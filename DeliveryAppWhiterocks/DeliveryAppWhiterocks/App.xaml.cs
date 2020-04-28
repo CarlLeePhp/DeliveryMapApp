@@ -6,11 +6,14 @@ namespace DeliveryAppWhiterocks
 {
     public partial class App : Application
     {
+        public static int screenHeight { get; set; }
+        public static int screenWidth { get; set; }
+
         public App()
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            MainPage = new NavigationPage(new MainPage());
         }
 
         protected override void OnStart()

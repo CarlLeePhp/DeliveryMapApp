@@ -6,11 +6,20 @@
              mc:Ignorable="d"
              x:Class="DeliveryAppWhiterocks.MainPage">
 
-    <StackLayout>
-        <Label></Label>
-        <Entry></Entry>
-        <Label></Label>
-        <Entry></Entry>
-    </StackLayout>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="topRowMargin"></RowDefinition>
+            <RowDefinition x:Name="contentRow" Height="*"></RowDefinition>
+            <RowDefinition x:Name="botRowMargin"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="leftColMargin"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition x:Name="rightColMargin"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <StackLayout Grid.Row="1" Grid.Column="1" >
+            <Image x:Name="appIconImg" Source="@drawable/appIcon.png"></Image>
+        </StackLayout>
+    </Grid>
 
 </ContentPage>

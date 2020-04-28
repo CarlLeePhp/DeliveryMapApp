@@ -14,6 +14,9 @@ namespace DeliveryAppWhiterocks.Droid
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            App.screenHeight = (int)(Resources.DisplayMetrics.HeightPixels / Resources.DisplayMetrics.Density);
+            App.screenWidth = (int)(Resources.DisplayMetrics.WidthPixels / Resources.DisplayMetrics.Density);
+
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 

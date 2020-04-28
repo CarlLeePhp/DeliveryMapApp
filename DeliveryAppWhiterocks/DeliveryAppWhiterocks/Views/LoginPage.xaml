@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:models="clr-namespace:DeliveryAppWhiterocks.ViewModels"
+             mc:Ignorable="d"
+             x:Class="DeliveryAppWhiterocks.Views.LoginPage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="topRowMargin"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition x:Name="botRowMargin"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="leftColMargin"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition x:Name="rightColMargin"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackLayout x:Name="masterStackLayout" Grid.Row="1" Grid.Column="1">
+                <StackLayout x:Name="imageLogoLayout">
+                    <Image Source="@drawable/appIcon.png"></Image>
+                </StackLayout>
+
+                <StackLayout x:Name="loginLayout">
+                    <StackLayout.Padding>
+                        <OnIdiom x:TypeArguments="Thickness">
+                            <OnIdiom.Phone>
+                                <OnPlatform x:TypeArguments="Thickness" Android="0,25,0,0" />
+                            </OnIdiom.Phone>
+                            <OnIdiom.Tablet>
+                                <OnPlatform x:TypeArguments="Thickness" Android="0,40,0,0" />
+                            </OnIdiom.Tablet>
+                        </OnIdiom>
+                    </StackLayout.Padding>
+
+                    <Label  x:Name="usernameLbl" Text="Username"></Label>
+                    <models:CustomEntry x:Name="usernameEntry" Placeholder="Username"></models:CustomEntry>
+                    <Label  x:Name="passwordLbl" Text="Password"></Label>
+                    <models:CustomEntry  x:Name="passwordEntry" IsPassword="True" Placeholder="Password"></models:CustomEntry>
+                    <Button x:Name="signInBtn" Text="Login" Clicked="SignInBtn_Clicked" Padding="10,0,10,0" Margin="0,15,0,0"></Button>
+                </StackLayout>
+            </StackLayout>
+        </Grid>
+
+    </ContentPage.Content>
+</ContentPage>

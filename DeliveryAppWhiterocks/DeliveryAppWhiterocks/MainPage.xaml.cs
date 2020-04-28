@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using DeliveryAppWhiterocks.Models;
+using DeliveryAppWhiterocks.Views;
 
 namespace DeliveryAppWhiterocks
 {
@@ -16,6 +18,30 @@ namespace DeliveryAppWhiterocks
         public MainPage()
         {
             InitializeComponent();
+            SetAppMargin();
+            Init();
+        }
+
+        private void SetAppMargin()
+        {
+            //DisplayAlert("Test", $"{App.screenWidth.ToString()} {App.screenHeight.ToString()}", "OK");
+            topRowMargin.Height = App.screenHeight / 4;
+            botRowMargin.Height = App.screenHeight / 4;
+            leftColMargin.Width = App.screenWidth / 4;
+            rightColMargin.Width = App.screenWidth / 4;
+        }
+
+        private void Init()
+        {
+            BackgroundColor = Constants.backgroundColor;
+        }
+
+        protected async override void OnAppearing()
+        {
+            NavigationPage.SetHasNavigationBar(this, false);
+            base.OnAppearing();
+            await Task.Delay(15000);
+            await this.Navigation.PushAsync(new LoginPage());
         }
     }
 }
