@@ -31,9 +31,9 @@ namespace DeliveryAppWhiterocks.Droid
 
             if (Control != null)
             {
-                this.Control.SetRawInputType(InputTypes.TextFlagNoSuggestions);
+                //this.Control.SetRawInputType(InputTypes.TextFlagNoSuggestions);
                 Control.SetBackgroundColor(global::Android.Graphics.Color.White);
-                Control.SetHintTextColor(ColorStateList.ValueOf(global::Android.Graphics.Color.White));
+                Control.SetHintTextColor(ColorStateList.ValueOf(global::Android.Graphics.Color.LightGray));
             }
         }
     }

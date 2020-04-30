@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,11 +8,13 @@ using DeliveryAppWhiterocks.Models;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+
 namespace DeliveryAppWhiterocks.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LoginPage : ContentPage
     {
+    
         public LoginPage()
         {
             InitializeComponent();
@@ -41,11 +44,15 @@ namespace DeliveryAppWhiterocks.Views
                 label.TextColor = Constants.secondaryTextColor;
                 label.FontAttributes = FontAttributes.Bold;
                 label.FontSize = 16;
+                label.Padding = new Thickness(0, 10, 0, 0);
             }
 
             List<Entry> entryList = new List<Entry>();
             entryList.Add(passwordEntry);
             entryList.Add(usernameEntry);
+
+            usernameEntry.Completed += UsernameEntry_Completed;
+            passwordEntry.Completed += PasswordEntry_Completed;
 
             foreach (Entry entry in entryList)
             {
@@ -54,8 +61,20 @@ namespace DeliveryAppWhiterocks.Views
                 entry.BackgroundColor = Constants.secondaryTextColor;
             }
 
+            signInBtn.CornerRadius = 10;
+            signInBtn.BackgroundColor = Constants.mainTextColor;
             signInBtn.FontAttributes = FontAttributes.Bold;
 
+        }
+
+        private void PasswordEntry_Completed(object sender, EventArgs e)
+        {
+            SignInBtn_Clicked(sender, e);
+        }
+
+        private void UsernameEntry_Completed(object sender, EventArgs e)
+        {
+            passwordEntry.Focus();
         }
 
         private void SignInBtn_Clicked(object sender, EventArgs e)
@@ -63,7 +82,7 @@ namespace DeliveryAppWhiterocks.Views
             User user = new User(usernameEntry.Text, passwordEntry.Text);
             if (user.checkInformation())
             {
-                DisplayAlert("Login", "Successful in log in into the system", "OK");
+               
             }
             else
             {
