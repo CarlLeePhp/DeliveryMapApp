@@ -12,5 +12,7 @@ namespace DeliveryAppWhiterocks.Models
         public static Color mainTextColor = Color.FromHex("d7dadc");
         public static Color secondaryTextColor = Color.FromHex("ffffff");
         public static Color contrastColor = Color.FromHex("000000");
+
+        public static string noInternetText="No internet connection, Application is running in offline mode";
     }
 }

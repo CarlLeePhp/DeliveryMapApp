@@ -8,7 +8,8 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition x:Name="topRowMargin"></RowDefinition>
+            
+            <RowDefinition x:Name="topRowMargin" ></RowDefinition>
             <RowDefinition x:Name="contentRow" Height="*"></RowDefinition>
             <RowDefinition x:Name="botRowMargin"></RowDefinition>
         </Grid.RowDefinitions>

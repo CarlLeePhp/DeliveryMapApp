@@ -65,6 +65,7 @@ namespace DeliveryAppWhiterocks.Views
             signInBtn.BackgroundColor = Constants.mainTextColor;
             signInBtn.FontAttributes = FontAttributes.Bold;
 
+            App.CheckInternetIfConnected(noInternetLbl, this);
         }
 
         private void PasswordEntry_Completed(object sender, EventArgs e)
@@ -82,11 +83,13 @@ namespace DeliveryAppWhiterocks.Views
             User user = new User(usernameEntry.Text, passwordEntry.Text);
             if (user.checkInformation())
             {
-               
+                App.UserDatabase.SaveUser(user);
+                DisplayAlert("Login", $"success  {App.UserDatabase.GetUser(user).ID} {App.UserDatabase.GetUser(user).Username} {App.UserDatabase.GetUser(user).Password}", "OK");
+                this.Navigation.PushAsync(new OrderPage());
             }
             else
             {
-                DisplayAlert("Login", "Unsuccessful in log in into the system", "OK");
+                DisplayAlert("Login", "Wrong credentials, please try again", "OK");
             }
         }
     }
