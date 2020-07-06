@@ -13,18 +13,31 @@ namespace DeliveryAppWhiterocks.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class OrderPage : ContentPage
     {
+        Color backgroundColor = Constants.backgroundColor;
+        List<OrderTemp> items;
+
         public OrderPage()
         {
             InitializeComponent();
             Init();
+            SupplyOrder();
         }
 
         private void Init()
         {
             NavigationPage.SetHasNavigationBar(this, false);
-            BackgroundColor = Constants.contrastColor;
 
-            
+            App.CheckInternetIfConnected(noInternetLbl, this);
+        
+        }
+
+        private void SupplyOrder()
+        {
+        }
+
+        private async void btnLocation_Clicked(object sender, EventArgs e)
+        {
+            await this.Navigation.PushAsync(new Maps());
         }
     }
 }

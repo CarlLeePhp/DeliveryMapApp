@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+    
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="DeliveryAppWhiterocks.ViewModels.ExpandableLabel">
+    
+  <ContentView.Content>
+      
+      <StackLayout
+            Padding="0"
+            x:Name ="Wrapper"
+            Spacing="0">
+            <BoxView BackgroundColor="White" HeightRequest="1"></BoxView>
+            <StackLayout
+                x:Name="Header"
+                Padding="10"
+                HorizontalOptions="FillAndExpand">
+                <Label x:Name="TitleText" Text="INVOICE TITLE" />
+            </StackLayout>
+            <BoxView BackgroundColor="Black" HeightRequest="1"></BoxView>
+            <StackLayout
+                x:Name="MiddleInfo"
+                Padding="0"
+                HorizontalOptions="FillAndExpand">
+                <StackLayout x:Name="MiddleContent" Padding="10">
+                    <Label x:Name="MiddleText" Text="Address tag" />
+                </StackLayout>
+            </StackLayout>
+            <BoxView BackgroundColor="Black" HeightRequest="1"></BoxView>
+            <StackLayout
+                x:Name="ExpandableLayout"
+                Padding="0"
+                HorizontalOptions="FillAndExpand">
+                <StackLayout x:Name="ExpandableContent" Padding="10">
+                    <Label x:Name="ExpandableText" Text="This is the expandable text" />
+                </StackLayout>
+            </StackLayout>
+            <BoxView BackgroundColor="WhiteSmoke" HeightRequest="1"></BoxView>
+            <StackLayout
+                x:Name="ExpandableClickable"
+                Padding="10"
+                HorizontalOptions="FillAndExpand">
+
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="TapGestureRecognizer_Tapped" />
+                </StackLayout.GestureRecognizers>
+                <Label Text="Click ME" />
+            </StackLayout>
+        </StackLayout>
+  </ContentView.Content>
+</ContentView>

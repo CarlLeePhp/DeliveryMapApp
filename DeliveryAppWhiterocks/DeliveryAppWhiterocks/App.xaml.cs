@@ -31,17 +31,7 @@ namespace DeliveryAppWhiterocks
 
         private void Init()
         {
-            var labelStyle = new Style(typeof(Label))
-            {
-                Setters = {
-                new Setter { Property = Label.TextColorProperty,    Value = Color.Red },
-                new Setter { Property = Label.FontAttributesProperty, Value = FontAttributes.Bold },
-                new Setter { Property = Label.FontFamilyProperty, Value = "cursive"}
-            }
-            };
             
-            Resources = new ResourceDictionary();
-            Resources.Add("labelStyle",labelStyle);
         }
 
         protected override void OnStart()

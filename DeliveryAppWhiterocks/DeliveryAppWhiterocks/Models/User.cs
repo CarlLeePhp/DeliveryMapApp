@@ -35,7 +35,7 @@ namespace DeliveryAppWhiterocks.Models
             {
                 User tempUser = DatabaseController.retrieveUserDataLocal(this);
 
-                if (tempUser == null )
+                if (tempUser == null && App.CheckIfInternet().Result)
                 {
                     tempUser = DatabaseController.retrieveUserDataOnline(this);
                 }

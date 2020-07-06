@@ -66,6 +66,7 @@ namespace DeliveryAppWhiterocks.Views
             signInBtn.FontAttributes = FontAttributes.Bold;
 
             App.CheckInternetIfConnected(noInternetLbl, this);
+            activityIndicator.IsVisible = false;    
         }
 
         private void PasswordEntry_Completed(object sender, EventArgs e)
@@ -78,18 +79,27 @@ namespace DeliveryAppWhiterocks.Views
             passwordEntry.Focus();
         }
 
-        private void SignInBtn_Clicked(object sender, EventArgs e)
+        private async void SignInBtn_Clicked(object sender, EventArgs e)
         {
-            User user = new User(usernameEntry.Text, passwordEntry.Text);
-            if (user.checkInformation())
+            try
             {
-                App.UserDatabase.SaveUser(user);
-                DisplayAlert("Login", $"success  {App.UserDatabase.GetUser(user).ID} {App.UserDatabase.GetUser(user).Username} {App.UserDatabase.GetUser(user).Password}", "OK");
-                this.Navigation.PushAsync(new OrderPage());
-            }
-            else
+                activityIndicator.IsVisible = true;
+                User user = new User(usernameEntry.Text, passwordEntry.Text);
+                if (user.checkInformation())
+                {
+                    App.UserDatabase.SaveUser(user);
+                    activityIndicator.IsVisible = false;
+                    await this.Navigation.PushAsync(new OrderPage());
+                }
+                else
+                {
+                    await DisplayAlert("Login", "Wrong credentials, please try again", "OK");
+                    activityIndicator.IsVisible = false;
+                }
+            } catch
             {
-                DisplayAlert("Login", "Wrong credentials, please try again", "OK");
+                await DisplayAlert("Login", "Wrong credentials, please try again", "OK");
+                activityIndicator.IsVisible = false;
             }
         }
     }

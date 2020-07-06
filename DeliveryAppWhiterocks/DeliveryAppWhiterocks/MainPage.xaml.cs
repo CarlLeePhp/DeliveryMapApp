@@ -40,8 +40,9 @@ namespace DeliveryAppWhiterocks
         {
             NavigationPage.SetHasNavigationBar(this, false);
             base.OnAppearing();
-            await Task.Delay(15000);
-            await this.Navigation.PushAsync(new LoginPage());
+            await Task.Delay(7000);
+            //await this.Navigation.PushAsync(new LoginPage());
+            await this.Navigation.PushAsync(new OrderPage ());
         }
     }
 }
