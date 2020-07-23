@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.companyname.deliveryappwhiterocks" android:installLocation="auto">
-	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="28" />
-	<application android:label="DeliveryAppWhiterocks.Android">
-		<meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAuQ7O0I0wSOFX-GR_rIauwFIjfiQNJiMA" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.companyname.deliveryappwhiterocks" android:installLocation="internalOnly">
+	<uses-sdk android:minSdkVersion="18" android:targetSdkVersion="28" />
+	<application android:label="DeliveryAppWhiterocks.Android" android:icon="@drawable/appIcon">
+		<meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyA6xf-nZQIXqgRrP8zrhRbbkJtq0D3ew4Y" />
+		<meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+		<uses-library android:name="org.apache.http.legacy" android:required="false" />
 	</application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
