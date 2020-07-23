@@ -21,6 +21,7 @@ namespace DeliveryAppWhiterocks.Views
         public OrderPage()
         {
             InitializeComponent();
+            //App.Current.MainPage = this;
             Init();
             orderTemp = new ObservableCollection<OrderTemp>();
             SupplyOrder();
@@ -34,21 +35,14 @@ namespace DeliveryAppWhiterocks.Views
         
         }
 
+        //get data from database when the application started
         private void SupplyOrder()
         {
-            orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Morning rd 132, Otago","30", "BLackstuff", 3, 3.5));
-            orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Utah rd 1211, Bluff" ,"30", "BLackstuff", 3, 3.5));
-            orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Utah rd 1211, Bluff", "30", "BLackstuff", 3, 3.5));
-            orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Utah rd 1211, Bluff", "30", "BLackstuff", 3, 3.5));
-            orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Utah rd 1211, Bluff", "30", "BLackstuff", 3, 3.5));
-            orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Utah rd 1211, Bluff", "30", "BLackstuff", 3, 3.5));
-
+            //load data from database
+            //do foreach
+            //orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Morning rd 132, Otago","30", "BLackstuff", 3, 3.5));
+            
             DeliveryInvoice.ItemsSource = orderTemp;
-        }
-
-        private async void btnLocation_Clicked(object sender, EventArgs e)
-        {
-            await this.Navigation.PushAsync(new Maps());
         }
 
         private void ImgMenu_Tapped(object sender, EventArgs e)
@@ -60,6 +54,12 @@ namespace DeliveryAppWhiterocks.Views
         {
             GridOverlay.IsVisible = false;
             
+        }
+
+        //Get data from XERO API
+        private void LoadDeliveryBtn_Clicked(object sender, EventArgs e)
+        {
+            Navigation.PushModalAsync(new XEROWebPage());
         }
     }
 }

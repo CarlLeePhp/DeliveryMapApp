@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms;
 
-namespace DeliveryAppWhiterocks.ViewModels
+namespace DeliveryAppWhiterocks.Models.Custom
 {
     public class CustomEntry : Entry
     {

@@ -4,15 +4,17 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.Xaml;
+using Application = Xamarin.Forms.Application;
 
 namespace DeliveryAppWhiterocks
 {
     public partial class App : Application
     {
-        static TokenDatabaseController tokenDatabase;
+        //static TokenDatabaseController tokenDatabase;
         static UserDatabaseController userDatabase;
-
         public static int screenHeight { get; set; }
         public static int screenWidth { get; set; }
 
@@ -26,6 +28,8 @@ namespace DeliveryAppWhiterocks
         {
             InitializeComponent();
             Init();
+            this.On<Android>().UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Resize);
+
             MainPage = new NavigationPage(new MainPage());
         }
 
@@ -98,7 +102,7 @@ namespace DeliveryAppWhiterocks
             }
         }
 
-        public static async Task<bool> CheckIfInternet()
+        public static bool CheckIfInternet()
         {
             var networkConnection = DependencyService.Get<INetworkConnection>();
             networkConnection.CheckInternetConnection();

@@ -12,7 +12,7 @@ using Android.Widget;
 using DeliveryAppWhiterocks.Droid;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
-using DeliveryAppWhiterocks.ViewModels;
+using DeliveryAppWhiterocks.Models.Custom;
 using Android.Text;
 using Android.Content.Res;
 
