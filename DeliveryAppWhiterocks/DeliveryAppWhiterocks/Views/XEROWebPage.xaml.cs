@@ -9,23 +9,23 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
+using System.Threading;
 
 namespace DeliveryAppWhiterocks.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class XEROWebPage : ContentPage
     {
-        public XEROWebPage()
+        OrderPage _orderPage;
+        public XEROWebPage(OrderPage order)
         {
             InitializeComponent();
+            _orderPage = order;
             InitXeroWebView();
-
-            
         }
 
         private void InitXeroWebView()
         {
-            
             xeroWebView.Source = AuthorizeLink();
             xeroWebView.Navigated += async (object sender, WebNavigatedEventArgs e) =>
             {
@@ -38,10 +38,13 @@ namespace DeliveryAppWhiterocks.Views
                     var isSuccess = await XeroAPI.GetToken();
                     await XeroAPI.GetTenantID();
                     await XeroAPI.GetInvoices();
-                    await DisplayAlert("SUCCESS", $"{XeroAPI._InvoiceResponse.Invoices[0].InvoiceNumber}", "OK");
+                    await XeroAPI.FillData();
+
+                    _orderPage.SupplyOrder();
+
+                    await Navigation.PopModalAsync();
                 }
             };
-            //await Navigation.PopModalAsync();
         }
 
         private WebViewSource AuthorizeLink()

@@ -38,7 +38,7 @@
                 <StackLayout BackgroundColor="Black" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="25"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
@@ -46,6 +46,7 @@
                             <ColumnDefinition Width="8*"></ColumnDefinition>
                             <ColumnDefinition Width="1*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalTextAlignment="Center" x:Name="noInternetLbl" FontAttributes="Bold" HorizontalTextAlignment="Center" BackgroundColor="Red" TextColor="White"></Label>
                         <Image Grid.Column="0" Grid.Row="1" Margin="15,15,0,0" HeightRequest="16" MinimumHeightRequest="16" x:Name="appIconImg" Source="@drawable/menu.png">
                             <!--Add Tap Event-->
                             <Image.GestureRecognizers>
@@ -86,11 +87,11 @@
                                             <ColumnDefinition Width="3*"></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
 
-                                        <Label Grid.Row="0" Margin="5" TextColor="White" FontSize="Title" Grid.Column="0" Text="{Binding InvoiceID}"></Label>
-                                        <Label Grid.Row="0" Margin="5" HorizontalTextAlignment="End" VerticalTextAlignment="End" TextColor="White" FontSize="Subtitle" Grid.Column="2" Text="{Binding CustomerName}"></Label>
+                                            <Label Grid.Row="0" Margin="5" TextColor="White" FontSize="Title" Grid.Column="0" Text="{Binding InvoiceNumber}"></Label>
+                                            <Label Grid.Row="0" Margin="5" HorizontalTextAlignment="End" VerticalTextAlignment="End" TextColor="White" FontSize="Subtitle" Grid.Column="2" Text="{Binding Contact.Name}"></Label>
                                         <StackLayout Grid.Row="1" Margin="5" Grid.ColumnSpan="3">
                                             <BoxView BackgroundColor="White" HeightRequest="1"></BoxView>
-                                            <Label TextColor="White" Text="{Binding Address}"></Label>
+                                                <Label TextColor="White" Text="{Binding Contact.Addresses[1].AddressLine1}"></Label>
                                         </StackLayout>
                                     </Grid>
                                 </Frame>
@@ -160,7 +161,7 @@
                                VerticalTextAlignment="Center"
                                FontSize="20" />
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="TapInfo" />
+                            <TapGestureRecognizer x:Name="TapInfo" Tapped="TapInfo_Tapped"/>
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
                     <StackLayout Spacing="30"

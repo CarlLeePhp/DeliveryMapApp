@@ -17,5 +17,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
         public double Quantity { get; set; }
         public string LineItemID { get; set; }
         public List<ValidationError> ValidationErrors { get; set; }
+
+        public double Weight { get; set; }
     }
 }
