@@ -30,9 +30,26 @@ namespace DeliveryAppWhiterocks.Views
         private void Init()
         {
             NavigationPage.SetHasNavigationBar(this, false);
-
             App.CheckInternetIfConnected(noInternetLbl, this);
-        
+
+            CheckHasDataLabel();
+        }
+
+        private void CheckHasDataLabel()
+        {
+            if(XeroAPI._InvoiceResponse != null) { 
+                if (XeroAPI._InvoiceResponse.Invoices.Count == 0)
+                {
+                    noDataLabel.IsVisible = true;
+                }
+                else
+                {
+                    noDataLabel.IsVisible = false;
+                }
+            } else
+            {
+                noDataLabel.IsVisible = true;
+            }
         }
 
         //get data from database when the application started
@@ -56,7 +73,6 @@ namespace DeliveryAppWhiterocks.Views
         private void TapCloseMenu_Tapped(object sender, EventArgs e)
         {
             GridOverlay.IsVisible = false;
-            
         }
 
         //Get data from XERO API
@@ -64,6 +80,8 @@ namespace DeliveryAppWhiterocks.Views
         {
             if (App.CheckIfInternet()) {
                 await Navigation.PushModalAsync(new XEROWebPage(this));
+                GridOverlay.IsVisible = false;
+                CheckHasDataLabel();
             } else
             {
                 await DisplayAlert("Oops", "No internet connection, couldn't load data from XERO", "OK");
@@ -73,6 +91,11 @@ namespace DeliveryAppWhiterocks.Views
         private void TapInfo_Tapped(object sender, EventArgs e)
         {
             Navigation.PushModalAsync(new DeliveryInfo());
+        }
+
+        private void testTap_Tapped(object sender, EventArgs e)
+        {
+            DisplayAlert("Y", "You got me!", "OK");
         }
     }
 }

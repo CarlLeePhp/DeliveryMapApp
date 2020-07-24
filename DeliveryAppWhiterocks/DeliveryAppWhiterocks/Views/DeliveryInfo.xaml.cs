@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+
 namespace DeliveryAppWhiterocks.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
@@ -27,6 +28,14 @@ namespace DeliveryAppWhiterocks.Views
         private void Init()
         {
             App.CheckInternetIfConnected(noInternetLbl, this);
+
+            if(Device.Idiom == TargetIdiom.Tablet)
+            {
+                QuantityHeaderLabel.FontSize = Device.GetNamedSize(NamedSize.Title, typeof(Label));
+            } else
+            {
+                QuantityHeaderLabel.FontSize = Device.GetNamedSize(NamedSize.Subtitle, typeof(Label));
+            }
         }
 
         private void MapItemList()
@@ -38,9 +47,14 @@ namespace DeliveryAppWhiterocks.Views
                 _stockInfo.Add(stockX);
                 totalWeight += stockX.Weight;
             }
-
+            
             WeightTotalLabel.Text = string.Format($"{totalWeight:F2} Kg");
             DeliveryItemListView.ItemsSource = _stockInfo;
+        }
+
+        private async void  TapBack_Tapped(object sender, EventArgs e)
+        {
+            await Navigation.PopModalAsync();
         }
     }
 }

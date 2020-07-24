@@ -19,6 +19,16 @@
 
     <ContentPage.Content>
         <Grid>
+            <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                <Label x:Name="noDataLabel" Grid.Row="0" Grid.Column="0" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Text="No data is currently loaded . . ." TextColor="Gray" FontSize="Subtitle" IsVisible="True"></Label>
+            </Grid>
+        
             <Grid ColumnSpacing="0"
                   HorizontalOptions="FillAndExpand"
                   VerticalOptions="Start"
@@ -34,6 +44,7 @@
                     <ColumnDefinition Width="8*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
+                
                 <!--TopHeader Nav-->
                 <StackLayout BackgroundColor="Black" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
                     <Grid>
@@ -82,19 +93,21 @@
                                             <RowDefinition Height="0.1*"></RowDefinition>
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="3*"></ColumnDefinition>
-                                            <ColumnDefinition Width="4*"></ColumnDefinition>
-                                            <ColumnDefinition Width="3*"></ColumnDefinition>
+                                                <ColumnDefinition Width="5*"></ColumnDefinition>
+                                                <ColumnDefinition Width="5*"></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
 
                                             <Label Grid.Row="0" Margin="5" TextColor="White" FontSize="Title" Grid.Column="0" Text="{Binding InvoiceNumber}"></Label>
-                                            <Label Grid.Row="0" Margin="5" HorizontalTextAlignment="End" VerticalTextAlignment="End" TextColor="White" FontSize="Subtitle" Grid.Column="2" Text="{Binding Contact.Name}"></Label>
-                                        <StackLayout Grid.Row="1" Margin="5" Grid.ColumnSpan="3">
-                                            <BoxView BackgroundColor="White" HeightRequest="1"></BoxView>
+                                            <Label Grid.Row="0" Margin="5" HorizontalTextAlignment="End" VerticalTextAlignment="End" TextColor="White" FontSize="Subtitle" Grid.Column="1" Text="{Binding Contact.Name}"></Label>
+                                            <StackLayout Grid.Row="1" Margin="5" Grid.ColumnSpan="2">
+                                                <BoxView BackgroundColor="White" HeightRequest="1"></BoxView>
                                                 <Label TextColor="White" Text="{Binding Contact.Addresses[1].AddressLine1}"></Label>
-                                        </StackLayout>
-                                    </Grid>
+                                            </StackLayout>
+                                        </Grid>
                                 </Frame>
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer x:Name="testTap" Tapped="testTap_Tapped"></TapGestureRecognizer>
+                                    </Grid.GestureRecognizers>
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
@@ -104,11 +117,16 @@
                 <!--BottomRibbon Nav Menu-->
                 <StackLayout  BackgroundColor="#1a1a1b"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
                     <BoxView Grid.Row="3" Grid.ColumnSpan="3"></BoxView>
-                    <StackLayout Orientation="Horizontal" Spacing="50" HorizontalOptions="CenterAndExpand">
-                        <Button x:Name="LoadDeliveryBtn" Text="Load Delivery" TextColor="#80574D" BackgroundColor="Transparent" Clicked="LoadDeliveryBtn_Clicked">
+                    <StackLayout Orientation="Horizontal" Spacing="50" HorizontalOptions="Center">
+
+                        <Button Text="Load Delivery" Clicked="LoadDeliveryBtn_Clicked" TextColor="#80574D" BackgroundColor="Transparent" >
                         </Button>
-                        <Button Text="Get Directions" TextColor="#80574D" BackgroundColor="Transparent">
+
+                        <BoxView BackgroundColor="black" WidthRequest="1"></BoxView>
+
+                        <Button Text="Get Directions" Clicked="LoadDeliveryBtn_Clicked" TextColor="#80574D" BackgroundColor="Transparent">
                         </Button>
+
                     </StackLayout>
                 </StackLayout>
             </Grid>
@@ -127,9 +145,10 @@
                           HeightRequest="120">
                         
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="4*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="8*" />
                         </Grid.ColumnDefinitions>
-                        <StackLayout Grid.Row="0" Grid.Column="0"
+                        <StackLayout Grid.Row="0" Grid.Column="1"
                                      VerticalOptions="Center"
                                      Spacing="0"
                                      Margin="15,0,0,0">
@@ -137,24 +156,31 @@
                                    FontSize="Large"
                                    TextColor="White" />
                         </StackLayout>
+                        
                     </Grid>
+                    
                     <StackLayout Spacing="30"
                                  Orientation="Horizontal"
                                  Margin="20,0,0,0">
-                        
+                        <Image Source="@drawable/refresh.png"
+                               HeightRequest="30"
+                               WidthRequest="30" />
                         <Label Text="Load Deliveries"
                                TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="TapOrders" Tapped="LoadDeliveryBtn_Clicked"/>
+                            <TapGestureRecognizer x:Name="TapSlMenuLoadOrder" Tapped="LoadDeliveryBtn_Clicked"/>
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
+                    <BoxView BackgroundColor="black" HeightRequest="1"></BoxView>
                     <StackLayout Spacing="30"
                                  Orientation="Horizontal"
                                  Margin="20,0,0,0">
-
+                        <Image Source="@drawable/info.png"
+                               HeightRequest="30"
+                               WidthRequest="30" />
                         <Label Text="Delivery Info"
                                TextColor="#80574D"
                                HeightRequest="50"
@@ -164,50 +190,75 @@
                             <TapGestureRecognizer x:Name="TapInfo" Tapped="TapInfo_Tapped"/>
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
+                    <BoxView BackgroundColor="black" HeightRequest="1"></BoxView>
                     <StackLayout Spacing="30"
                                  Orientation="Horizontal"
                                  Margin="20,0,0,0">
-                        
+                        <Image Source="@drawable/add.png"
+                               HeightRequest="30"
+                               WidthRequest="30" />
                         <Label Text="Add Pickup"
                                TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="TapPickup" />
+                            <TapGestureRecognizer x:Name="TapSlMenuPickup" />
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
+                    <BoxView BackgroundColor="black" HeightRequest="1"></BoxView>
                     <StackLayout Spacing="30"
                                  Orientation="Horizontal"
                                  Margin="20,0,0,0">
-                        
+                        <Image Source="@drawable/hourglass.png"
+                               HeightRequest="30"
+                               WidthRequest="30" />
+                        <Label Text="Past Delivery"
+                               TextColor="#80574D"
+                               HeightRequest="50"
+                               VerticalTextAlignment="Center"
+                               FontSize="20" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="TapSlMenuPastDelivery" />
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
+                    <BoxView BackgroundColor="black" HeightRequest="1"></BoxView>
+                    <StackLayout Spacing="30"
+                                 Orientation="Horizontal"
+                                 Margin="20,0,0,0">
+                        <Image Source="@drawable/completedOrder.png"
+                               HeightRequest="30"
+                               WidthRequest="30" />
                         <Label Text="Finish Delivery"
                                TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="TapFinishDelivery" />
+                            <TapGestureRecognizer x:Name="TapSlMenuFinishDelivery" />
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
+                    <BoxView BackgroundColor="black" HeightRequest="1"></BoxView>
                     <StackLayout Spacing="30"
                                  Orientation="Horizontal"
                                  Margin="20,0,0,0">
-                        
+                        <Image Source="@drawable/close.png"
+                               HeightRequest="30"
+                               WidthRequest="30" />
                         <Label Text="Close Options"
                                TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="Close" Tapped="TapCloseMenu_Tapped"/>
+                            <TapGestureRecognizer x:Name="TapSlMenuClose" Tapped="TapCloseMenu_Tapped"/>
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
                 </StackLayout>
                 <BoxView Grid.Column="1"
                          x:Name="BoxViewLayer" BackgroundColor="Transparent">
                     <BoxView.GestureRecognizers>
-                        <TapGestureRecognizer x:Name="TapCloseMenu" Tapped="TapCloseMenu_Tapped"/>
+                        <TapGestureRecognizer x:Name="TapOutsideSlMenuClose" Tapped="TapCloseMenu_Tapped"/>
                     </BoxView.GestureRecognizers>
                 </BoxView>
             </Grid>

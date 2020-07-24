@@ -15,4 +15,11 @@ namespace DeliveryAppWhiterocks.Models
 
         public static string noInternetText="No internet connection, Application is running in offline mode";
     }
+
+    public enum RequestType
+    {
+        Invoices,
+        Invoice,
+        Contact,
+    }
 }

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using DeliveryAppWhiterocks.Models.XeroAPI;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using DeliveryAppWhiterocks.Models.XeroAPI;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using System.Security.Cryptography;
-using Microsoft.IdentityModel.Tokens;
-using System.Threading;
 
 namespace DeliveryAppWhiterocks.Views
 {
@@ -27,10 +22,12 @@ namespace DeliveryAppWhiterocks.Views
         private void InitXeroWebView()
         {
             xeroWebView.Source = AuthorizeLink();
+            activityIndicator.IsVisible = false;
             xeroWebView.Navigated += async (object sender, WebNavigatedEventArgs e) =>
             {
                 if (e.Url.Contains(@"https://www.xero.com/nz/"))
                 {
+                    activityIndicator.IsVisible = true;
                     int indexStart = e.Url.IndexOf("code=") + 5;
                     int length = e.Url.IndexOf("&scope=") - indexStart;
                     Preferences.Set("Code", e.Url.Substring(indexStart, length));
@@ -63,7 +60,5 @@ namespace DeliveryAppWhiterocks.Views
                 }
                 return urlLink;
         }
-
-        
     }
 }

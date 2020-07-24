@@ -6,7 +6,18 @@
              mc:Ignorable="d"
              x:Class="DeliveryAppWhiterocks.Views.XEROWebPage">
     <ContentPage.Content>
-        <!-- WebView needs to be given height and width request within layouts to render. -->
-        <WebView HeightRequest="1300" WidthRequest="1000" x:Name="xeroWebView"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!-- WebView needs to be given height and width request within layouts to render. -->
+            <WebView Grid.Row="0" Grid.Column="0" HeightRequest="1300" WidthRequest="1000" x:Name="xeroWebView"/>
+            <StackLayout x:Name="activitySpinnerLayout" Grid.Row="0" Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Center">
+                <ActivityIndicator x:Name="activityIndicator" IsRunning="True" Color="Gray"></ActivityIndicator>
+            </StackLayout>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>

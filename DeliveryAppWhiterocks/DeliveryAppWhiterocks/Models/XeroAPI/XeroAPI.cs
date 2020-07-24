@@ -16,8 +16,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
     {
         public static InvoiceResponse _InvoiceResponse;
 
-        public static Dictionary<string, Stock> _ItemDictionary;
-
+        public static Dictionary<string, Stock> _ItemDictionary = new Dictionary<string, Stock>();
 
         public static async Task<bool> GetToken()
         {
@@ -71,12 +70,8 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             {
                 return false;
             }
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Preferences.Get("AccessToken", string.Empty));
-            client.DefaultRequestHeaders.Add("xero-tenant-id", tenantID);
-            client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-            HttpResponseMessage response = await client.GetAsync(@"https://api.xero.com/api.xro/2.0/Invoices");
+            
+            HttpResponseMessage response = await HttpClientBuilder(RequestType.Invoices);
 
             if (!response.IsSuccessStatusCode) return false;
 
@@ -88,7 +83,6 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
         public static async Task<bool> FillData()
         {
-            _ItemDictionary = new Dictionary<string, Stock>();
 
             for (int i = 0; i < _InvoiceResponse.Invoices.Count; i++)
             {
@@ -101,12 +95,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
         private static async Task<bool> FillItems(Invoice invoice, int i)
         {
 
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Preferences.Get("AccessToken", string.Empty));
-            client.DefaultRequestHeaders.Add("xero-tenant-id", Preferences.Get("TenantID", string.Empty));
-            client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-            var response = await client.GetAsync(@"https://api.xero.com/api.xro/2.0/Invoices/" + invoice.InvoiceID);
+            var response = await HttpClientBuilder(RequestType.Invoice, invoice.InvoiceID);
 
             if (!response.IsSuccessStatusCode) return false;
 
@@ -147,13 +136,8 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
         private static async Task<bool> FillContactAddress(Contact contact, int i)
         {
-            string tenantID = Preferences.Get("TenantID", string.Empty);
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Preferences.Get("AccessToken", string.Empty));
-            client.DefaultRequestHeaders.Add("xero-tenant-id", tenantID);
-            client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
-            HttpResponseMessage response = await client.GetAsync(@"https://api.xero.com/api.xro/2.0/Contacts/" + contact.ContactID);
+            HttpResponseMessage response = await HttpClientBuilder(RequestType.Contact, contact.ContactID);
 
             if (!response.IsSuccessStatusCode) return false;
 
@@ -162,6 +146,31 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             _InvoiceResponse.Invoices[i].Contact = contactResponse.Contacts[0];
             
             return true;
+        }
+
+        private static async Task<HttpResponseMessage> HttpClientBuilder(RequestType requestType,params string[] identifier)
+        {
+            string url = @"https://api.xero.com/api.xro/2.0/";
+            if (requestType == RequestType.Contact)
+            {
+                url += @"Contacts/" + identifier[0];
+            }
+            else if (requestType == RequestType.Invoice)
+            {
+                url += @"Invoices/" + identifier[0];
+            }
+            else
+            {
+                url += @"Invoices/";
+            }
+
+            string tenantID = Preferences.Get("TenantID", string.Empty);
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Preferences.Get("AccessToken", string.Empty));
+            client.DefaultRequestHeaders.Add("xero-tenant-id", tenantID);
+            client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+            return await client.GetAsync(url);
         }
     }
 }
