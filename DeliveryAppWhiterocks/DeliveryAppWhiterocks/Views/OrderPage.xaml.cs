@@ -25,6 +25,10 @@ namespace DeliveryAppWhiterocks.Views
             Init();
             _deliveryOrders = new ObservableCollection<Invoice>();
             //SupplyOrder();
+
+            //these 2 lines are for testing, remove later
+            //TestData.CreateInvoice();
+            //SupplyOrder();
         }
 
         private void Init()
@@ -33,6 +37,8 @@ namespace DeliveryAppWhiterocks.Views
             App.CheckInternetIfConnected(noInternetLbl, this);
 
             CheckHasDataLabel();
+
+            
         }
 
         private void CheckHasDataLabel()
@@ -91,12 +97,18 @@ namespace DeliveryAppWhiterocks.Views
         private void TapInfo_Tapped(object sender, EventArgs e)
         {
             GridOverlay.IsVisible = false;
-            Navigation.PushModalAsync(new DeliveryInfo());
+            Navigation.PushModalAsync(new DeliveryInfoPage());
         }
 
-        private void testTap_Tapped(object sender, EventArgs e)
+
+        private void DeliveryInvoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DisplayAlert("Y", "You got me!", "OK");
+            var currentSelection = e.CurrentSelection.FirstOrDefault() as Invoice;
+            if (currentSelection == null) return;
+            
+            Navigation.PushModalAsync(new OrderDetailPage(currentSelection));
+
+            ((CollectionView)sender).SelectedItem = null;
         }
     }
 }

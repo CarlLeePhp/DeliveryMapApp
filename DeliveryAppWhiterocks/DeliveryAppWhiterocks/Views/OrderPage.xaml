@@ -70,7 +70,7 @@
 
                 <StackLayout Orientation="Vertical" Grid.Row="2" Grid.ColumnSpan="3">
                     <!--InvoiceCollections-->
-                    <CollectionView  x:Name="DeliveryInvoice" >
+                    <CollectionView  x:Name="DeliveryInvoice" SelectionMode="Single" SelectionChanged="DeliveryInvoice_SelectionChanged">
                         <CollectionView.ItemsLayout>
                             <GridItemsLayout Orientation="Vertical"
                                   />
@@ -105,9 +105,7 @@
                                             </StackLayout>
                                         </Grid>
                                 </Frame>
-                                    <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer x:Name="testTap" Tapped="testTap_Tapped"></TapGestureRecognizer>
-                                    </Grid.GestureRecognizers>
+                                    
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
@@ -165,7 +163,7 @@
                         <Image Source="@drawable/refresh.png"
                                HeightRequest="30"
                                WidthRequest="30" />
-                        <Label Text="Load Deliveries"
+                        <Label Text="Load Delivery"
                                TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"

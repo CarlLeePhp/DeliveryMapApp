@@ -37,5 +37,15 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
         public DateTime FullyPaidOnDate { get; set; }
         public bool SentToContact { get; set; }
         public string BrandingThemeID { get; set; }
+
+        //fortesting constructor
+
+        public Invoice(string invoiceID,string invoiceNumber, Contact contact,List<LineItem> items)
+        {
+            this.InvoiceID = invoiceID;
+            this.InvoiceNumber = invoiceNumber;
+            this.Contact = contact;
+            this.LineItems = items;
+        }
     }
 }

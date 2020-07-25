@@ -4,15 +4,14 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="DeliveryAppWhiterocks.Views.DeliveryInfo">
-    
+             x:Class="DeliveryAppWhiterocks.Views.DeliveryInfoPage">
     <ContentPage.Content>
         <Grid>
-            
-            
+
+
             <Grid>
                 <Grid.RowDefinitions>
-                    
+
                     <RowDefinition Height="0.15*"/>
                     <RowDefinition Height="0.85*"/>
                     <RowDefinition Height="50"/>
@@ -23,8 +22,9 @@
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
-                    <!--No internet label-->
+                    
                     <StackLayout Spacing="5" Orientation="Vertical">
+                        <!--No internet label-->
                         <StackLayout HeightRequest="25">
                             <Label VerticalTextAlignment="Center" x:Name="noInternetLbl" FontAttributes="Bold" HorizontalTextAlignment="Center" BackgroundColor="Red" TextColor="White"></Label>
                         </StackLayout>
@@ -70,7 +70,7 @@
                             </StackLayout>
 
                             <Label x:Name="QuantityHeaderLabel" Grid.Row="1" Margin="20,20,0,0" HorizontalTextAlignment="Center" Grid.Column="0" Text="Quantity" TextColor="White" FontSize="Subtitle">
-                                
+
                             </Label>
                             <Label x:Name="ItemDescHeaderLabel" Grid.Row="1" Margin="0,20,0,0"  Grid.Column="1" Text="Item Description" TextColor="White" FontSize="Subtitle"></Label>
 
@@ -99,8 +99,6 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </Grid>
-
-            
         </Grid>
     </ContentPage.Content>
 </ContentPage>
