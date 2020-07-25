@@ -31,10 +31,14 @@ namespace DeliveryAppWhiterocks.Views
 
             if(Device.Idiom == TargetIdiom.Tablet)
             {
-                QuantityHeaderLabel.FontSize = Device.GetNamedSize(NamedSize.Title, typeof(Label));
+                double tabletFontSize = Device.GetNamedSize(NamedSize.Title, typeof(Label));
+                QuantityHeaderLabel.FontSize = tabletFontSize;
+                ItemDescHeaderLabel.FontSize = tabletFontSize;
             } else
             {
-                QuantityHeaderLabel.FontSize = Device.GetNamedSize(NamedSize.Subtitle, typeof(Label));
+                double phoneFontSize = Device.GetNamedSize(NamedSize.Subtitle, typeof(Label));
+                QuantityHeaderLabel.FontSize = phoneFontSize;
+                ItemDescHeaderLabel.FontSize = phoneFontSize;
             }
         }
 

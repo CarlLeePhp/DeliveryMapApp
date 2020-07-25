@@ -90,6 +90,7 @@ namespace DeliveryAppWhiterocks.Views
 
         private void TapInfo_Tapped(object sender, EventArgs e)
         {
+            GridOverlay.IsVisible = false;
             Navigation.PushModalAsync(new DeliveryInfo());
         }
 
