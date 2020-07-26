@@ -16,7 +16,7 @@ namespace DeliveryAppWhiterocks.Views
     public partial class DeliveryInfoPage : ContentPage
     {
         ObservableCollection<Stock> _stockInfo = new ObservableCollection<Stock>();
-
+       
         public DeliveryInfoPage()
         {
             InitializeComponent();
