@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms;
 
-namespace DeliveryAppWhiterocks.Data
+namespace DeliveryAppWhiterocks.Data.SQLite
 {
     class TokenDatabaseController
     {

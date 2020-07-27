@@ -10,7 +10,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using DeliveryAppWhiterocks.Data;
+using DeliveryAppWhiterocks.Data.SQLite;
 using DeliveryAppWhiterocks.Droid.Data;
 using Xamarin.Forms;
 

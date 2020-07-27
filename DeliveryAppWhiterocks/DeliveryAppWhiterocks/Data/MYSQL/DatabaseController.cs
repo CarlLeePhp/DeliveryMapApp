@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DeliveryAppWhiterocks.Data
+namespace DeliveryAppWhiterocks.Data.MYSQL
 {
     class DatabaseController
     {

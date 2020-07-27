@@ -1,4 +1,5 @@
-﻿using DeliveryAppWhiterocks.Data;
+﻿using DeliveryAppWhiterocks.Data.SQLite;
+using DeliveryAppWhiterocks.Data;
 using DeliveryAppWhiterocks.Models;
 using System;
 using System.Threading;
@@ -15,6 +16,13 @@ namespace DeliveryAppWhiterocks
     {
         //static TokenDatabaseController tokenDatabase;
         static UserDatabaseController userDatabase;
+        static InvoiceDatabaseController invoiceDatabase;
+        static LineItemDatabaseController lineItemDatabase;
+        static ItemDatabaseController itemDatabase;
+        static ContactDatabaseController contactDatabase;
+
+        //could be obsolete in the future, when i have time i will update this
+        //using grid might be more efficient, i stopped using this
         public static int screenHeight { get; set; }
         public static int screenWidth { get; set; }
 
@@ -28,6 +36,7 @@ namespace DeliveryAppWhiterocks
         {
             InitializeComponent();
             Init();
+            //this line here is necessary to stop the keyboard for blocking the entry/input field in webview
             this.On<Android>().UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Resize);
 
             MainPage = new NavigationPage(new MainPage());
@@ -50,6 +59,8 @@ namespace DeliveryAppWhiterocks
         {
         }
 
+        #region SQLITEDATABASE
+        //initialize sqlite database if it is not exist
         public static UserDatabaseController UserDatabase
         {
             get
@@ -62,6 +73,57 @@ namespace DeliveryAppWhiterocks
             }
         }
 
+        public static InvoiceDatabaseController InvoiceDatabase
+        {
+            get
+            {
+                if (invoiceDatabase == null)
+                {
+                    invoiceDatabase = new InvoiceDatabaseController();
+                }
+                return invoiceDatabase;
+            }
+        }
+
+        public static LineItemDatabaseController LineItemDatabase
+        {
+            get
+            {
+                if (lineItemDatabase == null)
+                {
+                    lineItemDatabase = new LineItemDatabaseController();
+                }
+                return lineItemDatabase;
+            }
+        }
+
+        public static ItemDatabaseController ItemDatabase
+        {
+            get
+            {
+                if (itemDatabase == null)
+                {
+                    itemDatabase = new ItemDatabaseController();
+                }
+                return itemDatabase;
+            }
+        }
+
+        public static ContactDatabaseController ContactDatabase
+        {
+            get
+            {
+                if (contactDatabase == null)
+                {
+                    contactDatabase = new ContactDatabaseController();
+                }
+                return contactDatabase;
+            }
+        }
+        #endregion
+
+        #region INTERNETCHECKING
+        //set nointernetlabel in certain page, by periodically checking the internet connection using timer
         public static void CheckInternetIfConnected(Label label, Page page)
         {
             labelScreen = label;
@@ -82,8 +144,10 @@ namespace DeliveryAppWhiterocks
         {
             var networkConnection = DependencyService.Get<INetworkConnection>();
             networkConnection.CheckInternetConnection();
+            //get the network connection status from device itself
             if (!networkConnection.isConnected)
             {
+                //no internet
                 if (hasInternet)
                 {
                     if (!noInterShow)
@@ -95,6 +159,7 @@ namespace DeliveryAppWhiterocks
             }
             else
             {
+                //has internet
                 Device.BeginInvokeOnMainThread(() => {
                     hasInternet = true;
                     labelScreen.IsVisible = false;
@@ -102,6 +167,7 @@ namespace DeliveryAppWhiterocks
             }
         }
 
+        //Check internet connection immediately
         public static bool CheckIfInternet()
         {
             var networkConnection = DependencyService.Get<INetworkConnection>();
@@ -109,6 +175,7 @@ namespace DeliveryAppWhiterocks
             return networkConnection.isConnected;
         }
 
+        //alert the user if there is no internet
         public static async Task<bool> CheckIfInternetAlert()
         {
             var networkConnection = DependencyService.Get<INetworkConnection>();
@@ -129,5 +196,6 @@ namespace DeliveryAppWhiterocks
             await currentPage.DisplayAlert("Internet", "Device did not connected to internet, please activate your connection", "OK");
             noInterShow = false;
         }
+        #endregion
     }
 }

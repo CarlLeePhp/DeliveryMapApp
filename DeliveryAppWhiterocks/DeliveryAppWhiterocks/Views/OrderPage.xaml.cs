@@ -27,8 +27,8 @@ namespace DeliveryAppWhiterocks.Views
             //SupplyOrder();
 
             //these 2 lines are for testing, remove later
-            //TestData.CreateInvoice();
-            //SupplyOrder();
+            TestData.CreateInvoice();
+            SupplyOrder();
         }
 
         private void Init()
