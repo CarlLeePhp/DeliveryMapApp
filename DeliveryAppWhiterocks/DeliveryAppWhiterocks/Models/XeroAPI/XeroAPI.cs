@@ -9,12 +9,14 @@ using System.Net.Http.Headers;
 using UnixTimeStamp;
 using DeliveryAppWhiterocks.Models.XeroAPI;
 using IdentityModel.Client;
+using DeliveryAppWhiterocks.Models.Database.SQLite;
+using Xamarin.Forms;
 
 namespace DeliveryAppWhiterocks.Models.XeroAPI
 {
     public class XeroAPI
     {
-        public static InvoiceResponse _InvoiceResponse;
+        private static InvoiceResponse _InvoiceResponse;
 
         public static Dictionary<string, Stock> _ItemDictionary = new Dictionary<string, Stock>();
 
@@ -83,11 +85,23 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
         public static async Task<bool> FillData()
         {
-
+            
             for (int i = 0; i < _InvoiceResponse.Invoices.Count; i++)
             {
-                 await FillItems(_InvoiceResponse.Invoices[i], i);
-                 await FillContactAddress(_InvoiceResponse.Invoices[i].Contact, i);
+                if (App.InvoiceDatabase.CheckIfExisted(_InvoiceResponse.Invoices[i].InvoiceID) == false) {
+                    await FillItems(_InvoiceResponse.Invoices[i], i);
+                    await FillContactAddress(_InvoiceResponse.Invoices[i].Contact, i);
+
+                    InvoiceSQLite invoiceSqlite = new InvoiceSQLite()
+                    {
+                        InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
+                        InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
+                        CompletedDeliveryStatus = false,
+                        ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
+                        Subtotal = _InvoiceResponse.Invoices[i].SubTotal
+                    };
+                    App.InvoiceDatabase.InsertInvoice(invoiceSqlite, _InvoiceResponse.Invoices[i].LineItems, _InvoiceResponse.Invoices[i].Contact);
+                }
             }
             return true;
         }

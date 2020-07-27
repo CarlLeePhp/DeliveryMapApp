@@ -1,4 +1,5 @@
 ﻿using DeliveryAppWhiterocks.Models;
+using DeliveryAppWhiterocks.Models.Database.SQLite;
 using DeliveryAppWhiterocks.Models.XeroAPI;
 using System;
 using System.Collections.Generic;
@@ -43,29 +44,41 @@ namespace DeliveryAppWhiterocks.Views
 
         private void CheckHasDataLabel()
         {
-            if(XeroAPI._InvoiceResponse != null) { 
-                if (XeroAPI._InvoiceResponse.Invoices.Count == 0)
-                {
-                    noDataLabel.IsVisible = true;
-                }
-                else
-                {
-                    noDataLabel.IsVisible = false;
-                }
-            } else
+            if (App.InvoiceDatabase.CountIncompleteInvoices() == 0)
             {
                 noDataLabel.IsVisible = true;
             }
+            else
+            {
+                noDataLabel.IsVisible = false;
+            }
         }
 
-        //get data from database when the application started
+        //get data from database when the order page started
         public void SupplyOrder()
         {
             //load data from database
             //do foreach
             //orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Morning rd 132, Otago","30", "BLackstuff", 3, 3.5));
-            foreach(Invoice invoice in XeroAPI._InvoiceResponse.Invoices)
+            foreach(InvoiceSQLite invoiceSqlite in App.InvoiceDatabase.GetAllIncompleteInvoices())
             {
+                ContactSQLite contactSqlite = App.ContactDatabase.GetContactByID(invoiceSqlite.ContactID);
+                List<Address> address = new List<Address>();
+                //add emtpy one to mimic the structure of our client
+                address.Add(new Address());
+                if (contactSqlite.City != "") contactSqlite.City = string.Format(", {0}", contactSqlite.City);
+                address.Add(new Address() { AddressLine1 = contactSqlite.Address, City = contactSqlite.City});
+                Contact contact = new Contact() { 
+                    ContactID = contactSqlite.ContactID, 
+                    Name = contactSqlite.Fullname, 
+                    Addresses = address 
+                };
+
+                Invoice invoice = new Invoice() {
+                    InvoiceID = invoiceSqlite.InvoiceID, 
+                    InvoiceNumber =invoiceSqlite.InvoiceNumber, 
+                    Contact = contact
+                };
                 _deliveryOrders.Add(invoice);
             }
             DeliveryInvoice.ItemsSource = _deliveryOrders;
@@ -92,6 +105,12 @@ namespace DeliveryAppWhiterocks.Views
             {
                 await DisplayAlert("Oops", "No internet connection, couldn't load data from XERO", "OK");
             }
+        }
+
+        private void GetDirectionBtn_Clicked(object sender, EventArgs e)
+        {
+            List<InvoiceSQLite> inv = App.InvoiceDatabase.GetAllInvoices();
+            DisplayAlert("Test", $"{inv[0].InvoiceNumber}", "OK");
         }
 
         private void TapInfo_Tapped(object sender, EventArgs e)

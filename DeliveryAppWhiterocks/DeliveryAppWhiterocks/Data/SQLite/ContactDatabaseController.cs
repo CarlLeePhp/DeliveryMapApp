@@ -40,5 +40,21 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 return true;
             }
         }
+
+        public ContactSQLite GetContactByID(string contactID)
+        {
+            lock (locker)
+            {
+                return database.Table<ContactSQLite>().Where(contact => contact.ContactID == contactID).FirstOrDefault();
+            }
+        }
+
+        public void DeleteAllContacts()
+        {
+            lock (locker)
+            {
+                database.DeleteAll<ContactSQLite>();
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DeliveryAppWhiterocks.Models.Database.SQLite;
+using DeliveryAppWhiterocks.Models.XeroAPI;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,23 @@ namespace DeliveryAppWhiterocks.Data.SQLite
         {
             lock (locker)
             {
-                database.Table<LineItemSQLite>().Delete();
+                database.DeleteAll<LineItemSQLite>();
+            }
+        }
+
+        public List<LineItemSQLite> GetLineItemByInvoiceID(string invoiceID)
+        {
+            lock (locker)
+            {
+                return database.Table<LineItemSQLite>().Where(lineItem => lineItem.InvoiceID == invoiceID).ToList();
+            }
+        }
+
+        public LineItemSQLite GetLastLineItem()
+        {
+            lock (locker)
+            {
+                return database.Table<LineItemSQLite>().OrderByDescending(lineItemX => lineItemX.ItemLineID).FirstOrDefault();
             }
         }
     }

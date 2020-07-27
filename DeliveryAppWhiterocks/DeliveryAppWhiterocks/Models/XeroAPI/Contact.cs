@@ -26,5 +26,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
         public BatchPayment BatchPayments { get; set; }
         public List<ContactPerson> ContactPersons { get; set; }
         public bool HasValidationErrors { get; set; }
+
+        
     }
 }

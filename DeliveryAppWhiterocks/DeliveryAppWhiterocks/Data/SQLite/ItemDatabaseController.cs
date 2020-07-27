@@ -32,6 +32,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
+        public ItemSQLite GetItemByID(string itemCode)
+        {
+            lock (locker)
+            {
+                return database.Table<ItemSQLite>().Where(item => item.ItemCode == itemCode).FirstOrDefault();
+            }
+        }
+
         public void InsertItem(ItemSQLite item)
         {
             lock (locker)
@@ -44,7 +52,7 @@ namespace DeliveryAppWhiterocks.Data.SQLite
         {
             lock (locker)
             {
-                database.Table<ItemSQLite>().Delete();
+                database.DeleteAll<ItemSQLite>();
             }
         }
     }

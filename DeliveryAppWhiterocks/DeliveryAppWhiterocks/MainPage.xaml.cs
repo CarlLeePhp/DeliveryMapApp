@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using DeliveryAppWhiterocks.Models;
 using DeliveryAppWhiterocks.Views;
+using DeliveryAppWhiterocks.Models.XeroAPI;
+using DeliveryAppWhiterocks.Models.Database.SQLite;
 
 namespace DeliveryAppWhiterocks
 {
@@ -40,9 +42,24 @@ namespace DeliveryAppWhiterocks
         {
             NavigationPage.SetHasNavigationBar(this, false);
             base.OnAppearing();
+            loadLocalData();
             await Task.Delay(7000);
             //await this.Navigation.PushAsync(new LoginPage());
             await this.Navigation.PushAsync(new OrderPage ());
+        }
+
+        public void loadLocalData()
+        {
+            //List<InvoiceSQLite> invoiceSQLite = App.InvoiceDatabase.GetAllInvoices();
+
+            //foreach(InvoiceSQLite invoice in invoiceSQLite)
+            //{
+
+            //}
+            //App.InvoiceDatabase.DeleteAllInvoices();
+            //App.LineItemDatabase.DeleteAllLineItems();
+            //App.ContactDatabase.DeleteAllContacts();
+            //App.ItemDatabase.DeleteAllItems();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DeliveryAppWhiterocks.Models.XeroAPI;
+﻿using DeliveryAppWhiterocks.Models.Database.SQLite;
+using DeliveryAppWhiterocks.Models.XeroAPI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -39,9 +40,18 @@ namespace DeliveryAppWhiterocks.Views
             double itemsSubtotal = 0;
             double GstAmount = DeliveryAppWhiterocks.Models.Constants.taxAmount;
             double GstTotal = 0;
-            foreach (LineItem item in _selectedInvoice.LineItems)
+
+            List<LineItemSQLite> lineItems = App.LineItemDatabase.GetLineItemByInvoiceID(_selectedInvoice.InvoiceID);
+            foreach (LineItemSQLite lineItemsSql in lineItems)
             {
-                item.TotalAmount = item.Quantity * item.UnitAmount;
+                ItemSQLite itemSql = App.ItemDatabase.GetItemByID(lineItemsSql.ItemCode);
+                LineItem item = new LineItem()
+                {
+                    Description = itemSql.Description,
+                    Quantity = lineItemsSql.Quantity,
+                    UnitAmount = itemSql.UnitAmount,
+                    TotalAmount = lineItemsSql.Quantity * itemSql.UnitAmount
+                };
                 itemsSubtotal += item.TotalAmount;
                 _itemsCollection.Add(item);
             }

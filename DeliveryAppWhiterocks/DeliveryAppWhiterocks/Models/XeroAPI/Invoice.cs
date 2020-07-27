@@ -10,10 +10,10 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
         public string InvoiceID { get; set; }
         public string InvoiceNumber { get; set; }
         public string Reference { get; set; }
-        public List<Payment> Payments { get; set; }
-        public List<CreditNote> CreditNotes { get; set; }
-        public List<Prepayment> Prepayments { get; set; }
-        public List<Overpayment> Overpayments { get; set; }
+        public List<Payment> Payments { get; set; } = new List<Payment>();
+        public List<CreditNote> CreditNotes { get; set; } = new List<CreditNote>();
+        public List<Prepayment> Prepayments { get; set; } = new List<Prepayment>();
+        public List<Overpayment> Overpayments { get; set; } = new List<Overpayment>();
         public double AmountDue { get; set; }
         public double AmountPaid { get; set; }
         public double AmountCredited { get; set; }
@@ -28,7 +28,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
         public DateTime DueDate { get; set; }
         public string Status { get; set; }
         public string LineAmountTypes { get; set; }
-        public List<LineItem> LineItems { get; set; }
+        public List<LineItem> LineItems { get; set; } = new List<LineItem>();
         public double SubTotal { get; set; }
         public double TotalTax { get; set; }
         public double Total { get; set; }
@@ -40,12 +40,5 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
         //fortesting constructor
 
-        public Invoice(string invoiceID,string invoiceNumber, Contact contact,List<LineItem> items)
-        {
-            this.InvoiceID = invoiceID;
-            this.InvoiceNumber = invoiceNumber;
-            this.Contact = contact;
-            this.LineItems = items;
-        }
     }
 }

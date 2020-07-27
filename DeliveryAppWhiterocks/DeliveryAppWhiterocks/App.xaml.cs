@@ -9,6 +9,7 @@ using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.Xaml;
 using Application = Xamarin.Forms.Application;
+using DeliveryAppWhiterocks.Models.XeroAPI;
 
 namespace DeliveryAppWhiterocks
 {
@@ -38,7 +39,7 @@ namespace DeliveryAppWhiterocks
             Init();
             //this line here is necessary to stop the keyboard for blocking the entry/input field in webview
             this.On<Android>().UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Resize);
-
+            
             MainPage = new NavigationPage(new MainPage());
         }
 
@@ -87,8 +88,8 @@ namespace DeliveryAppWhiterocks
 
         public static LineItemDatabaseController LineItemDatabase
         {
-            get
-            {
+            get 
+            { 
                 if (lineItemDatabase == null)
                 {
                     lineItemDatabase = new LineItemDatabaseController();
@@ -96,6 +97,7 @@ namespace DeliveryAppWhiterocks
                 return lineItemDatabase;
             }
         }
+
 
         public static ItemDatabaseController ItemDatabase
         {

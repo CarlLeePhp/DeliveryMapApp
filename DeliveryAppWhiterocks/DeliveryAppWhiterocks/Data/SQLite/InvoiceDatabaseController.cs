@@ -3,6 +3,7 @@ using DeliveryAppWhiterocks.Models.XeroAPI;
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Security.Authentication;
 using System.Text;
 using Xamarin.Forms;
 
@@ -37,18 +38,55 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
-        public void InsertInvoice(InvoiceSQLite invoice,List<LineItem> lineitem)
+        public int CountIncompleteInvoices()
+        {
+            lock (locker)
+            {
+                return database.Table<InvoiceSQLite>().Where(invoiceX => invoiceX.CompletedDeliveryStatus == false).Count();
+            }
+        }
+
+        public bool CheckIfExisted(string InvoiceID)
+        {
+            lock (locker)
+            {
+                var invoice = database.Table<InvoiceSQLite>().Where(invoiceX => invoiceX.InvoiceID == InvoiceID).FirstOrDefault();
+                if(invoice == null)
+                {
+                    return false;
+                } else
+                {
+                    return true;
+                }
+            }
+        }
+
+        public void InsertInvoice(InvoiceSQLite invoice,List<LineItem> lineitem,Contact contact)
         {
             lock (locker)
             {
                 database.Insert(invoice);
                 //create LineItem to associate it with the invoice
 
+                if (App.ContactDatabase.CheckContactIfExisted(invoice.ContactID) == false)
+                {
+                    Address address = contact.Addresses[1];
+                    ContactSQLite contactSQLite = new ContactSQLite()
+                    {
+                        ContactID = contact.ContactID,
+                        Fullname = contact.Name,
+                        Address = (address.AddressLine1.Trim()+" "+address.AddressLine2.Trim()+" "+address.AddressLine3.Trim()+" "+address.AddressLine4.Trim()).Trim(),
+                        City = contact.Addresses[1].City,
+                        PostalCode = contact.Addresses[1].PostalCode,
+                    };
+                    App.ContactDatabase.InsertContact(contactSQLite);
+                }
+
                 foreach(LineItem item in lineitem) {
                     //sort desc by ID, get the first one (biggest id number)
-                    var maxItemLineID = database.Table<LineItemSQLite>().OrderByDescending(lineItemX => lineItemX.ItemLineID).FirstOrDefault();
+                    var maxItemLineID = App.LineItemDatabase.GetLastLineItem();
                     //create the id by referencing lineitemtable
-                    LineItemSQLite lineItemSQL = new LineItemSQLite()
+                    LineItemSQLite lineItemSQLite = new LineItemSQLite()
                     {
                         // if it's not set set the itemline id to 1 else increment 1 from the biggest value
                         ItemLineID = (maxItemLineID == null ? 1 : maxItemLineID.ItemLineID +1),
@@ -57,7 +95,7 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                         Quantity = (int)item.Quantity
                     };
                     //Save to db
-                    App.LineItemDatabase.InsertLineItem(lineItemSQL);
+                    App.LineItemDatabase.InsertLineItem(lineItemSQLite);
 
                     //check if item already exist, if not add it into database
                     if(App.ItemDatabase.CheckIfExisted(item.ItemCode) == false)
@@ -79,7 +117,7 @@ namespace DeliveryAppWhiterocks.Data.SQLite
         {
             lock (locker)
             {
-                database.Table<InvoiceSQLite>().Delete();
+                database.DeleteAll<InvoiceSQLite>();
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using DeliveryAppWhiterocks.Models;
+using DeliveryAppWhiterocks.Models.Database.SQLite;
 using DeliveryAppWhiterocks.Models.XeroAPI;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,7 @@ namespace DeliveryAppWhiterocks.Views
         private void MapItemList()
         {
             double totalWeight = 0;
+
             foreach (KeyValuePair<string, Stock> stock in XeroAPI._ItemDictionary)
             {
                 Stock stockX = stock.Value;
