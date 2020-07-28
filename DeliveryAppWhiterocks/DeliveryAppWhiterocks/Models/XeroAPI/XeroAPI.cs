@@ -17,7 +17,10 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
     public class XeroAPI
     {
         private static InvoiceResponse _InvoiceResponse;
-
+        public static string Hello()
+        {
+            return "Hello";
+        }
         public static async Task<bool> GetToken()
         {
             var formVariables = new List<KeyValuePair<string, string>>();
@@ -132,10 +135,12 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
                 if (!_ItemDictionary.ContainsKey(codeX))
                 {
+
                     //Get Weight from description
                     //has an {itemName " "?} + {number} kg
                     //possible format 20kg , 20 kg , (20kg), (20)kg, (20) kg
-                    Stock stock = new Stock(codeX, item.Description, 0, item.Quantity);
+                    double weight = GetWeight(item.Description);
+                    Stock stock = new Stock(codeX, item.Description, weight, item.Quantity);
                     _ItemDictionary.Add(codeX, stock);
                 } else
                 {
@@ -146,6 +151,20 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             }
             return true;
         }
+
+        public static double GetWeight(string description)
+        {
+            double weight = 0;
+            description = description.Trim().ToLower();
+            if (description.Contains("kg"))
+            {
+                int index = description.IndexOf("kg");
+                description = description.Remove(index).Trim();
+                string[] parts = description.Split(' ');
+                weight = double.Parse(parts[parts.Length - 1]);
+            }
+            return weight;
+        }  // GetWeight
 
         private static async Task<bool> FillContactAddress(Contact contact, int i)
         {
