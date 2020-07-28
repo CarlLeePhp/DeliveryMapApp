@@ -46,15 +46,37 @@ namespace DeliveryAppWhiterocks.Views
 
         private void MapItemList()
         {
-            double totalWeight = 0;
+            Dictionary<string, Stock> itemDictionary = new Dictionary<string, Stock>();
 
-            foreach (KeyValuePair<string, Stock> stock in XeroAPI._ItemDictionary)
+            List<InvoiceSQLite> invoiceSQLite = App.InvoiceDatabase.GetAllIncompleteInvoices();
+
+            foreach (InvoiceSQLite invoice in invoiceSQLite)
+            {
+                List<LineItemSQLite> lineItemSQLite = App.LineItemDatabase.GetLineItemByInvoiceID(invoice.InvoiceID);
+                foreach(LineItemSQLite lineItem in lineItemSQLite)
+                {
+                    string codeX = lineItem.ItemCode;
+                    ItemSQLite itemSQLite = App.ItemDatabase.GetItemByID(lineItem.ItemCode);
+                    if (!itemDictionary.ContainsKey(codeX))
+                    {
+                        Stock stock = new Stock(codeX, itemSQLite.Description, itemSQLite.Weight, lineItem.Quantity);
+                        itemDictionary.Add(codeX, stock);
+                    }
+                    else
+                    {
+                        itemDictionary[codeX].AddStockQuantity(Convert.ToInt32(lineItem.Quantity));
+                        itemDictionary[codeX].AddStockWeight(itemSQLite.Weight);
+                    }
+                }
+            }
+
+            double totalWeight = 0;
+            foreach (KeyValuePair<string, Stock> stock in itemDictionary)
             {
                 Stock stockX = stock.Value;
                 _stockInfo.Add(stockX);
                 totalWeight += stockX.Weight;
             }
-
             WeightTotalLabel.Text = string.Format($"{totalWeight:F2} Kg");
             DeliveryItemListView.ItemsSource = _stockInfo;
         }

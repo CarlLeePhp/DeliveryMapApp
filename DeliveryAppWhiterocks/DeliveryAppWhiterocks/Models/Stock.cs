@@ -7,15 +7,15 @@ namespace DeliveryAppWhiterocks.Models
 {
     public class Stock
     {
-        public string ItemID { get; set; }
+        public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
         public double Weight { get; set; }
         public int Quantity { get; set; }
 
 
-        public Stock(string ItemID,string ItemDescription,double Weight,double Quantity)
+        public Stock(string ItemCode,string ItemDescription,double Weight,double Quantity)
         {
-            this.ItemID = ItemID;
+            this.ItemCode = ItemCode;
             this.ItemDescription = ItemDescription;
             this.Weight = Weight;
             this.Quantity = Convert.ToInt32(Quantity);

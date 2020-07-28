@@ -18,8 +18,6 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
     {
         private static InvoiceResponse _InvoiceResponse;
 
-        public static Dictionary<string, Stock> _ItemDictionary = new Dictionary<string, Stock>();
-
         public static async Task<bool> GetToken()
         {
             var formVariables = new List<KeyValuePair<string, string>>();
@@ -108,6 +106,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
         private static async Task<bool> FillItems(Invoice invoice, int i)
         {
+            Dictionary<string, Stock> _ItemDictionary = new Dictionary<string, Stock>();
 
             var response = await HttpClientBuilder(RequestType.Invoice, invoice.InvoiceID);
 
