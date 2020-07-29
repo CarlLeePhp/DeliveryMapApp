@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Mail;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -68,6 +69,7 @@ namespace DeliveryAppWhiterocks.Views
                 address.Add(new Address());
                 if (contactSqlite.City != "") contactSqlite.City = string.Format(", {0}", contactSqlite.City);
                 address.Add(new Address() { AddressLine1 = contactSqlite.Address, City = contactSqlite.City});
+                
                 Contact contact = new Contact() { 
                     ContactID = contactSqlite.ContactID, 
                     Name = contactSqlite.Fullname, 

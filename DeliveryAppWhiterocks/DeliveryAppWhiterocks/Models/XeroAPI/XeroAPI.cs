@@ -106,7 +106,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
         private static async Task<bool> FillItems(Invoice invoice, int i)
         {
-            Dictionary<string, Stock> _ItemDictionary = new Dictionary<string, Stock>();
+            Dictionary<string, Stock> itemDictionary = new Dictionary<string, Stock>();
 
             var response = await HttpClientBuilder(RequestType.Invoice, invoice.InvoiceID);
 
@@ -130,18 +130,18 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                     return false;
                 }
 
-                if (!_ItemDictionary.ContainsKey(codeX))
+                if (!itemDictionary.ContainsKey(codeX))
                 {
                     //Get Weight from description
                     //has an {itemName " "?} + {number} kg
                     //possible format 20kg , 20 kg , (20kg), (20)kg, (20) kg
                     Stock stock = new Stock(codeX, item.Description, 0, item.Quantity);
-                    _ItemDictionary.Add(codeX, stock);
+                    itemDictionary.Add(codeX, stock);
                 } else
                 {
                     //Get Weight from description
-                    _ItemDictionary[codeX].AddStockQuantity(Convert.ToInt32(item.Quantity));
-                    _ItemDictionary[codeX].AddStockWeight(0);
+                    itemDictionary[codeX].AddStockQuantity(Convert.ToInt32(item.Quantity));
+                    itemDictionary[codeX].AddStockWeight(0);
                 }
             }
             return true;
