@@ -67,6 +67,7 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.3.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CachingNativeBitmapDescriptorFactory.cs" />
     <Compile Include="CustomEntryAndroid.cs" />
     <Compile Include="Data\NetworkConnection.cs" />
     <Compile Include="Data\SQLiteAndroid.cs" />

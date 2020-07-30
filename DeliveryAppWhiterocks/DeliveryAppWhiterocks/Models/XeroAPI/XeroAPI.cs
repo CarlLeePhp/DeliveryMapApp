@@ -90,18 +90,20 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             for (int i = 0; i < _InvoiceResponse.Invoices.Count; i++)
             {
                 if (App.InvoiceDatabase.CheckIfExisted(_InvoiceResponse.Invoices[i].InvoiceID) == false) {
-                    await FillItems(_InvoiceResponse.Invoices[i], i);
-                    await FillContactAddress(_InvoiceResponse.Invoices[i].Contact, i);
+                    if(_InvoiceResponse.Invoices[i].Status == "AUTHORISED" || _InvoiceResponse.Invoices[i].Status == "PAID") { 
+                        await FillItems(_InvoiceResponse.Invoices[i], i);
+                        await FillContactAddress(_InvoiceResponse.Invoices[i].Contact, i);
 
-                    InvoiceSQLite invoiceSqlite = new InvoiceSQLite()
-                    {
-                        InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
-                        InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
-                        CompletedDeliveryStatus = false,
-                        ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
-                        Subtotal = _InvoiceResponse.Invoices[i].SubTotal
-                    };
-                    App.InvoiceDatabase.InsertInvoice(invoiceSqlite, _InvoiceResponse.Invoices[i].LineItems, _InvoiceResponse.Invoices[i].Contact);
+                        InvoiceSQLite invoiceSqlite = new InvoiceSQLite()
+                        {
+                            InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
+                            InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
+                            CompletedDeliveryStatus = false,
+                            ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
+                            Subtotal = _InvoiceResponse.Invoices[i].SubTotal
+                        };
+                        App.InvoiceDatabase.InsertInvoice(invoiceSqlite, _InvoiceResponse.Invoices[i].LineItems, _InvoiceResponse.Invoices[i].Contact);
+                    }
                 }
             }
             return true;

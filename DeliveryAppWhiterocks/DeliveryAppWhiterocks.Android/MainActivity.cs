@@ -7,6 +7,7 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using Android;
+using Xamarin.Forms.GoogleMaps.Android;
 
 namespace DeliveryAppWhiterocks.Droid
 {
@@ -30,9 +31,15 @@ namespace DeliveryAppWhiterocks.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(savedInstanceState);
-            Xamarin.FormsMaps.Init(this,savedInstanceState);
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+
+            // Override default BitmapDescriptorFactory by your implementation. 
+            var platformConfig = new PlatformConfig
+            {
+                BitmapDescriptorFactory = new CachingNativeBitmapDescriptorFactory()
+            };
+            Xamarin.FormsGoogleMaps.Init(this, savedInstanceState, platformConfig); // initialize for Xamarin.Forms.GoogleMaps
+            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

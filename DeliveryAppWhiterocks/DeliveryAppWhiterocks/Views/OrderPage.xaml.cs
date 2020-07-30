@@ -111,8 +111,7 @@ namespace DeliveryAppWhiterocks.Views
 
         private void GetDirectionBtn_Clicked(object sender, EventArgs e)
         {
-            List<InvoiceSQLite> inv = App.InvoiceDatabase.GetAllInvoices();
-            DisplayAlert("Test", $"{inv[0].InvoiceNumber}", "OK");
+            Navigation.PushModalAsync(new MapsPage());
         }
 
         private void TapInfo_Tapped(object sender, EventArgs e)
