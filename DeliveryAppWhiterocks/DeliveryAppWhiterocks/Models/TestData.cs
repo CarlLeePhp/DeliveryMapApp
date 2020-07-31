@@ -6,7 +6,7 @@ using DeliveryAppWhiterocks.Models.XeroAPI;
 
 namespace DeliveryAppWhiterocks.Models
 {
-    public static class TestData
+    public class TestData
     {
         const int CUST_QUANTITY = 2;
         const int ITEM_QUANTITY = 2;

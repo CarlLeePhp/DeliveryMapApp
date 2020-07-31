@@ -90,18 +90,20 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             for (int i = 0; i < _InvoiceResponse.Invoices.Count; i++)
             {
                 if (App.InvoiceDatabase.CheckIfExisted(_InvoiceResponse.Invoices[i].InvoiceID) == false) {
-                    await FillItems(_InvoiceResponse.Invoices[i], i);
-                    await FillContactAddress(_InvoiceResponse.Invoices[i].Contact, i);
+                    if(_InvoiceResponse.Invoices[i].Status == "AUTHORISED" || _InvoiceResponse.Invoices[i].Status == "PAID") { 
+                        await FillItems(_InvoiceResponse.Invoices[i], i);
+                        await FillContactAddress(_InvoiceResponse.Invoices[i].Contact, i);
 
-                    InvoiceSQLite invoiceSqlite = new InvoiceSQLite()
-                    {
-                        InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
-                        InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
-                        CompletedDeliveryStatus = false,
-                        ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
-                        Subtotal = _InvoiceResponse.Invoices[i].SubTotal
-                    };
-                    App.InvoiceDatabase.InsertInvoice(invoiceSqlite, _InvoiceResponse.Invoices[i].LineItems, _InvoiceResponse.Invoices[i].Contact);
+                        InvoiceSQLite invoiceSqlite = new InvoiceSQLite()
+                        {
+                            InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
+                            InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
+                            CompletedDeliveryStatus = false,
+                            ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
+                            Subtotal = _InvoiceResponse.Invoices[i].SubTotal
+                        };
+                        App.InvoiceDatabase.InsertInvoice(invoiceSqlite, _InvoiceResponse.Invoices[i].LineItems, _InvoiceResponse.Invoices[i].Contact);
+                    }
                 }
             }
             return true;
@@ -109,7 +111,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
         private static async Task<bool> FillItems(Invoice invoice, int i)
         {
-            Dictionary<string, Stock> _ItemDictionary = new Dictionary<string, Stock>();
+            Dictionary<string, Stock> itemDictionary = new Dictionary<string, Stock>();
 
             var response = await HttpClientBuilder(RequestType.Invoice, invoice.InvoiceID);
 
@@ -133,20 +135,21 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                     return false;
                 }
 
-                if (!_ItemDictionary.ContainsKey(codeX))
+                if (!itemDictionary.ContainsKey(codeX))
                 {
 
                     //Get Weight from description
                     //has an {itemName " "?} + {number} kg
                     //possible format 20kg , 20 kg , (20kg), (20)kg, (20) kg
+
                     double weight = GetWeight(item.Description);
                     Stock stock = new Stock(codeX, item.Description, weight, item.Quantity);
-                    _ItemDictionary.Add(codeX, stock);
+                    itemDictionary.Add(codeX, stock);
                 } else
                 {
                     //Get Weight from description
-                    _ItemDictionary[codeX].AddStockQuantity(Convert.ToInt32(item.Quantity));
-                    _ItemDictionary[codeX].AddStockWeight(0);
+                    itemDictionary[codeX].AddStockQuantity(Convert.ToInt32(item.Quantity));
+                    itemDictionary[codeX].AddStockWeight(0);
                 }
             }
             return true;

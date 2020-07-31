@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Mail;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,7 +31,10 @@ namespace DeliveryAppWhiterocks.Views
             //these 2 lines are for testing, remove later
             TestData.CreateInvoice();
             SupplyOrder();
+            
         }
+
+        
 
         private void Init()
         {
@@ -57,10 +61,11 @@ namespace DeliveryAppWhiterocks.Views
         //get data from database when the order page started
         public void SupplyOrder()
         {
+            _deliveryOrders.Clear();
             //load data from database
             //do foreach
             //orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Morning rd 132, Otago","30", "BLackstuff", 3, 3.5));
-            foreach(InvoiceSQLite invoiceSqlite in App.InvoiceDatabase.GetAllIncompleteInvoices())
+            foreach (InvoiceSQLite invoiceSqlite in App.InvoiceDatabase.GetAllIncompleteInvoices())
             {
                 ContactSQLite contactSqlite = App.ContactDatabase.GetContactByID(invoiceSqlite.ContactID);
                 List<Address> address = new List<Address>();
@@ -68,6 +73,7 @@ namespace DeliveryAppWhiterocks.Views
                 address.Add(new Address());
                 if (contactSqlite.City != "") contactSqlite.City = string.Format(", {0}", contactSqlite.City);
                 address.Add(new Address() { AddressLine1 = contactSqlite.Address, City = contactSqlite.City});
+                
                 Contact contact = new Contact() { 
                     ContactID = contactSqlite.ContactID, 
                     Name = contactSqlite.Fullname, 
@@ -109,8 +115,7 @@ namespace DeliveryAppWhiterocks.Views
 
         private void GetDirectionBtn_Clicked(object sender, EventArgs e)
         {
-            List<InvoiceSQLite> inv = App.InvoiceDatabase.GetAllInvoices();
-            DisplayAlert("Test", $"{inv[0].InvoiceNumber}", "OK");
+            Navigation.PushModalAsync(new MapsPage());
         }
 
         private void TapInfo_Tapped(object sender, EventArgs e)
