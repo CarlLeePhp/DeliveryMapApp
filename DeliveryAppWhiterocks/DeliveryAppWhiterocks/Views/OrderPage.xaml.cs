@@ -31,7 +31,10 @@ namespace DeliveryAppWhiterocks.Views
             //these 2 lines are for testing, remove later
             TestData.CreateInvoice();
             SupplyOrder();
+            
         }
+
+        
 
         private void Init()
         {
@@ -58,10 +61,11 @@ namespace DeliveryAppWhiterocks.Views
         //get data from database when the order page started
         public void SupplyOrder()
         {
+            _deliveryOrders.Clear();
             //load data from database
             //do foreach
             //orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Morning rd 132, Otago","30", "BLackstuff", 3, 3.5));
-            foreach(InvoiceSQLite invoiceSqlite in App.InvoiceDatabase.GetAllIncompleteInvoices())
+            foreach (InvoiceSQLite invoiceSqlite in App.InvoiceDatabase.GetAllIncompleteInvoices())
             {
                 ContactSQLite contactSqlite = App.ContactDatabase.GetContactByID(invoiceSqlite.ContactID);
                 List<Address> address = new List<Address>();

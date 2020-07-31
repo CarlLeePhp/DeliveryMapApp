@@ -60,6 +60,7 @@ namespace DeliveryAppWhiterocks
             //App.LineItemDatabase.DeleteAllLineItems();
             //App.ContactDatabase.DeleteAllContacts();
             //App.ItemDatabase.DeleteAllItems();
+
         }
     }
 }

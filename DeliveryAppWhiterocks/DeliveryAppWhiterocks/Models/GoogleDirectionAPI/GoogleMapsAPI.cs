@@ -23,7 +23,7 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
             //PolylineHelper.Encode(initialLocation);
             string formattedWaypoints = string.Join("|", waypoints);
             //WITH via: OR NOT?
-            var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={waypoints[waypoints.Length-1]}&waypoints=optimize:true|{formattedWaypoints}&key={Constants.GoogleAPIKEY}&mode=driving");
+            var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={initialLocation.Latitude},{initialLocation.Longitude}&waypoints=optimize:true|{formattedWaypoints}&key={Constants.GoogleAPIKEY}&mode=driving");
             var responseBody = await response.Content.ReadAsStringAsync();
             var googleDirection = JsonConvert.DeserializeObject<GoogleDirection>(responseBody);
 

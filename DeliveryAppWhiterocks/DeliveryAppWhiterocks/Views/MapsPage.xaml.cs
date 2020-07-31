@@ -53,6 +53,7 @@ namespace DeliveryAppWhiterocks.Views
             //}
         }
 
+
         private async void MapWaypoints()
         {
             GoogleDirection direction = await GoogleMapsAPI.MapDirections(_lastKnownPosition, _waypoints.ToArray());
@@ -84,8 +85,6 @@ namespace DeliveryAppWhiterocks.Views
                 }
                 fullAddress += $", New Zealand";
 
-                
-
                 Position position = await GoogleMapsAPI.GetPositionFromKnownAddress(fullAddress);
                 //separate waypoints by comma
                 _waypoints.Add($"{position.Latitude}%2C{position.Longitude}");
@@ -96,11 +95,19 @@ namespace DeliveryAppWhiterocks.Views
                     //set tag so we can reference it when a pin is clicked
                     Tag = invoice
                 };
+
+                map.SelectedPinChanged += Map_SelectedPinChanged;
+
                 map.Pins.Add(pin);
             }
             return true;
         }
 
+        private void Map_SelectedPinChanged(object sender, SelectedPinChangedEventArgs e)
+        {
+            Pin currentPinSelected = e.SelectedPin;
+            
+        }
 
         private async void CenterMapToCurrentLocation()
         {
