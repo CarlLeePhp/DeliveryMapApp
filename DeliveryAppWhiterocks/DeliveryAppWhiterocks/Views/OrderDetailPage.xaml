@@ -103,7 +103,8 @@
                         BackgroundColor="#CE0B06"
                         TextColor="White"
                         Text="Mark as Completed"
-                        x:Name="CompletedOrderButton" />
+                        x:Name="CompletedOrderButton"
+                        Clicked="MarkAsCompleted" />
             </StackLayout>
         </StackLayout>
 

@@ -78,5 +78,11 @@ namespace DeliveryAppWhiterocks.Views
         {
             //LOAD MAP
         }
+
+        private void MarkAsCompleted(object sender, EventArgs e)
+        {
+            _selectedInvoice.Status = "Completed";
+            Navigation.PopModalAsync();
+        } // Mark As Completed
     }
 }
