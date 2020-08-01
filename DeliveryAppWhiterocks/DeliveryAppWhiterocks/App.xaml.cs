@@ -45,7 +45,7 @@ namespace DeliveryAppWhiterocks
 
         private void Init()
         {
-            
+            Device.SetFlags(new string[] { "Expander_Experimental" });
         }
 
         protected override void OnStart()

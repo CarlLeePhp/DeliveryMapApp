@@ -115,7 +115,7 @@ namespace DeliveryAppWhiterocks.Views
 
         private void GetDirectionBtn_Clicked(object sender, EventArgs e)
         {
-            Navigation.PushModalAsync(new MapsPage());
+            Navigation.PushModalAsync(new MapsPage(_deliveryOrders));
         }
 
         private void TapInfo_Tapped(object sender, EventArgs e)

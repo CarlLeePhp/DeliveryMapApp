@@ -31,8 +31,9 @@ namespace DeliveryAppWhiterocks.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(savedInstanceState);
+            Xamarin.Forms.Forms.SetFlags("Expander_Experimental");
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-
+            
             // Override default BitmapDescriptorFactory by your implementation. 
             var platformConfig = new PlatformConfig
             {
@@ -40,6 +41,8 @@ namespace DeliveryAppWhiterocks.Droid
             };
             Xamarin.FormsGoogleMaps.Init(this, savedInstanceState, platformConfig); // initialize for Xamarin.Forms.GoogleMaps
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+
+            
             LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
