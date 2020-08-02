@@ -85,7 +85,7 @@ namespace DeliveryAppWhiterocks.Views
             bool userAction = false;
             if(_selectedInvoice.Status == "Completed")
             {
-                userAction = await DisplayAlert("Completed", "Do you want to mark it as uncompleted? ", "Yes", "Cancel");
+                userAction = await DisplayAlert("Confirm action", "Do you wish to mark it as incomplete? ", "Yes", "Cancel");
                 if (userAction)
                 {
                     _selectedInvoice.Status = "";
@@ -95,11 +95,11 @@ namespace DeliveryAppWhiterocks.Views
             }
             else
             {
-                userAction = await DisplayAlert("Completed", "Do you want to mark it as completed? ", "Yes", "Cancel");
+                userAction = await DisplayAlert("Confirm action", "Do you wish to mark it as completed? ", "Yes", "Cancel");
                 if (userAction)
                 {
                     _selectedInvoice.Status = "Completed";
-                    CompletedOrderButton.Text = "Mark as Uncompleted";
+                    CompletedOrderButton.Text = "Mark as incomplete";
                     PageHeaderLabel.Text += " Completed";
                 }
                 
@@ -112,8 +112,8 @@ namespace DeliveryAppWhiterocks.Views
                 invoice.CompletedDeliveryStatus = (_selectedInvoice.Status == "Completed");
                 invoice.ContactID = _selectedInvoice.Contact.ContactID;
                 invoice.Subtotal = _selectedInvoice.SubTotal;
-                InvoiceDatabaseController databaseController = new InvoiceDatabaseController();
-                databaseController.UpdateInvoiceStatus(invoice);
+                
+                App.InvoiceDatabase.UpdateInvoiceStatus(invoice);
             }
             
             // Navigation.PopModalAsync();
