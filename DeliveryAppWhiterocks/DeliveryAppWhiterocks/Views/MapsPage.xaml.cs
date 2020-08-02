@@ -25,6 +25,7 @@ namespace DeliveryAppWhiterocks.Views
     {
         List<string> _waypoints = new List<string>();
         Position _lastKnownPosition;
+        Geocoder geocoder = new Geocoder();
 
         //properties for sliding up menu
         CompositeDisposable _EventSubscriptions = new CompositeDisposable();
@@ -144,38 +145,64 @@ namespace DeliveryAppWhiterocks.Views
             foreach (InvoiceSQLite invoice in App.InvoiceDatabase.GetAllIncompleteInvoices())
             {
                 ContactSQLite customerContact = App.ContactDatabase.GetContactByID(invoice.ContactID);
+                Position position;
 
-                //Get better format from address
-                #region Format the Address
-                string fullAddress = customerContact.Address;
-                if (customerContact.City != "")
+                if (!customerContact.Latitude.HasValue) { 
+
+                    //Get better format from address
+                    #region Format the Address
+                    string fullAddress = customerContact.Address;
+                    if (customerContact.City != "")
+                    {
+                        fullAddress += $", {customerContact.City}";
+                    }
+                    fullAddress += $", New Zealand";
+                    #endregion
+
+                    if (App.CheckIfInternet()) {
+                        //Get location by calling google geolocation API / each invoice
+                        position = await GoogleMapsAPI.GetPositionFromKnownAddress(fullAddress);
+                        customerContact.Latitude = position.Latitude;
+                        customerContact.Longitude = position.Longitude;
+                        
+                    } else
+                    {
+                        try { 
+                            position = (await geocoder.GetPositionsForAddressAsync(fullAddress)).FirstOrDefault();
+                            customerContact.Latitude = position.Latitude;
+                            customerContact.Longitude = position.Longitude;
+                        }
+                        catch
+                        {
+                            position = new Position(0, 0);
+                            await DisplayAlert("Alert", String.Format("Couldnt map the position of {0}",invoice.InvoiceNumber), "OK");
+                        }
+                    }
+
+                    if(customerContact.Latitude.HasValue) App.ContactDatabase.UpdateContactPosition(customerContact);
+                } else 
                 {
-                    fullAddress += $", {customerContact.City}";
+                    position = new Position(customerContact.Latitude.Value, customerContact.Longitude.Value);
                 }
-                fullAddress += $", New Zealand";
-                #endregion
 
-                //Get location by calling google geolocation API / each invoice
-                Position position = await GoogleMapsAPI.GetPositionFromKnownAddress(fullAddress);
-                
-                //Add it to the waypoints list later to be used on the googleDirection API
-                //Formatted by Comma separator for latitude,longitude
-                _waypoints.Add($"{position.Latitude}%2C{position.Longitude}");
+                if(position.Latitude != 0 && position.Longitude != 0) { 
+                    //Add it to the waypoints list later to be used on the googleDirection API
+                    //Formatted by Comma separator for latitude,longitude
+                    _waypoints.Add($"{position.Latitude}%2C{position.Longitude}");
 
-                //Set pin on map
-                #region SetPin
-                var pin = new Pin()
-                {
-                    Position = position,
-                    Label = $"{invoice.InvoiceNumber}",
-                    //set tag so i can reference it when a pin is clicked
-                    Tag = invoice
-                };
-                map.SelectedPinChanged += Map_SelectedPinChanged;
-
-                
-                map.Pins.Add(pin);
-                #endregion
+                    //Set pin on map
+                    #region SetPin
+                    var pin = new Pin()
+                    {
+                        Position = position,
+                        Label = $"{invoice.InvoiceNumber}",
+                        //set tag so i can reference it when a pin is clicked
+                        Tag = invoice
+                    };
+                    map.SelectedPinChanged += Map_SelectedPinChanged;
+                    map.Pins.Add(pin);
+                    #endregion
+                }
             }
             return true;
         }
@@ -184,8 +211,8 @@ namespace DeliveryAppWhiterocks.Views
         //A method that let's google handle the directions, shortest path etc.
         private async void MapWaypoints()
         {
-            if(_waypoints.Count > 0) {
-                //
+            if(_waypoints.Count > 0 && App.CheckIfInternet()) {
+                
                 _invoicesCollection.Clear();
                 GoogleDirection direction = await GoogleMapsAPI.MapDirections(_lastKnownPosition, _waypoints.ToArray());
                 List<Position> directionPolylines = PolylineHelper.Decode(direction.Routes[0].OverviewPolyline.Points).ToList();
@@ -199,9 +226,15 @@ namespace DeliveryAppWhiterocks.Views
                         StrokeColor = Constants.mapShapeColor,
                         StrokeWidth = 8,
                     };
-                    polyline.Positions.Add(directionPolylines[i]);
-                    polyline.Positions.Add(directionPolylines[i + 1]);
-                    map.Polylines.Add(polyline);
+
+                    try { 
+                        polyline.Positions.Add(directionPolylines[i]);
+                        polyline.Positions.Add(directionPolylines[i + 1]);
+                        map.Polylines.Add(polyline);
+                    } catch
+                    {
+                        continue;
+                    }
                 }
                 #endregion
 

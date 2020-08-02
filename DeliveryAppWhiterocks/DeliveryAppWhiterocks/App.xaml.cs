@@ -154,8 +154,10 @@ namespace DeliveryAppWhiterocks
                 {
                     if (!noInterShow)
                     {
-                        hasInternet = false;
-                        labelScreen.IsVisible = true;
+                        Device.BeginInvokeOnMainThread(() => {
+                            hasInternet = false;
+                            labelScreen.IsVisible = true;
+                        });
                     }
                 }
             }

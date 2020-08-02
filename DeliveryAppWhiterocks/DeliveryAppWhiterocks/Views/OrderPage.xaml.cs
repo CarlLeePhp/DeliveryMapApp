@@ -5,10 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Mail;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -110,9 +106,13 @@ namespace DeliveryAppWhiterocks.Views
 
         private void GetDirectionBtn_Clicked(object sender, EventArgs e)
         {
-            List<Invoice> invoices = _deliveryOrders.ToList();
-            
-            Navigation.PushModalAsync(new MapsPage(invoices));
+            if (App.CheckIfInternet()) { 
+                List<Invoice> invoices = _deliveryOrders.ToList();
+                Navigation.PushModalAsync(new MapsPage(invoices));
+            } else
+            {
+                DisplayAlert("Oops", "No internet connection, Google Maps requires an internet connection", "OK");
+            }
         }
 
         private void TapInfo_Tapped(object sender, EventArgs e)

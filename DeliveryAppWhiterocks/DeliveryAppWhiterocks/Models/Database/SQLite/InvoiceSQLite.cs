@@ -13,5 +13,6 @@ namespace DeliveryAppWhiterocks.Models.Database.SQLite
         public bool CompletedDeliveryStatus { get; set; }
         public string ContactID { get; set; }
         public double Subtotal { get; set; }
+
     }
 }
