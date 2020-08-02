@@ -45,6 +45,7 @@ namespace DeliveryAppWhiterocks.Views
 
             //Enable the blue circle that mark the current location of user
             map.MyLocationEnabled = true;
+
             InitMap();
 
             //Got the information from https://winstongubantes.blogspot.com/2017/11/creating-draggable-sliding-up-panel-in.html
