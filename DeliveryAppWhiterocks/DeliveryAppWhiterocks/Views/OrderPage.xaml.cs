@@ -26,9 +26,12 @@ namespace DeliveryAppWhiterocks.Views
 
             //these 2 lines are for testing, remove later
             TestData.CreateInvoice();
-            SupplyOrder();
+            
         }
-
+        protected override void OnAppearing()
+        {
+            SupplyOrder(); // Moved from Constructor
+        }
         private void Init()
         {
             NavigationPage.SetHasNavigationBar(this, false);
