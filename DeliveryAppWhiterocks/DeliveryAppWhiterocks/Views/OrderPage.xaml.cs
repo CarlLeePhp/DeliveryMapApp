@@ -31,10 +31,7 @@ namespace DeliveryAppWhiterocks.Views
             //these 2 lines are for testing, remove later
             TestData.CreateInvoice();
             SupplyOrder();
-            
         }
-
-        
 
         private void Init()
         {
@@ -42,8 +39,6 @@ namespace DeliveryAppWhiterocks.Views
             App.CheckInternetIfConnected(noInternetLbl, this);
 
             CheckHasDataLabel();
-
-            
         }
 
         private void CheckHasDataLabel()
@@ -115,7 +110,9 @@ namespace DeliveryAppWhiterocks.Views
 
         private void GetDirectionBtn_Clicked(object sender, EventArgs e)
         {
-            Navigation.PushModalAsync(new MapsPage(_deliveryOrders));
+            List<Invoice> invoices = _deliveryOrders.ToList();
+            
+            Navigation.PushModalAsync(new MapsPage(invoices));
         }
 
         private void TapInfo_Tapped(object sender, EventArgs e)

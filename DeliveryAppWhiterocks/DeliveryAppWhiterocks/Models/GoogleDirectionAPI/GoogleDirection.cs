@@ -182,7 +182,7 @@ namespace DeliveryAppWhiterocks.Models
         public IList<object> Warnings { get; set; }
 
         [JsonProperty("waypoint_order")]
-        public IList<object> WaypointOrder { get; set; }
+        public IList<int> WaypointOrder { get; set; }
     }
 
     public class GoogleDirection

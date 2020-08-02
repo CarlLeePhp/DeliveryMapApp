@@ -26,20 +26,21 @@ namespace DeliveryAppWhiterocks.Views
         List<string> _waypoints = new List<string>();
         Position _lastKnownPosition;
 
+        //properties for sliding up menu
         CompositeDisposable _EventSubscriptions = new CompositeDisposable();
         PanGestureRecognizer _panGesture = new PanGestureRecognizer();
-
         double _transY;
+        //end sliding up menu props
 
         ObservableCollection<Invoice> _invoicesCollection = new ObservableCollection<Invoice>();
+        List<Invoice> _invoices = new List<Invoice>();
 
         //remove the passing parameter later. now is used only for testing
-        public MapsPage(ObservableCollection<Invoice> invoices)
+        public MapsPage(List<Invoice> invoices)
         {
             InitializeComponent();
-            _invoicesCollection = invoices;
-            //replace this later, get data from GoogleAPI.Waypoints after sorted.
-            DeliveryItemView.ItemsSource = _invoicesCollection;
+
+            _invoices = invoices;
 
             //Enable the blue circle that mark the current location of user
             map.MyLocationEnabled = true;
@@ -50,6 +51,9 @@ namespace DeliveryAppWhiterocks.Views
             InitializeObservables();
         }
 
+        //SLIDEUP MENU REGION
+        //a layout that helps in resizing the stacklayout that contains the delivery orders
+        #region SlideUpMenu
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
@@ -125,46 +129,14 @@ namespace DeliveryAppWhiterocks.Views
                     TaskScheduler.FromCurrentSynchronizationContext());
         }
 
+        #endregion
+
         public async void InitMap()
         {
             CenterMapToCurrentLocation();
-            //await InitPins();
-            //MapWaypoints();
-            //The Geocoder.GetPositionsForAddressAsync() doesnt work, it shows GRPC error,
-
-            //Position position = await GoogleMapsAPI.GetPositionFromKnownAddress("84 Lithgow st, Invercargill ,New Zealand");
-
-            //if (position.Latitude == 0 && position.Longitude == 0)
-            //{
-            //    await DisplayAlert("Alert", "Not Found", "OK");
-            //}
-            //else
-            //{
-            //    map.MyLocationEnabled = true;
-            //    map.MoveToRegion(MapSpan.FromCenterAndRadius(position, Distance.FromKilometers(3)), true);
-
-            //    string reverseGeo = await GoogleMapsAPI.GetAdressFromKnownPosition(position);
-            //    await DisplayAlert("Map", $"{reverseGeo}", "OK");
-            //}
-        }
-
-
-        private async void MapWaypoints()
-        {
-            GoogleDirection direction = await GoogleMapsAPI.MapDirections(_lastKnownPosition, _waypoints.ToArray());
-            List<Position> directionPolylines = PolylineHelper.Decode(direction.Routes[0].OverviewPolyline.Points).ToList();
-            for (int i = 0; i < directionPolylines.Count - 1; i++)
-            {
-                Xamarin.Forms.GoogleMaps.Polyline polyline = new Xamarin.Forms.GoogleMaps.Polyline()
-                {
-                    StrokeColor = Constants.mapShapeColor,
-                    StrokeWidth = 8,
-                };
-
-                polyline.Positions.Add(directionPolylines[i]);
-                polyline.Positions.Add(directionPolylines[i + 1]);
-                map.Polylines.Add(polyline);
-            }
+            await InitPins();
+            MapWaypoints();
+            //The Geocoder.GetPositionsForAddressAsync() doesnt work, it shows GRPC error, dont use it
         }
 
         private async Task<bool> InitPins()
@@ -172,17 +144,26 @@ namespace DeliveryAppWhiterocks.Views
             foreach (InvoiceSQLite invoice in App.InvoiceDatabase.GetAllIncompleteInvoices())
             {
                 ContactSQLite customerContact = App.ContactDatabase.GetContactByID(invoice.ContactID);
-                string fullAddress = customerContact.Address;
 
+                //Get better format from address
+                #region Format the Address
+                string fullAddress = customerContact.Address;
                 if (customerContact.City != "")
                 {
                     fullAddress += $", {customerContact.City}";
                 }
                 fullAddress += $", New Zealand";
+                #endregion
 
+                //Get location by calling google geolocation API / each invoice
                 Position position = await GoogleMapsAPI.GetPositionFromKnownAddress(fullAddress);
-                //separate waypoints by comma
+                
+                //Add it to the waypoints list later to be used on the googleDirection API
+                //Formatted by Comma separator for latitude,longitude
                 _waypoints.Add($"{position.Latitude}%2C{position.Longitude}");
+
+                //Set pin on map
+                #region SetPin
                 var pin = new Pin()
                 {
                     Position = position,
@@ -190,19 +171,56 @@ namespace DeliveryAppWhiterocks.Views
                     //set tag so i can reference it when a pin is clicked
                     Tag = invoice
                 };
-
                 map.SelectedPinChanged += Map_SelectedPinChanged;
 
+                
                 map.Pins.Add(pin);
+                #endregion
             }
             return true;
         }
 
+        //InitPins() should be called before this method, _waypoints is added in InitPins()
+        //A method that let's google handle the directions, shortest path etc.
+        private async void MapWaypoints()
+        {
+            if(_waypoints.Count > 0) {
+                //
+                _invoicesCollection.Clear();
+                GoogleDirection direction = await GoogleMapsAPI.MapDirections(_lastKnownPosition, _waypoints.ToArray());
+                List<Position> directionPolylines = PolylineHelper.Decode(direction.Routes[0].OverviewPolyline.Points).ToList();
+
+                //Create Polyline based on the decoded direction from google
+                #region Create polylines on map
+                for (int i = 0; i < directionPolylines.Count - 1; i++)
+                {
+                    Xamarin.Forms.GoogleMaps.Polyline polyline = new Xamarin.Forms.GoogleMaps.Polyline()
+                    {
+                        StrokeColor = Constants.mapShapeColor,
+                        StrokeWidth = 8,
+                    };
+                    polyline.Positions.Add(directionPolylines[i]);
+                    polyline.Positions.Add(directionPolylines[i + 1]);
+                    map.Polylines.Add(polyline);
+                }
+                #endregion
+
+                foreach(int order in GoogleMapsAPI._waypointsOrder)
+                {
+                    _invoicesCollection.Add(_invoices[order]);
+                }
+                //replace this later, get data from GoogleAPI.Waypoints after sorted.
+                DeliveryItemView.ItemsSource = _invoicesCollection;
+            }
+        }
+
+        //Do something when a pin is clicked, experimental
         private void Map_SelectedPinChanged(object sender, SelectedPinChangedEventArgs e)
         {
             Pin currentPinSelected = e.SelectedPin;
         }
 
+        //A method that is centering map to the location of the device
         private async void CenterMapToCurrentLocation()
         {
             Location lastKnownLocation = await Geolocation.GetLastKnownLocationAsync();
@@ -210,29 +228,13 @@ namespace DeliveryAppWhiterocks.Views
             map.MoveToRegion(new MapSpan(_lastKnownPosition, 0.05, 0.05));
         }
 
+        //tied to the XAML side, x:Name=currentLocationButton
         private void currentLocationButton_Clicked(object sender, EventArgs e)
         {
             CenterMapToCurrentLocation();
         }
-
-
-        private void SwipeGestureRecognizer_Swiped(object sender, SwipedEventArgs e)
-        {
-            switch (e.Direction)
-            {
-                case SwipeDirection.Up:
-                    // Handle the swipe
-                    //open the layout
-                    DisplayAlert("OK", "SWIPED UP", "OK");
-                    break;
-                case SwipeDirection.Down:
-                    // Handle the swipe
-                    //close the layout
-                    DisplayAlert("OK", "SWIPED DOWN", "OK");
-                    break;
-            }
-        }
-
+        
+        //When the see items button is clicked it will go to the order details page
         private void ItemDetailsButton_Clicked(object sender, EventArgs e)
         {
             var button = sender as Button;
