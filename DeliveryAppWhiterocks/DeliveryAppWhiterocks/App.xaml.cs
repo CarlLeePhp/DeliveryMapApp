@@ -45,7 +45,7 @@ namespace DeliveryAppWhiterocks
 
         private void Init()
         {
-            
+            Device.SetFlags(new string[] { "Expander_Experimental" });
         }
 
         protected override void OnStart()
@@ -154,8 +154,10 @@ namespace DeliveryAppWhiterocks
                 {
                     if (!noInterShow)
                     {
-                        hasInternet = false;
-                        labelScreen.IsVisible = true;
+                        Device.BeginInvokeOnMainThread(() => {
+                            hasInternet = false;
+                            labelScreen.IsVisible = true;
+                        });
                     }
                 }
             }

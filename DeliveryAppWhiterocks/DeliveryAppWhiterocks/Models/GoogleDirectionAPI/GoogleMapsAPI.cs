@@ -14,18 +14,24 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
 {
     public class GoogleMapsAPI
     {
+        public static List<int> _waypointsOrder = new List<int>();
+
         public static async Task<GoogleDirection> MapDirections(Position initialLocation,params string[] waypoints)
         {
+            //GET REQUEST URI
             /*https://maps.googleapis.com/maps/api/directions/json?origin=Boston,MA&destination=Concord,MA&waypoints=via:enc:Charlestown,MA|Lexington,MA&key=YOUR_API_KEY&mode=driving*/
-            
+
+            _waypointsOrder = new List<int>();
+
             var httpClient = new HttpClient();
-            //have to turn it into something for API to understand initial location
-            //PolylineHelper.Encode(initialLocation);
+            
             string formattedWaypoints = string.Join("|", waypoints);
-            //WITH via: OR NOT?
+
             var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={initialLocation.Latitude},{initialLocation.Longitude}&waypoints=optimize:true|{formattedWaypoints}&key={Constants.GoogleAPIKEY}&mode=driving");
             var responseBody = await response.Content.ReadAsStringAsync();
             var googleDirection = JsonConvert.DeserializeObject<GoogleDirection>(responseBody);
+
+            _waypointsOrder = googleDirection.Routes[0].WaypointOrder.ToList();
 
             return googleDirection;
         }

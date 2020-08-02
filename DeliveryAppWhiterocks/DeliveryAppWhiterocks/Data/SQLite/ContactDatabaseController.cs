@@ -49,6 +49,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
+        public void UpdateContactPosition(ContactSQLite contact)
+        {
+            lock (locker)
+            {
+                database.Update(contact);
+            }
+        }
+
         public void DeleteAllContacts()
         {
             lock (locker)
