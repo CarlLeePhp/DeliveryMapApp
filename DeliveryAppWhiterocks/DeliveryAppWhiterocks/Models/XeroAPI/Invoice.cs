@@ -26,7 +26,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
         public DateTime Date { get; set; }
         public DateTime DueDateString { get; set; }
         public DateTime DueDate { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } // empty, completed?
         public string LineAmountTypes { get; set; }
         public List<LineItem> LineItems { get; set; } = new List<LineItem>();
         public double SubTotal { get; set; }

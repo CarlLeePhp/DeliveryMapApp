@@ -1,4 +1,5 @@
-﻿using DeliveryAppWhiterocks.Models.Database.SQLite;
+﻿using DeliveryAppWhiterocks.Data.SQLite;
+using DeliveryAppWhiterocks.Models.Database.SQLite;
 using DeliveryAppWhiterocks.Models.XeroAPI;
 using System;
 using System.Collections.Generic;
@@ -79,10 +80,44 @@ namespace DeliveryAppWhiterocks.Views
             //LOAD MAP
         }
 
-        private void MarkAsCompleted(object sender, EventArgs e)
+        private async void MarkAsCompleted(object sender, EventArgs e)
         {
-            _selectedInvoice.Status = "Completed";
-            Navigation.PopModalAsync();
+            bool userAction = false;
+            if(_selectedInvoice.Status == "Completed")
+            {
+                userAction = await DisplayAlert("Completed", "Do you want to mark it as uncompleted? ", "Yes", "Cancel");
+                if (userAction)
+                {
+                    _selectedInvoice.Status = "";
+                    CompletedOrderButton.Text = "Mark as Completed";
+                    PageHeaderLabel.Text = _selectedInvoice.InvoiceNumber;
+                }
+            }
+            else
+            {
+                userAction = await DisplayAlert("Completed", "Do you want to mark it as completed? ", "Yes", "Cancel");
+                if (userAction)
+                {
+                    _selectedInvoice.Status = "Completed";
+                    CompletedOrderButton.Text = "Mark as Uncompleted";
+                    PageHeaderLabel.Text += " Completed";
+                }
+                
+            }
+            if (userAction)
+            {
+                InvoiceSQLite invoice = new InvoiceSQLite();
+                invoice.InvoiceID = _selectedInvoice.InvoiceID;
+                invoice.InvoiceNumber = _selectedInvoice.InvoiceNumber;
+                invoice.CompletedDeliveryStatus = (_selectedInvoice.Status == "Completed");
+                invoice.ContactID = _selectedInvoice.Contact.ContactID;
+                invoice.Subtotal = _selectedInvoice.SubTotal;
+                InvoiceDatabaseController databaseController = new InvoiceDatabaseController();
+                databaseController.UpdateInvoiceStatus(invoice);
+            }
+            
+            // Navigation.PopModalAsync();
+
         } // Mark As Completed
     }
 }

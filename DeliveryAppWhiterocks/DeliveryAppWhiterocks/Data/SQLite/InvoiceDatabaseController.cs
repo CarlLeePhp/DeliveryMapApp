@@ -112,7 +112,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 }
             }
         }
-
+        public void UpdateInvoiceStatus(InvoiceSQLite invoice)
+        {
+            lock (locker)
+            {
+                database.Update(invoice);
+            }
+            
+        }
         public void DeleteAllInvoices()
         {
             lock (locker)
