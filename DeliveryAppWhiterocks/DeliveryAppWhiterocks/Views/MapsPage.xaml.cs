@@ -28,7 +28,7 @@ namespace DeliveryAppWhiterocks.Views
         Geocoder geocoder = new Geocoder();
 
         //properties for sliding up menu
-        CompositeDisposable _EventSubscriptions = new CompositeDisposable();
+        
         PanGestureRecognizer _panGesture = new PanGestureRecognizer();
         double _transY;
         //end sliding up menu props
@@ -51,20 +51,16 @@ namespace DeliveryAppWhiterocks.Views
             InitMap();
 
             //Got the information from https://winstongubantes.blogspot.com/2017/11/creating-draggable-sliding-up-panel-in.html
-            CollapseAllMenus(); 
+            InitMenu(); 
             InitializeObservables();
         }
 
         //SLIDEUP MENU REGION
         //a layout that helps in resizing the stacklayout that contains the delivery orders
         #region SlideUpMenu
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-            _EventSubscriptions.Clear();
-        }
+        
 
-        private void CollapseAllMenus()
+        private void InitMenu()
         {
             Task.Factory.StartNew(async () =>
             {
@@ -75,6 +71,8 @@ namespace DeliveryAppWhiterocks.Views
                     QuickMenuPullLayout.TranslationY = Notification.HeightRequest;
                 });
             });
+
+            QuickMenuPullLayout.BackgroundColor = new Color(247, 247, 247, 0.9);
         }
 
         private void InitializeObservables()
@@ -88,7 +86,6 @@ namespace DeliveryAppWhiterocks.Views
                 //.Throttle(TimeSpan.FromMilliseconds(20), TaskPoolScheduler.Default)
                 .Subscribe(x => Device.BeginInvokeOnMainThread(() => { CheckQuickMenuPullOutGesture(x); }));
 
-            _EventSubscriptions.Add(panGestureObservable);
             QuickMenuInnerLayout.GestureRecognizers.Add(_panGesture);
         }
 
@@ -104,8 +101,9 @@ namespace DeliveryAppWhiterocks.Views
                     {
                         Device.BeginInvokeOnMainThread(() =>
                         {
-                            QuickMenuPullLayout.TranslationY = Math.Max(0,
-                                Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY));
+                            //QuickMenuPullLayout.TranslationY = Math.Max(0,
+                            //    Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY));
+                            QuickMenuPullLayout.TranslateTo(QuickMenuPullLayout.TranslationX, Math.Max(0, Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY)), 250, Easing.Linear);
                         });
                     }, 2);
 

@@ -118,7 +118,7 @@
                 <!--BottomRibbon Nav Menu-->
                 <StackLayout  BackgroundColor="#1a1a1b"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
                     <BoxView Grid.Row="3" Grid.ColumnSpan="3"></BoxView>
-                    <StackLayout Orientation="Horizontal" Spacing="50" HorizontalOptions="Center">
+                    <StackLayout Orientation="Horizontal" Spacing="45" HorizontalOptions="Center">
 
                         <Button Text="Load Delivery" Clicked="LoadDeliveryBtn_Clicked" TextColor="#80574D" BackgroundColor="Transparent" >
                         </Button>
