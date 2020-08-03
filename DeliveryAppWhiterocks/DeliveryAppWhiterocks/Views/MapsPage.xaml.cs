@@ -136,8 +136,10 @@ namespace DeliveryAppWhiterocks.Views
         public async void InitMap()
         {
             CenterMapToCurrentLocation();
+
             await InitPins();
             MapWaypoints();
+
             //The Geocoder.GetPositionsForAddressAsync() doesnt work, it shows GRPC error, dont use it
         }
 
@@ -220,35 +222,42 @@ namespace DeliveryAppWhiterocks.Views
                 
                 _invoicesCollection.Clear();
                 GoogleDirection direction = await GoogleMapsAPI.MapDirections(_lastKnownPosition, _waypoints.ToArray());
-                List<Position> directionPolylines = PolylineHelper.Decode(direction.Routes[0].OverviewPolyline.Points).ToList();
 
-                //Create Polyline based on the decoded direction from google
-                #region Create polylines on map
-                for (int i = 0; i < directionPolylines.Count - 1; i++)
-                {
-                    Xamarin.Forms.GoogleMaps.Polyline polyline = new Xamarin.Forms.GoogleMaps.Polyline()
-                    {
-                        StrokeColor = Constants.mapShapeColor,
-                        StrokeWidth = 8,
-                    };
+                //Only create a line if it returns something from google
+                if(direction.Status != "ZERO_RESULTS" && direction.Routes.Count > 0) { 
+                    List<Position> directionPolylines = PolylineHelper.Decode(direction.Routes[0].OverviewPolyline.Points).ToList();
 
-                    try { 
-                        polyline.Positions.Add(directionPolylines[i]);
-                        polyline.Positions.Add(directionPolylines[i + 1]);
-                        map.Polylines.Add(polyline);
-                    } catch
+                    //Create Polyline based on the decoded direction from google
+                    #region Create polylines on map
+                    for (int i = 0; i < directionPolylines.Count - 1; i++)
                     {
-                        continue;
+                        Xamarin.Forms.GoogleMaps.Polyline polyline = new Xamarin.Forms.GoogleMaps.Polyline()
+                        {
+                            StrokeColor = Constants.mapShapeColor,
+                            StrokeWidth = 8,
+                        };
+
+                        try { 
+                            polyline.Positions.Add(directionPolylines[i]);
+                            polyline.Positions.Add(directionPolylines[i + 1]);
+                            map.Polylines.Add(polyline);
+                        } catch
+                        {
+                            continue;
+                        }
                     }
-                }
-                #endregion
+                    #endregion
 
-                foreach(int order in GoogleMapsAPI._waypointsOrder)
+                    foreach(int order in GoogleMapsAPI._waypointsOrder)
+                    {
+                        _invoicesCollection.Add(_invoices[order]);
+                    }
+                    //replace this later, get data from GoogleAPI.Waypoints after sorted.
+                    DeliveryItemView.ItemsSource = _invoicesCollection;
+                } else
                 {
-                    _invoicesCollection.Add(_invoices[order]);
+                    await DisplayAlert("Oops","Unable to map the directions, please try to use internet connections or restart the app","OK");
                 }
-                //replace this later, get data from GoogleAPI.Waypoints after sorted.
-                DeliveryItemView.ItemsSource = _invoicesCollection;
             }
         }
 
