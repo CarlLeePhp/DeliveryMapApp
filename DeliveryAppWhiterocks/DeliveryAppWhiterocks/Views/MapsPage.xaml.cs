@@ -36,6 +36,8 @@ namespace DeliveryAppWhiterocks.Views
         ObservableCollection<Invoice> _invoicesCollection = new ObservableCollection<Invoice>();
         List<Invoice> _invoices = new List<Invoice>();
 
+        List<Pin> pins;
+
         //remove the passing parameter later. now is used only for testing
         public MapsPage(List<Invoice> invoices)
         {
@@ -45,6 +47,7 @@ namespace DeliveryAppWhiterocks.Views
 
             //Enable the blue circle that mark the current location of user
             map.MyLocationEnabled = true;
+
             InitMap();
 
             //Got the information from https://winstongubantes.blogspot.com/2017/11/creating-draggable-sliding-up-panel-in.html
@@ -142,6 +145,8 @@ namespace DeliveryAppWhiterocks.Views
 
         private async Task<bool> InitPins()
         {
+            pins = new List<Pin>();
+
             foreach (InvoiceSQLite invoice in App.InvoiceDatabase.GetAllIncompleteInvoices())
             {
                 ContactSQLite customerContact = App.ContactDatabase.GetContactByID(invoice.ContactID);
@@ -199,6 +204,8 @@ namespace DeliveryAppWhiterocks.Views
                         //set tag so i can reference it when a pin is clicked
                         Tag = invoice
                     };
+                    pins.Add(pin);
+
                     map.SelectedPinChanged += Map_SelectedPinChanged;
                     map.Pins.Add(pin);
                     #endregion
@@ -275,5 +282,32 @@ namespace DeliveryAppWhiterocks.Views
 
             Navigation.PushModalAsync(new OrderDetailPage(invoiceSelected));
         }
+
+        private async void MarkAsCompleted(object sender, EventArgs e)
+        {
+            bool userAction = await DisplayAlert("Confirm action", "Do you wish to mark it as complete? ", "Yes", "Cancel");
+
+            if (userAction)
+            {
+                var button = sender as Button;
+                Invoice invoiceSelected = button.BindingContext as Invoice;
+                invoiceSelected.Status = "Completed";
+
+                InvoiceSQLite invoice = new InvoiceSQLite();
+                invoice.InvoiceID = invoiceSelected.InvoiceID;
+                invoice.InvoiceNumber = invoiceSelected.InvoiceNumber;
+                invoice.CompletedDeliveryStatus = (invoiceSelected.Status == "Completed");
+                invoice.ContactID = invoiceSelected.Contact.ContactID;
+                invoice.Subtotal = invoiceSelected.SubTotal;
+                
+                App.InvoiceDatabase.UpdateInvoiceStatus(invoice);
+
+                _invoicesCollection.Remove(invoiceSelected);
+                DeliveryItemView.ItemsSource = _invoicesCollection;
+
+                Pin thePin = pins.Where(pinX => pinX.Label == invoiceSelected.InvoiceNumber).FirstOrDefault();
+                map.Pins.Remove(thePin);
+            }
+        } // Mark As Completed
     }
 }
