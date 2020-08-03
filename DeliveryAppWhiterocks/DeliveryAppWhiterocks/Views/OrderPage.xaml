@@ -236,7 +236,7 @@
                                VerticalTextAlignment="Center"
                                FontSize="20" />
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="TapSlMenuFinishDelivery" />
+                            <TapGestureRecognizer x:Name="TapSlMenuFinishDelivery" Tapped="TapFinish_Tapped"/>
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
                     <BoxView BackgroundColor="black" HeightRequest="1"></BoxView>

@@ -30,6 +30,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
+        public List<InvoiceSQLite> GetAllCompletedInvoices()
+        {
+            lock (locker)
+            {
+                return database.Table<InvoiceSQLite>().Where(invoice => invoice.CompletedDeliveryStatus == true).ToList();
+            }
+        }
+
         public List<InvoiceSQLite> GetAllInvoices()
         {
             lock (locker)

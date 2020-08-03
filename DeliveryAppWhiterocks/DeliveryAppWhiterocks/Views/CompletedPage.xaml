@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="DeliveryAppWhiterocks.Views.CompletedPage">
+    <ContentPage.Content>
+        <Grid ColumnSpacing="0"
+                  HorizontalOptions="FillAndExpand"
+                  VerticalOptions="Start"
+                  RowSpacing="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.2*"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="0.1*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="8*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <StackLayout Orientation="Vertical" Grid.Row="2" Grid.ColumnSpan="3">
+                <!--InvoiceCollections-->
+                <CollectionView  x:Name="DeliveryInvoice" SelectionMode="Single" SelectionChanged="DeliveryInvoice_SelectionChanged" ItemsSource="{Binding DeliveryOrders}" >
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical"
+                                  />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="0.8*"></ColumnDefinition>
+                                    <ColumnDefinition Width="0.1*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Frame BackgroundColor="#1a1a1b" Grid.Row="0" Grid.Column="1" Margin="0,20,0,0" BorderColor="White" CornerRadius="3">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="0.1*"></RowDefinition>
+                                            <RowDefinition Height="0.1*"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="5*"></ColumnDefinition>
+                                            <ColumnDefinition Width="5*"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Grid.Row="0" Margin="5" TextColor="White" FontSize="Title" Grid.Column="0" Text="{Binding InvoiceNumber}"></Label>
+                                        <Label Grid.Row="0" Margin="5" HorizontalTextAlignment="End" VerticalTextAlignment="End" TextColor="White" FontSize="Subtitle" Grid.Column="1" Text="{Binding Contact.Name}"></Label>
+                                        <StackLayout Grid.Row="1" Margin="5" Grid.ColumnSpan="2">
+                                            <BoxView BackgroundColor="White" HeightRequest="1"></BoxView>
+                                            <StackLayout Orientation="Horizontal" Spacing="4">
+                                                <Label TextColor="White" Text="{Binding Contact.Addresses[1].AddressLine1}"></Label>
+                                                <Label TextColor="White" Text="{Binding Contact.Addresses[1].City}"></Label>
+                                            </StackLayout>
+                                        </StackLayout>
+                                    </Grid>
+                                </Frame>
+
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </StackLayout>
+
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

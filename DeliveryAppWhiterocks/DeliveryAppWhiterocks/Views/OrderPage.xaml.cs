@@ -1,6 +1,8 @@
 ﻿using DeliveryAppWhiterocks.Models;
 using DeliveryAppWhiterocks.Models.Database.SQLite;
 using DeliveryAppWhiterocks.Models.XeroAPI;
+using IdentityModel.Client;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,6 +29,11 @@ namespace DeliveryAppWhiterocks.Views
             //these 2 lines are for testing, remove later
             TestData.CreateInvoice();
             
+        }
+
+        public string Hello()
+        {
+            return "Hello";
         }
         protected override void OnAppearing()
         {
@@ -124,6 +131,10 @@ namespace DeliveryAppWhiterocks.Views
             Navigation.PushModalAsync(new DeliveryInfoPage());
         }
 
+        private void TapFinish_Tapped(object sender, EventArgs e)
+        {
+            Navigation.PushModalAsync(new CompletedPage());
+        }
 
         private void DeliveryInvoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
