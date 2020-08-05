@@ -6,9 +6,11 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using Xamarin.Essentials;
 using System.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
 using UnixTimeStamp;
 using DeliveryAppWhiterocks.Models.XeroAPI;
 using IdentityModel.Client;
+using IdentityModel.Jwk;
 using DeliveryAppWhiterocks.Models.Database.SQLite;
 using Xamarin.Forms;
 
@@ -17,6 +19,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
     public class XeroAPI
     {
         private static InvoiceResponse _InvoiceResponse;
+        private static AccessToken _accessToken;
         public static string Hello()
         {
             return "Hello";
@@ -48,6 +51,18 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             Preferences.Set("ExpiresIn", token.expires_in);
             Preferences.Set("CurrentTime", UnixTime.GetCurrentTime());
             Preferences.Set("RefreshToken", token.refresh_token);
+
+            // decode the access_token to get the authentication_event_id
+
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+            if (handler.CanReadToken(token.access_token))
+            {
+                JwtSecurityToken accessToken = handler.ReadJwtToken(token.access_token);
+                JwtPayload myPayload = accessToken.Payload;
+                string myPayloadJSON = myPayload.SerializeToJson();
+                _accessToken = JsonConvert.DeserializeObject<AccessToken>(myPayloadJSON);
+                
+            }
             return true;
         }
 
@@ -64,7 +79,12 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             var tenant = JsonConvert.DeserializeObject<List<Tenant>>(responseBody);
             //Preferences.Set("TenantID", tenant[0].tenantId);
             //I changed this
-            Preferences.Set("TenantID", tenant[1].tenantId);
+            //Preferences.Set("TenantID", tenant[1].tenantId);
+            // find a tenant by authentication_event_id
+            foreach(Tenant t in tenant)
+            {
+                if (t.authEventId == _accessToken.authentication_event_id) Preferences.Set("TenantID", t.tenantId);
+            }
             return true;
         }
 
