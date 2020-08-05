@@ -28,7 +28,7 @@ namespace DeliveryAppWhiterocks.Views
         Geocoder geocoder = new Geocoder();
 
         //properties for sliding up menu
-        CompositeDisposable _EventSubscriptions = new CompositeDisposable();
+        
         PanGestureRecognizer _panGesture = new PanGestureRecognizer();
         double _transY;
         //end sliding up menu props
@@ -51,20 +51,16 @@ namespace DeliveryAppWhiterocks.Views
             InitMap();
 
             //Got the information from https://winstongubantes.blogspot.com/2017/11/creating-draggable-sliding-up-panel-in.html
-            CollapseAllMenus(); 
+            InitMenu(); 
             InitializeObservables();
         }
 
         //SLIDEUP MENU REGION
         //a layout that helps in resizing the stacklayout that contains the delivery orders
         #region SlideUpMenu
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-            _EventSubscriptions.Clear();
-        }
+        
 
-        private void CollapseAllMenus()
+        private void InitMenu()
         {
             Task.Factory.StartNew(async () =>
             {
@@ -75,6 +71,8 @@ namespace DeliveryAppWhiterocks.Views
                     QuickMenuPullLayout.TranslationY = Notification.HeightRequest;
                 });
             });
+
+            QuickMenuPullLayout.BackgroundColor = new Color(247, 247, 247, 0.9);
         }
 
         private void InitializeObservables()
@@ -88,7 +86,6 @@ namespace DeliveryAppWhiterocks.Views
                 //.Throttle(TimeSpan.FromMilliseconds(20), TaskPoolScheduler.Default)
                 .Subscribe(x => Device.BeginInvokeOnMainThread(() => { CheckQuickMenuPullOutGesture(x); }));
 
-            _EventSubscriptions.Add(panGestureObservable);
             QuickMenuInnerLayout.GestureRecognizers.Add(_panGesture);
         }
 
@@ -104,8 +101,9 @@ namespace DeliveryAppWhiterocks.Views
                     {
                         Device.BeginInvokeOnMainThread(() =>
                         {
-                            QuickMenuPullLayout.TranslationY = Math.Max(0,
-                                Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY));
+                            //QuickMenuPullLayout.TranslationY = Math.Max(0,
+                            //    Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY));
+                            QuickMenuPullLayout.TranslateTo(QuickMenuPullLayout.TranslationX, Math.Max(0, Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY)), 250, Easing.Linear);
                         });
                     }, 2);
 
@@ -138,8 +136,10 @@ namespace DeliveryAppWhiterocks.Views
         public async void InitMap()
         {
             CenterMapToCurrentLocation();
+
             await InitPins();
             MapWaypoints();
+
             //The Geocoder.GetPositionsForAddressAsync() doesnt work, it shows GRPC error, dont use it
         }
 
@@ -222,35 +222,42 @@ namespace DeliveryAppWhiterocks.Views
                 
                 _invoicesCollection.Clear();
                 GoogleDirection direction = await GoogleMapsAPI.MapDirections(_lastKnownPosition, _waypoints.ToArray());
-                List<Position> directionPolylines = PolylineHelper.Decode(direction.Routes[0].OverviewPolyline.Points).ToList();
 
-                //Create Polyline based on the decoded direction from google
-                #region Create polylines on map
-                for (int i = 0; i < directionPolylines.Count - 1; i++)
-                {
-                    Xamarin.Forms.GoogleMaps.Polyline polyline = new Xamarin.Forms.GoogleMaps.Polyline()
-                    {
-                        StrokeColor = Constants.mapShapeColor,
-                        StrokeWidth = 8,
-                    };
+                //Only create a line if it returns something from google
+                if(direction.Status != "ZERO_RESULTS" && direction.Routes.Count > 0) { 
+                    List<Position> directionPolylines = PolylineHelper.Decode(direction.Routes[0].OverviewPolyline.Points).ToList();
 
-                    try { 
-                        polyline.Positions.Add(directionPolylines[i]);
-                        polyline.Positions.Add(directionPolylines[i + 1]);
-                        map.Polylines.Add(polyline);
-                    } catch
+                    //Create Polyline based on the decoded direction from google
+                    #region Create polylines on map
+                    for (int i = 0; i < directionPolylines.Count - 1; i++)
                     {
-                        continue;
+                        Xamarin.Forms.GoogleMaps.Polyline polyline = new Xamarin.Forms.GoogleMaps.Polyline()
+                        {
+                            StrokeColor = Constants.mapShapeColor,
+                            StrokeWidth = 8,
+                        };
+
+                        try { 
+                            polyline.Positions.Add(directionPolylines[i]);
+                            polyline.Positions.Add(directionPolylines[i + 1]);
+                            map.Polylines.Add(polyline);
+                        } catch
+                        {
+                            continue;
+                        }
                     }
-                }
-                #endregion
+                    #endregion
 
-                foreach(int order in GoogleMapsAPI._waypointsOrder)
+                    foreach(int order in GoogleMapsAPI._waypointsOrder)
+                    {
+                        _invoicesCollection.Add(_invoices[order]);
+                    }
+                    //replace this later, get data from GoogleAPI.Waypoints after sorted.
+                    DeliveryItemView.ItemsSource = _invoicesCollection;
+                } else
                 {
-                    _invoicesCollection.Add(_invoices[order]);
+                    await DisplayAlert("Oops","Unable to map the directions, please try to use internet connections or restart the app","OK");
                 }
-                //replace this later, get data from GoogleAPI.Waypoints after sorted.
-                DeliveryItemView.ItemsSource = _invoicesCollection;
             }
         }
 

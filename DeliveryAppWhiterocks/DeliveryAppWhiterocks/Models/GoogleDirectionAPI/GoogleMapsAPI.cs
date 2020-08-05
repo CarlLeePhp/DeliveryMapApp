@@ -22,17 +22,25 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
             /*https://maps.googleapis.com/maps/api/directions/json?origin=Boston,MA&destination=Concord,MA&waypoints=via:enc:Charlestown,MA|Lexington,MA&key=YOUR_API_KEY&mode=driving*/
 
             _waypointsOrder = new List<int>();
-
             var httpClient = new HttpClient();
             
             string formattedWaypoints = string.Join("|", waypoints);
 
             var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={initialLocation.Latitude},{initialLocation.Longitude}&waypoints=optimize:true|{formattedWaypoints}&key={Constants.GoogleAPIKEY}&mode=driving");
+            
+            if (!response.IsSuccessStatusCode) return null;
+
             var responseBody = await response.Content.ReadAsStringAsync();
             var googleDirection = JsonConvert.DeserializeObject<GoogleDirection>(responseBody);
 
-            _waypointsOrder = googleDirection.Routes[0].WaypointOrder.ToList();
 
+            //ERROR could happened when google couldnt map the location, because it's in different continent / island etc
+            try { 
+                _waypointsOrder = googleDirection.Routes[0].WaypointOrder.ToList();
+            } catch
+            {
+                
+            }
             return googleDirection;
         }
 
