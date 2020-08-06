@@ -66,7 +66,7 @@ namespace DeliveryAppWhiterocks.Views
                     }
                     catch
                     {
-                        Console.WriteLine("Err");
+                        Console.WriteLine("Error");
                     }
                 });
             }, null, 10, (int)TimeSpan.FromSeconds(6).TotalMilliseconds);
@@ -106,7 +106,7 @@ namespace DeliveryAppWhiterocks.Views
 
                 Location locationB = new Location(pointB.Latitude, pointB.Longitude);
                 double kilometersDistanceToPointB = Location.CalculateDistance(_currentLocation, locationB, DistanceUnits.Kilometers);
-                if (kilometersDistanceToPointA * 1000 > 10 && kilometersDistanceToPointB * 1000 < 25)
+                if (kilometersDistanceToPointA * 1000 > 10 && kilometersDistanceToPointB * 1000 < 35)
                 {
                     _outsideRouteUpdateCounter = 0;
                     map.Polylines[0].Positions.RemoveAt(0);
@@ -120,10 +120,9 @@ namespace DeliveryAppWhiterocks.Views
             if (_outsideRouteUpdateCounter >= 5)
             {
                 _outsideRouteUpdateCounter = 0;
-                MapDirections();
+                MapDirections("(stray) ");
                 //for diagnostic
-                numberOfAPICalls++;
-                Console.WriteLine("Numbers of API Calls : #" + numberOfAPICalls);
+                
             }
             return true;
         }
@@ -135,7 +134,7 @@ namespace DeliveryAppWhiterocks.Views
             if (_counter > _invoiceSQLite.Count() || _firstVisited)
             {
                 await InitPins();
-                MapDirections();
+                MapDirections("(initializing) ");
                 _counter = _invoiceSQLite.Count();
                 _firstVisited = false;
                 _outsideRouteUpdateCounter = 0;
@@ -295,8 +294,12 @@ namespace DeliveryAppWhiterocks.Views
 
         //InitPins() should be called before this method, _waypoints is added in InitPins()
         //A method that let's google handle the directions, shortest path etc.
-        private async void MapDirections()
+        private async void MapDirections(string message="")
         {
+            //for diagnostic
+            numberOfAPICalls++;
+            Console.WriteLine($"{message} Number Of API Calls: #{numberOfAPICalls}");
+
             map.Polylines.Clear();
             if (_currentLocation == null)
             {
@@ -409,13 +412,25 @@ namespace DeliveryAppWhiterocks.Views
 
         public void UpdateStatus(Invoice invoiceSelected)
         {
+            bool googleAPICallRequired = true;
+
             _invoicesCollection.Remove(invoiceSelected);
             _invoices.Remove(invoiceSelected);
             DeliveryItemView.ItemsSource = _invoicesCollection;
             Pin thePin = _pins.Where(pinX => pinX.Label == invoiceSelected.InvoiceNumber).FirstOrDefault();
             map.Pins.Remove(thePin);
             _waypoints.Remove($"{thePin.Position.Latitude}%2C{thePin.Position.Longitude}");
-            MapDirections();
+
+            InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceNumber(invoiceSelected.InvoiceNumber);
+            if(invoiceSQLite != null)
+            {
+                ContactSQLite contact =  App.ContactDatabase.GetContactByID(invoiceSQLite.ContactID);
+                double distanceToInvoiceInKm = Location.CalculateDistance(_currentLocation, new Location((double)contact.Latitude,(double)contact.Longitude), DistanceUnits.Kilometers);
+
+                if (distanceToInvoiceInKm * 1000 < 30) googleAPICallRequired = false;
+            }
+
+            if(googleAPICallRequired) MapDirections("(Force-Refresh) ");
             _counter--;
         }
     }

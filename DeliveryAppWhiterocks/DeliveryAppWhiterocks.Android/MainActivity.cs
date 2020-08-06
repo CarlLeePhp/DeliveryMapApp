@@ -1,10 +1,6 @@
-﻿using System;
-
-using Android.App;
+﻿using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.OS;
 using Android;
 using Xamarin.Forms.GoogleMaps.Android;
@@ -33,7 +29,7 @@ namespace DeliveryAppWhiterocks.Droid
             base.OnCreate(savedInstanceState);
             Xamarin.Forms.Forms.SetFlags("Expander_Experimental");
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-           Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
 
             // Override default BitmapDescriptorFactory by your implementation. 
             var platformConfig = new PlatformConfig

@@ -47,6 +47,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
+        public InvoiceSQLite GetInvoiceByInvoiceNumber(string invoiceNumber)
+        {
+            lock (locker)
+            {
+                return database.Table<InvoiceSQLite>().Where(invoiceX => invoiceX.InvoiceNumber == invoiceNumber).FirstOrDefault();
+            }
+        }
+
         public int CountIncompleteInvoices()
         {
             lock (locker)
