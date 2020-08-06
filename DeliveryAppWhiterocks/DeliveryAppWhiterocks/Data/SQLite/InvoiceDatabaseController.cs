@@ -38,6 +38,7 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
+        
         public List<InvoiceSQLite> GetAllInvoices()
         {
             lock (locker)
@@ -53,6 +54,15 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 return database.Table<InvoiceSQLite>().Where(invoiceX => invoiceX.CompletedDeliveryStatus == false).Count();
             }
         }
+
+        public int CountAllCompletedInvoices()
+        {
+            lock (locker)
+            {
+                return database.Table<InvoiceSQLite>().Where(invoice => invoice.CompletedDeliveryStatus == true).Count();
+            }
+        }
+
 
         public bool CheckIfExisted(string InvoiceID)
         {

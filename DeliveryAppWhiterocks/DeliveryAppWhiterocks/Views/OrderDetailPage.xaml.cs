@@ -18,7 +18,7 @@ namespace DeliveryAppWhiterocks.Views
     {
         ObservableCollection<LineItem> _itemsCollection = new ObservableCollection<LineItem>();
         Invoice _selectedInvoice;
-        
+
         public OrderDetailPage(Invoice selectedInvoice)
         {
             InitializeComponent();
@@ -30,6 +30,11 @@ namespace DeliveryAppWhiterocks.Views
         private void Init()
         {
             PageHeaderLabel.Text = _selectedInvoice.InvoiceNumber;
+            if(_selectedInvoice.Status == "Completed")
+            {
+                PageHeaderLabel.Text += " Completed";
+                CompletedOrderButton.Text = "Mark as incomplete";
+            }
             customerNameLabel.Text = _selectedInvoice.Contact.Name;
             customerAddressLabel.Text = $"{_selectedInvoice.Contact.Addresses[1].AddressLine1}, {_selectedInvoice.Contact.Addresses[1].City}";
 

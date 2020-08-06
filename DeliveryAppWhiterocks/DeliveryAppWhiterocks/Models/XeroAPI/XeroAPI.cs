@@ -64,7 +64,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             var tenant = JsonConvert.DeserializeObject<List<Tenant>>(responseBody);
             //Preferences.Set("TenantID", tenant[0].tenantId);
             //I changed this
-            Preferences.Set("TenantID", tenant[1].tenantId);
+            Preferences.Set("TenantID", tenant[0].tenantId);
             return true;
         }
 

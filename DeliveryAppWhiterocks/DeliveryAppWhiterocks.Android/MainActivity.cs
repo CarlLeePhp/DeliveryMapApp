@@ -33,7 +33,8 @@ namespace DeliveryAppWhiterocks.Droid
             base.OnCreate(savedInstanceState);
             Xamarin.Forms.Forms.SetFlags("Expander_Experimental");
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            
+           Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+
             // Override default BitmapDescriptorFactory by your implementation. 
             var platformConfig = new PlatformConfig
             {
@@ -47,6 +48,7 @@ namespace DeliveryAppWhiterocks.Droid
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
+            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
