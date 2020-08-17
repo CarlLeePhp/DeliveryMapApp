@@ -14,14 +14,37 @@
                 <RowDefinition Height="0.2*"/>
                 <RowDefinition Height="20"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="0.1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="8*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
+            
+            <!--TopHeader Nav-->
+            <StackLayout BackgroundColor="Black" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="8*"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalTextAlignment="Center" x:Name="noInternetLbl" FontAttributes="Bold" HorizontalTextAlignment="Center" BackgroundColor="Red" TextColor="White"></Label>
 
+                    <Image Grid.Column="0" Grid.Row="1" Margin="15,15,0,0" HeightRequest="16" MinimumHeightRequest="16" x:Name="appIconClose" Source="close">
+                        <!--Add Tap Event-->
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="ImgMenu" Command="{Binding CloseCommand}"/>
+                        </Image.GestureRecognizers>
+                    </Image>
+                    <Label Grid.Row="1" Grid.Column="1" Margin="0,15,0,0" HorizontalOptions="Center" VerticalOptions="End" VerticalTextAlignment="End" FontAttributes="Bold" FontSize="26" TextColor="White">Completed List</Label>
+                </Grid>
+            </StackLayout>
+            
             <StackLayout Orientation="Vertical" Grid.Row="2" Grid.ColumnSpan="3">
                 <!--InvoiceCollections-->
                 <CollectionView  x:Name="DeliveryInvoice" SelectionMode="Single" SelectionChanged="DeliveryInvoice_SelectionChanged" ItemsSource="{Binding DeliveryOrders}" >

@@ -5,11 +5,13 @@ using System.Text;
 
 using DeliveryAppWhiterocks.Models.XeroAPI;
 using DeliveryAppWhiterocks.Models.Database.SQLite;
+using Xamarin.Forms;
 
 namespace DeliveryAppWhiterocks.ViewModels
 {
     public class CompletedViewModel : BaseViewModel
     {
+        INavigation _navigation;
         ObservableCollection<Invoice> _deliveryOrders = new ObservableCollection<Invoice>();
         public ObservableCollection<Invoice> DeliveryOrders
         {
@@ -21,8 +23,16 @@ namespace DeliveryAppWhiterocks.ViewModels
             }
         }
 
-        public CompletedViewModel()
+        /**
+         * Commands
+         */
+
+        public Command CloseCommand { get; set; }
+        public CompletedViewModel(INavigation navigation)
         {
+            _navigation = navigation;
+            // Register Commands
+            CloseCommand = new Command(Close);
             _deliveryOrders.Clear();
             //load data from database
             //do foreach
@@ -47,11 +57,18 @@ namespace DeliveryAppWhiterocks.ViewModels
                 {
                     InvoiceID = invoiceSqlite.InvoiceID,
                     InvoiceNumber = invoiceSqlite.InvoiceNumber,
-                    Contact = contact
+                    Contact = contact,
+                    Status = "Completed"
                 };
                 _deliveryOrders.Add(invoice);
             }
             
+        } // Constructor
+
+        private async void Close()
+        {
+            await _navigation.PopModalAsync();
         }
+
     }
 }

@@ -17,6 +17,7 @@ namespace DeliveryAppWhiterocks.Views
     public partial class OrderPage : ContentPage
     {
         ObservableCollection<Invoice> _deliveryOrders;
+        bool _childPageLoaded = false;
 
         public OrderPage()
         {
@@ -37,6 +38,7 @@ namespace DeliveryAppWhiterocks.Views
         }
         protected override void OnAppearing()
         {
+            _childPageLoaded = false;
             SupplyOrder(); // Moved from Constructor
         }
         private void Init()
@@ -139,8 +141,8 @@ namespace DeliveryAppWhiterocks.Views
         private void DeliveryInvoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var currentSelection = e.CurrentSelection.FirstOrDefault() as Invoice;
-            if (currentSelection == null) return;
-            
+            if (currentSelection == null || _childPageLoaded) return;
+            _childPageLoaded = true;
             Navigation.PushModalAsync(new OrderDetailPage(currentSelection));
 
             ((CollectionView)sender).SelectedItem = null;
