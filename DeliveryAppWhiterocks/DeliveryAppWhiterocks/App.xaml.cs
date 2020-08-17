@@ -139,6 +139,7 @@ namespace DeliveryAppWhiterocks
                 {
                     CheckInternetOverTime();
                 },null,10,(int)TimeSpan.FromSeconds(3).TotalMilliseconds);
+                
             }
         }
 

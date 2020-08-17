@@ -18,7 +18,7 @@ namespace DeliveryAppWhiterocks.Views
     {
         ObservableCollection<LineItem> _itemsCollection = new ObservableCollection<LineItem>();
         Invoice _selectedInvoice;
-        
+
         public OrderDetailPage(Invoice selectedInvoice)
         {
             InitializeComponent();
@@ -38,7 +38,7 @@ namespace DeliveryAppWhiterocks.Views
             {
                 PageHeaderLabel.Text = _selectedInvoice.InvoiceNumber;
             }
-                
+
             customerNameLabel.Text = _selectedInvoice.Contact.Name;
             customerAddressLabel.Text = $"{_selectedInvoice.Contact.Addresses[1].AddressLine1}, {_selectedInvoice.Contact.Addresses[1].City}";
             

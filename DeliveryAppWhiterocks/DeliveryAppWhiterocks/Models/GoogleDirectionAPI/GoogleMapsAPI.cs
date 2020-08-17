@@ -9,6 +9,7 @@ using IdentityModel.Client;
 using DeliveryAppWhiterocks.Models.Helper;
 using DeliveryAppWhiterocks.Models.GoogleGeocodingAPI;
 using Xamarin.Forms.GoogleMaps;
+using System.Security.Cryptography;
 
 namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
 {
@@ -16,8 +17,12 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
     {
         public static List<int> _waypointsOrder = new List<int>();
 
-        public static async Task<GoogleDirection> MapDirections(Position initialLocation,params string[] waypoints)
+        //DEST CONSTANT ONLY FOR TESTING REMOVE LATER
+        static Position destination = new Position(-46.4134, 168.3556);
+
+        public static async Task<GoogleDirection> MapDirectionsWithWaypoints(Position initialLocation,params string[] waypoints)
         {
+
             //GET REQUEST URI
             /*https://maps.googleapis.com/maps/api/directions/json?origin=Boston,MA&destination=Concord,MA&waypoints=via:enc:Charlestown,MA|Lexington,MA&key=YOUR_API_KEY&mode=driving*/
 
@@ -26,7 +31,8 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
             
             string formattedWaypoints = string.Join("|", waypoints);
 
-            var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={initialLocation.Latitude},{initialLocation.Longitude}&waypoints=optimize:true|{formattedWaypoints}&key={Constants.GoogleAPIKEY}&mode=driving");
+            
+            var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={destination.Latitude},{destination.Longitude}&waypoints=optimize:true|{formattedWaypoints}&key={Constants.GoogleAPIKEY}&mode=driving");
             
             if (!response.IsSuccessStatusCode) return null;
 
@@ -41,6 +47,24 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
             {
                 
             }
+            return googleDirection;
+        }
+
+
+
+        internal static async Task<GoogleDirection> MapDirectionsNoWaypoints(Position initialLocation)
+        {
+            var httpClient = new HttpClient();
+
+          
+
+            var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={destination.Latitude},{destination.Longitude}&key={Constants.GoogleAPIKEY}&mode=driving");
+
+            if (!response.IsSuccessStatusCode) return null;
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var googleDirection = JsonConvert.DeserializeObject<GoogleDirection>(responseBody);
+
             return googleDirection;
         }
 
@@ -77,7 +101,5 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
 
             return pos;
         }
-
-        
     }
 }
