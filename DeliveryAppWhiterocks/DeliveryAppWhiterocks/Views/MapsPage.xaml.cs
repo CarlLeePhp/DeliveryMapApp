@@ -45,6 +45,9 @@ namespace DeliveryAppWhiterocks.Views
         Location _prevLocation;
         int _outsideRouteUpdateCounter = 0;
 
+        GoogleDirection _direction;
+       
+
         //DEST CONSTANT ONLY FOR TESTING REMOVE LATER
         int numberOfAPICalls = 0;
         static Position destination = new Position(-46.4134, 168.3556);
@@ -79,11 +82,13 @@ namespace DeliveryAppWhiterocks.Views
         private async Task<bool> Update()
         {
             _currentLocation = await Geolocation.GetLastKnownLocationAsync();
-            if(_prevLocation == null) _prevLocation = _currentLocation;
+            
             if (_currentLocation == null)
             {
                 return false;
             }
+
+            if (_prevLocation == null) _prevLocation = _currentLocation;
 
             if (map.Polylines.Count > 0 && _prevLocation != _currentLocation)
             {
@@ -97,7 +102,6 @@ namespace DeliveryAppWhiterocks.Views
                 {
                     //this is Point B, next point
                     pointB = map.Polylines[0].Positions[1];
-
                 }
                 else if (map.Polylines[0].Positions.Count == 1)
                 {
@@ -121,8 +125,6 @@ namespace DeliveryAppWhiterocks.Views
             {
                 _outsideRouteUpdateCounter = 0;
                 MapDirections("(stray) ");
-                //for diagnostic
-                
             }
             return true;
         }
@@ -310,11 +312,11 @@ namespace DeliveryAppWhiterocks.Views
             if (_waypoints.Count > 0 && App.CheckIfInternet()) {
                 
                 _invoicesCollection.Clear();
-                GoogleDirection direction = await GoogleMapsAPI.MapDirectionsWithWaypoints(lastKnownPosition, _waypoints.ToArray());
+                _direction = await GoogleMapsAPI.MapDirectionsWithWaypoints(lastKnownPosition, _waypoints.ToArray());
 
                 //Only create a line if it returns something from google
-                if(direction.Status != "ZERO_RESULTS" && direction.Routes.Count > 0) { 
-                    List<Position> directionPolylines = PolylineHelper.Decode(direction.Routes[0].OverviewPolyline.Points).ToList();
+                if(_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0) { 
+                    List<Position> directionPolylines = PolylineHelper.Decode(_direction.Routes[0].OverviewPolyline.Points).ToList();
 
                     CreatePolylinesOnMap(directionPolylines);
                     
@@ -330,10 +332,10 @@ namespace DeliveryAppWhiterocks.Views
                 }
             } else if(_waypoints.Count() == 0 && App.CheckIfInternet())
             {
-                GoogleDirection direction = await GoogleMapsAPI.MapDirectionsNoWaypoints(lastKnownPosition);
-                if (direction.Status != "ZERO_RESULTS" && direction.Routes.Count > 0)
+                _direction = await GoogleMapsAPI.MapDirectionsNoWaypoints(lastKnownPosition);
+                if (_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0)
                 {
-                    List<Position> directionPolylines = PolylineHelper.Decode(direction.Routes[0].OverviewPolyline.Points).ToList();
+                    List<Position> directionPolylines = PolylineHelper.Decode(_direction.Routes[0].OverviewPolyline.Points).ToList();
                     CreatePolylinesOnMap(directionPolylines);
                 }
             }
