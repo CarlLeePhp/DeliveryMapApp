@@ -25,9 +25,6 @@ namespace DeliveryAppWhiterocks.Views
             Init();
             _deliveryOrders = new ObservableCollection<Invoice>();
             //SupplyOrder();
-
-            //these 2 lines are for testing, remove later
-            TestData.CreateInvoice();
             
         }
 
