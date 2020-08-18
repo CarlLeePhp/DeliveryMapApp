@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Xamarin.Forms;
 using Xero.NetStandard.OAuth2.Model.Accounting;
 
 namespace DeliveryAppWhiterocks.Models
@@ -11,7 +12,7 @@ namespace DeliveryAppWhiterocks.Models
         public string ItemDescription { get; set; }
         public double Weight { get; set; }
         public int Quantity { get; set; }
-
+        public Color FontColor { get; set; }
 
         public Stock(string ItemCode,string ItemDescription,double Weight,double Quantity)
         {
@@ -39,6 +40,17 @@ namespace DeliveryAppWhiterocks.Models
         public void ReduceStockWeight(double Weight)
         {
             this.Weight -= Weight;
+        }
+
+        public void SetColor()
+        {
+            if(this.Weight == 0)
+            {
+                FontColor = Color.Red; 
+            } else
+            {
+                FontColor = Color.White;
+            }
         }
     }
 }
