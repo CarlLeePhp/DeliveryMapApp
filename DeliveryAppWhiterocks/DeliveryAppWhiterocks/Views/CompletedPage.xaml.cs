@@ -15,15 +15,32 @@ namespace DeliveryAppWhiterocks.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CompletedPage : ContentPage
     {
+        bool _childPageLoaded = false;
         public CompletedPage()
         {
             InitializeComponent();
-            BindingContext = new CompletedViewModel();
+            
         }
 
+        protected override void OnAppearing()
+        {
+            _childPageLoaded = false;
+            init();
+            BindingContext = new CompletedViewModel(Navigation);
+        }
         private void DeliveryInvoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var currentSelection = e.CurrentSelection.FirstOrDefault() as Invoice;
+            if (currentSelection == null || _childPageLoaded) return;
+            _childPageLoaded = true;
+            Navigation.PushModalAsync(new OrderDetailPage(currentSelection));
 
+            ((CollectionView)sender).SelectedItem = null;
+        }
+
+        private void init()
+        {
+            App.CheckInternetIfConnected(noInternetLbl, this);
         }
     }
 }

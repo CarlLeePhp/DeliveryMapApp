@@ -29,15 +29,19 @@ namespace DeliveryAppWhiterocks.Views
 
         private void Init()
         {
-            PageHeaderLabel.Text = _selectedInvoice.InvoiceNumber;
-            if(_selectedInvoice.Status == "Completed")
+            if (_selectedInvoice.Status == "Completed")
             {
-                PageHeaderLabel.Text += " Completed";
+                PageHeaderLabel.Text = _selectedInvoice.InvoiceNumber + " Completed";
                 CompletedOrderButton.Text = "Mark as incomplete";
             }
+            else
+            {
+                PageHeaderLabel.Text = _selectedInvoice.InvoiceNumber;
+            }
+
             customerNameLabel.Text = _selectedInvoice.Contact.Name;
             customerAddressLabel.Text = $"{_selectedInvoice.Contact.Addresses[1].AddressLine1}, {_selectedInvoice.Contact.Addresses[1].City}";
-
+            
             App.CheckInternetIfConnected(noInternetLbl, this);
         }
 
