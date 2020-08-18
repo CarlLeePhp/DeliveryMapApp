@@ -50,12 +50,7 @@ namespace DeliveryAppWhiterocks
 
         public void loadLocalData()
         {
-            //List<InvoiceSQLite> invoiceSQLite = App.InvoiceDatabase.GetAllInvoices();
-
-            //foreach(InvoiceSQLite invoice in invoiceSQLite)
-            //{
-
-            //}
+            
             App.InvoiceDatabase.DeleteAllInvoices();
             App.LineItemDatabase.DeleteAllLineItems();
             App.ContactDatabase.DeleteAllContacts();

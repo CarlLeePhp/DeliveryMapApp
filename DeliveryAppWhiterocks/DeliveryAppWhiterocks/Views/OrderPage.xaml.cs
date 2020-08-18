@@ -28,7 +28,7 @@ namespace DeliveryAppWhiterocks.Views
             //SupplyOrder();
 
             //these 2 lines are for testing, remove later
-            TestData.CreateInvoice();
+            //TestData.CreateInvoice();
             
         }
 
@@ -40,13 +40,12 @@ namespace DeliveryAppWhiterocks.Views
         {
             _childPageLoaded = false;
             SupplyOrder(); // Moved from Constructor
+            CheckHasDataLabel();
         }
         private void Init()
         {
             NavigationPage.SetHasNavigationBar(this, false);
             App.CheckInternetIfConnected(noInternetLbl, this);
-
-            CheckHasDataLabel();
         }
 
         private void CheckHasDataLabel()
@@ -106,14 +105,32 @@ namespace DeliveryAppWhiterocks.Views
         //Get data from XERO API
         private async void LoadDeliveryBtn_Clicked(object sender, EventArgs e)
         {
-            if (App.CheckIfInternet()) {
-                await Navigation.PushModalAsync(new XEROWebPage(this));
-                GridOverlay.IsVisible = false;
-                CheckHasDataLabel();
-            } else
+            // no access token in Preferences: first run -> login
+            // more than 30 days -> login
+            // more than 30 mins -> get new access token
+            // otherwise -> get data directly
+            XeroAPI.DecodeAccessToken();
+            if (XeroAPI._accessToken != null)
             {
-                await DisplayAlert("Oops", "No internet connection, couldn't load data from XERO", "OK");
+                long currentUnixTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                if(currentUnixTimeStamp - XeroAPI._accessToken.nbf > 1800 && currentUnixTimeStamp - XeroAPI._accessToken.nbf < 30 * 24 * 3600)
+                {
+                    // get a new access token
+                }
+
+                await DisplayAlert("Login Time", XeroAPI._accessToken.nbf.ToString(), "OK");
             }
+            
+            
+            
+            //if (App.CheckIfInternet()) {
+            //    await Navigation.PushModalAsync(new XEROWebPage());
+            //    GridOverlay.IsVisible = false;
+                
+            //} else
+            //{
+            //    await DisplayAlert("Oops", "No internet connection, couldn't load data from XERO", "OK");
+            //}
         }
 
         private void GetDirectionBtn_Clicked(object sender, EventArgs e)

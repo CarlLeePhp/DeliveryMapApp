@@ -18,12 +18,9 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 {
     public class XeroAPI
     {
-        private static InvoiceResponse _InvoiceResponse;
-        private static AccessToken _accessToken;
-        public static string Hello()
-        {
-            return "Hello";
-        }
+        public static InvoiceResponse _InvoiceResponse;
+        public static AccessToken _accessToken;
+        
         public static async Task<bool> GetToken()
         {
             var formVariables = new List<KeyValuePair<string, string>>();
@@ -65,7 +62,24 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             }
             return true;
         }
+        public static void DecodeAccessToken()
+        {
+            string accessTokenString = Preferences.Get("AccessToken", "");
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+            if (handler.CanReadToken(accessTokenString))
+            {
+                JwtSecurityToken accessToken = handler.ReadJwtToken(accessTokenString);
+                JwtPayload myPayload = accessToken.Payload;
+                string myPayloadJSON = myPayload.SerializeToJson();
+                _accessToken = JsonConvert.DeserializeObject<AccessToken>(myPayloadJSON);
 
+            }
+            else
+            {
+                _accessToken = null;
+            }
+
+        }
         public static async Task<bool> GetTenantID()
         {
             HttpClient client = new HttpClient();
@@ -77,14 +91,18 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
             string responseBody = await response.Content.ReadAsStringAsync();
             var tenant = JsonConvert.DeserializeObject<List<Tenant>>(responseBody);
-            //Preferences.Set("TenantID", tenant[0].tenantId);
-            //I changed this
-            //Preferences.Set("TenantID", tenant[1].tenantId);
+
             // find a tenant by authentication_event_id
-            foreach(Tenant t in tenant)
+            // In case nothing could be found, just use the first one
+            string tenantId = "";
+            foreach (Tenant t in tenant)
             {
-                if (t.authEventId == _accessToken.authentication_event_id) Preferences.Set("TenantID", t.tenantId);
+                if (t.authEventId == _accessToken.authentication_event_id)
+                    tenantId = t.tenantId;
             }
+            if(tenantId == "") Preferences.Set("TenantID", tenant[0].tenantId);
+            Preferences.Set("TenantID", tenantId);
+
             return true;
         }
 
