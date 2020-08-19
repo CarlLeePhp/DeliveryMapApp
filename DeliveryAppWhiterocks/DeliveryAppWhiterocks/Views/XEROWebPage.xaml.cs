@@ -11,11 +11,11 @@ namespace DeliveryAppWhiterocks.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class XEROWebPage : ContentPage
     {
-        OrderPage _orderPage;
-        public XEROWebPage(OrderPage order)
+        
+        public XEROWebPage()
         {
+            
             InitializeComponent();
-            _orderPage = order;
             InitXeroWebView();
         }
 
@@ -35,9 +35,8 @@ namespace DeliveryAppWhiterocks.Views
                     var isSuccess = await XeroAPI.GetToken();
                     await XeroAPI.GetTenantID();
                     await XeroAPI.GetInvoices();
+                    //await DisplayAlert("OK", $"{XeroAPI._InvoiceResponse.Invoices[0].InvoiceID}", "OK");
                     await XeroAPI.FillData();
-
-                    _orderPage.SupplyOrder();
 
                     await Navigation.PopModalAsync();
                 }

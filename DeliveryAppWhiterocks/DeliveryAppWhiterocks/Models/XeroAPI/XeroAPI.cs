@@ -20,12 +20,9 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 {
     public class XeroAPI
     {
-        private static InvoiceResponse _InvoiceResponse;
-        private static AccessToken _accessToken;
-        public static string Hello()
-        {
-            return "Hello";
-        }
+        public static InvoiceResponse _InvoiceResponse;
+        public static AccessToken _accessToken;
+        
         public static async Task<bool> GetToken()
         {
             var formVariables = new List<KeyValuePair<string, string>>();
@@ -54,20 +51,27 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             Preferences.Set("CurrentTime", UnixTime.GetCurrentTime());
             Preferences.Set("RefreshToken", token.refresh_token);
 
-            // decode the access_token to get the authentication_event_id
-
+            DecodeAccessToken();
+            return true;
+        }
+        public static void DecodeAccessToken()
+        {
+            string accessTokenString = Preferences.Get("AccessToken", "");
             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-            if (handler.CanReadToken(token.access_token))
+            if (handler.CanReadToken(accessTokenString))
             {
-                JwtSecurityToken accessToken = handler.ReadJwtToken(token.access_token);
+                JwtSecurityToken accessToken = handler.ReadJwtToken(accessTokenString);
                 JwtPayload myPayload = accessToken.Payload;
                 string myPayloadJSON = myPayload.SerializeToJson();
                 _accessToken = JsonConvert.DeserializeObject<AccessToken>(myPayloadJSON);
-                
-            }
-            return true;
-        }
 
+            }
+            else
+            {
+                _accessToken = null;
+            }
+
+        }
         public static async Task<bool> GetTenantID()
         {
             HttpClient client = new HttpClient();
@@ -79,13 +83,22 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
             string responseBody = await response.Content.ReadAsStringAsync();
             var tenant = JsonConvert.DeserializeObject<List<Tenant>>(responseBody);
-            //Preferences.Set("TenantID", tenant[0].tenantId);
-            //I changed this
-            //Preferences.Set("TenantID", tenant[1].tenantId);
+
             // find a tenant by authentication_event_id
-            foreach(Tenant t in tenant)
+            // In case nothing could be found, just use the first one
+            string tenantId = "";
+            foreach (Tenant t in tenant)
             {
-                if (t.authEventId == _accessToken.authentication_event_id) Preferences.Set("TenantID", t.tenantId);
+                if (t.authEventId == _accessToken.authentication_event_id)
+                    tenantId = t.tenantId;
+            }
+            if (tenantId == "")
+            {
+                Preferences.Set("TenantID", tenant[0].tenantId);
+            }
+            else
+            {
+                Preferences.Set("TenantID", tenantId);
             }
             return true;
         }
@@ -139,7 +152,8 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                     {
                         ContactSQLite contactInDatabase = App.ContactDatabase.GetContactByID(invoiceInDatabase.ContactID);
                         ContactSQLite newContact = App.ContactDatabase.PrepareContactSQLite(_InvoiceResponse.Invoices[i].Contact);
-                        if(contactInDatabase.Address != newContact.Address )
+
+                        if(contactInDatabase.Address != newContact.Address)
                         {
                             App.ContactDatabase.UpdateContactPosition(newContact);
                         }
@@ -242,7 +256,35 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             
             return true;
         }
+        public static async Task<bool> RefreshToken()
+        {
+            var formVariables = new List<KeyValuePair<string, string>>();
+            formVariables.Add(new KeyValuePair<string, string>("grant_type", "refresh_token"));
+            formVariables.Add(new KeyValuePair<string, string>("client_id", XeroSettings.clientID));
+            formVariables.Add(new KeyValuePair<string, string>("refresh_token", Preferences.Get("RefreshToken", string.Empty)));
 
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, @"https://identity.xero.com/connect/token");
+            request.Content = new FormUrlEncodedContent(formVariables);
+
+            var response = await client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+
+            var token = JsonConvert.DeserializeObject<Token>(await response.Content.ReadAsStringAsync());
+            Preferences.Set("AccessToken", token.access_token);
+            Preferences.Set("ExpiresIn", token.expires_in);
+            Preferences.Set("CurrentTime", UnixTime.GetCurrentTime());
+            Preferences.Set("RefreshToken", token.refresh_token);
+
+            DecodeAccessToken();
+            return true;
+        }
         private static async Task<HttpResponseMessage> HttpClientBuilder(RequestType requestType,params string[] identifier)
         {
             string url = @"https://api.xero.com/api.xro/2.0/";
