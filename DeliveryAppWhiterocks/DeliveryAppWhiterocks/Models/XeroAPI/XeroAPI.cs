@@ -124,6 +124,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
                     InvoiceSQLite invoiceSqlite = new InvoiceSQLite()
                     {
+                        InvoiceType = _InvoiceResponse.Invoices[i].Type,
                         InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
                         InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
                         CompletedDeliveryStatus = false,
@@ -138,7 +139,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                     {
                         ContactSQLite contactInDatabase = App.ContactDatabase.GetContactByID(invoiceInDatabase.ContactID);
                         ContactSQLite newContact = App.ContactDatabase.PrepareContactSQLite(_InvoiceResponse.Invoices[i].Contact);
-                        if(contactInDatabase.Address == "" && newContact.Address != "")
+                        if(contactInDatabase.Address != newContact.Address )
                         {
                             App.ContactDatabase.UpdateContactPosition(newContact);
                         }

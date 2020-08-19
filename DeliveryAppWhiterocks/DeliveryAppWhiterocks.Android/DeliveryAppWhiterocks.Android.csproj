@@ -70,7 +70,7 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CachingNativeBitmapDescriptorFactory.cs" />
+    <Compile Include="BitmapConfig.cs" />
     <Compile Include="CustomEntryAndroid.cs" />
     <Compile Include="Data\NetworkConnection.cs" />
     <Compile Include="Data\SQLiteAndroid.cs" />
@@ -136,6 +136,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\currentLocation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\DropOffMarker.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\PickupMarker.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ProjectExtensions>

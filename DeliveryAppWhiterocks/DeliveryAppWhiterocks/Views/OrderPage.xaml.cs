@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -81,9 +80,11 @@ namespace DeliveryAppWhiterocks.Views
                 };
 
                 Invoice invoice = new Invoice() {
+                    Type = invoiceSqlite.InvoiceType,
                     InvoiceID = invoiceSqlite.InvoiceID, 
                     InvoiceNumber =invoiceSqlite.InvoiceNumber, 
-                    Contact = contact
+                    Contact = contact,
+                    TypeColor = contactSqlite.Type == ContactType.Customer ? Constants.IsDropOffColor : Constants.IsPickUpColor
                 };
                 _deliveryOrders.Add(invoice);
             }

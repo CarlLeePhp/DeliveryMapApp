@@ -29,13 +29,7 @@
                        FontSize="Large"
                        FontAttributes="Bold"
                        HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
-                <Image Source="@drawable/location.png"
-                       Grid.Column="2"
-                       HorizontalOptions="Center" Scale="0.9">
-                    <Image.GestureRecognizers>
-                        <TapGestureRecognizer x:Name="TapLocation" Tapped="TapLocation_Tapped"/>
-                    </Image.GestureRecognizers>
-                </Image>
+                
             </Grid>
             <ListView x:Name="ItemsListView"
                       SelectionMode="None"

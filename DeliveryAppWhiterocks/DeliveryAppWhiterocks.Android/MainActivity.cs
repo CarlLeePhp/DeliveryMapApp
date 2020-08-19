@@ -34,7 +34,7 @@ namespace DeliveryAppWhiterocks.Droid
             // Override default BitmapDescriptorFactory by your implementation. 
             var platformConfig = new PlatformConfig
             {
-                BitmapDescriptorFactory = new CachingNativeBitmapDescriptorFactory()
+                BitmapDescriptorFactory = new BitmapConfig()
             };
             Xamarin.FormsGoogleMaps.Init(this, savedInstanceState, platformConfig); // initialize for Xamarin.Forms.GoogleMaps
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);

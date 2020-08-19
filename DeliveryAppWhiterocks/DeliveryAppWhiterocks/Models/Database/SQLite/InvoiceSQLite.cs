@@ -10,6 +10,7 @@ namespace DeliveryAppWhiterocks.Models.Database.SQLite
         [PrimaryKey,Unique]
         public string InvoiceID { get; set; }
         public string InvoiceNumber { get; set; }
+        public string InvoiceType { get; set; }
         public bool CompletedDeliveryStatus { get; set; }
         public string ContactID { get; set; }
         public double Subtotal { get; set; }

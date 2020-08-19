@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 
 namespace DeliveryAppWhiterocks.Models.XeroAPI
@@ -38,7 +39,6 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
         public bool SentToContact { get; set; }
         public string BrandingThemeID { get; set; }
 
-        //fortesting constructor
-
+        public Color TypeColor { get; set; }
     }
 }

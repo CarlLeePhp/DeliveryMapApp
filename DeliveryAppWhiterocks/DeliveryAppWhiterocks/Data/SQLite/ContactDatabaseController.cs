@@ -78,6 +78,7 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 Address = (address.AddressLine1.Trim() + " " + address.AddressLine2.Trim() + " " + address.AddressLine3.Trim() + " " + address.AddressLine4.Trim()).Trim(),
                 City = contact.Addresses[1].City,
                 PostalCode = contact.Addresses[1].PostalCode,
+                Type = contact.IsCustomer ? ContactType.Customer : ContactType.Supplier
             };
 
             return contactSQLite;

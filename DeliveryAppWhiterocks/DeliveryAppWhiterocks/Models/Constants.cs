@@ -18,7 +18,8 @@ namespace DeliveryAppWhiterocks.Models
         public static Color secondaryTextColor = Color.FromHex("ffffff");
         public static Color contrastColor = Color.FromHex("000000");
 
-
+        public static Color IsDropOffColor = Color.FromHex("2b3b46");
+        public static Color IsPickUpColor = Color.FromHex("4e623a");
 
         public static double taxAmount = 0.15;
 
