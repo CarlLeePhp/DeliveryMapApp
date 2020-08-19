@@ -13,6 +13,8 @@ using IdentityModel.Client;
 using IdentityModel.Jwk;
 using DeliveryAppWhiterocks.Models.Database.SQLite;
 using Xamarin.Forms;
+using System.Text.RegularExpressions;
+using Xamarin.Forms.Shapes;
 
 namespace DeliveryAppWhiterocks.Models.XeroAPI
 {
@@ -49,17 +51,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             Preferences.Set("CurrentTime", UnixTime.GetCurrentTime());
             Preferences.Set("RefreshToken", token.refresh_token);
 
-            // decode the access_token to get the authentication_event_id
-
-            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-            if (handler.CanReadToken(token.access_token))
-            {
-                JwtSecurityToken accessToken = handler.ReadJwtToken(token.access_token);
-                JwtPayload myPayload = accessToken.Payload;
-                string myPayloadJSON = myPayload.SerializeToJson();
-                _accessToken = JsonConvert.DeserializeObject<AccessToken>(myPayloadJSON);
-                
-            }
+            DecodeAccessToken();
             return true;
         }
         public static void DecodeAccessToken()
@@ -100,9 +92,14 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                 if (t.authEventId == _accessToken.authentication_event_id)
                     tenantId = t.tenantId;
             }
-            if(tenantId == "") Preferences.Set("TenantID", tenant[0].tenantId);
-            Preferences.Set("TenantID", tenantId);
-
+            if (tenantId == "")
+            {
+                Preferences.Set("TenantID", tenant[0].tenantId);
+            }
+            else
+            {
+                Preferences.Set("TenantID", tenantId);
+            }
             return true;
         }
 
@@ -129,20 +126,58 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             
             for (int i = 0; i < _InvoiceResponse.Invoices.Count; i++)
             {
-                if (App.InvoiceDatabase.CheckIfExisted(_InvoiceResponse.Invoices[i].InvoiceID) == false) {
-                    if(_InvoiceResponse.Invoices[i].Status == "AUTHORISED" || _InvoiceResponse.Invoices[i].Status == "PAID") { 
-                        await FillItems(_InvoiceResponse.Invoices[i], i);
-                        await FillContactAddress(_InvoiceResponse.Invoices[i].Contact, i);
+                InvoiceSQLite invoiceInDatabase = App.InvoiceDatabase.GetInvoiceByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
 
-                        InvoiceSQLite invoiceSqlite = new InvoiceSQLite()
-                        {
-                            InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
-                            InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
-                            CompletedDeliveryStatus = false,
-                            ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
-                            Subtotal = _InvoiceResponse.Invoices[i].SubTotal
-                        };
+                if (invoiceInDatabase != null && invoiceInDatabase.CompletedDeliveryStatus) continue;
+                
+                if (_InvoiceResponse.Invoices[i].Status == "AUTHORISED" || _InvoiceResponse.Invoices[i].Status == "PAID")
+                {
+                    await FillItems(_InvoiceResponse.Invoices[i], i);
+                    await FillContactAddress(_InvoiceResponse.Invoices[i].Contact, i);
+
+                    InvoiceSQLite invoiceSqlite = new InvoiceSQLite()
+                    {
+                        InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
+                        InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
+                        CompletedDeliveryStatus = false,
+                        ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
+                        Subtotal = _InvoiceResponse.Invoices[i].SubTotal
+                    };
+                    
+                    //Insert data normally if the data doesnt exist else check for update
+                    if(invoiceInDatabase == null) { 
                         App.InvoiceDatabase.InsertInvoice(invoiceSqlite, _InvoiceResponse.Invoices[i].LineItems, _InvoiceResponse.Invoices[i].Contact);
+                    } else
+                    {
+                        ContactSQLite contactInDatabase = App.ContactDatabase.GetContactByID(invoiceInDatabase.ContactID);
+                        ContactSQLite newContact = App.ContactDatabase.PrepareContactSQLite(_InvoiceResponse.Invoices[i].Contact);
+                        if(contactInDatabase.Address != newContact.Address)
+                        {
+                            App.ContactDatabase.UpdateContactPosition(newContact);
+                        }
+
+                        foreach(LineItem lineItem in _InvoiceResponse.Invoices[i].LineItems)
+                        {
+                            //check if item already exist, if not add it into database
+                            ItemSQLite itemSQLite = App.ItemDatabase.GetItemByID(lineItem.ItemCode);
+                            if (itemSQLite == null)
+                            {
+                                ItemSQLite newItem = new ItemSQLite()
+                                {
+                                    ItemCode = lineItem.ItemCode,
+                                    Description = lineItem.Description,
+                                    UnitAmount = lineItem.UnitAmount,
+                                    Weight = lineItem.Weight
+                                };
+                                App.ItemDatabase.InsertItem(newItem);
+                            } else if (itemSQLite.UnitAmount != lineItem.UnitAmount || itemSQLite.Weight != lineItem.Weight)
+                            {
+                                itemSQLite.UnitAmount = lineItem.UnitAmount;
+                                itemSQLite.Weight = lineItem.Weight;
+                                itemSQLite.Description = lineItem.Description;
+                                App.ItemDatabase.UpdateItem(itemSQLite);
+                            }
+                        }
                     }
                 }
             }
@@ -163,7 +198,8 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             foreach(LineItem item in _InvoiceResponse.Invoices[i].LineItems)
             {
                 string codeX;
-                //GET WEIGHT HERE
+                double weight = GetWeight(item.Description);
+                item.Weight = weight;
 
                 if (!string.IsNullOrEmpty(item.ItemCode)) { 
                     codeX = item.ItemCode; 
@@ -177,19 +213,16 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
                 if (!itemDictionary.ContainsKey(codeX))
                 {
-
                     //Get Weight from description
                     //has an {itemName " "?} + {number} kg
                     //possible format 20kg , 20 kg , (20kg), (20)kg, (20) kg
-
-                    double weight = GetWeight(item.Description);
                     Stock stock = new Stock(codeX, item.Description, weight, item.Quantity);
                     itemDictionary.Add(codeX, stock);
                 } else
                 {
                     //Get Weight from description
                     itemDictionary[codeX].AddStockQuantity(Convert.ToInt32(item.Quantity));
-                    itemDictionary[codeX].AddStockWeight(0);
+                    itemDictionary[codeX].AddStockWeight(weight);
                 }
             }
             return true;
@@ -197,16 +230,15 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
         public static double GetWeight(string description)
         {
-            double weight = 0;
-            description = description.Trim().ToLower();
-            if (description.Contains("kg"))
+            var weightRaw = Regex.Match(description, @"(\d+(\.\d+)?)|(\.\d+)");
+            if (weightRaw.Success) {
+                double weight = 0;
+                Double.TryParse(weightRaw.ToString(), out weight);
+                return weight;
+            } else
             {
-                int index = description.IndexOf("kg");
-                description = description.Remove(index).Trim();
-                string[] parts = description.Split(' ');
-                weight = double.Parse(parts[parts.Length - 1]);
+                return 0;
             }
-            return weight;
         }  // GetWeight
 
         private static async Task<bool> FillContactAddress(Contact contact, int i)
@@ -222,7 +254,35 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             
             return true;
         }
+        public static async Task<bool> RefreshToken()
+        {
+            var formVariables = new List<KeyValuePair<string, string>>();
+            formVariables.Add(new KeyValuePair<string, string>("grant_type", "refresh_token"));
+            formVariables.Add(new KeyValuePair<string, string>("client_id", XeroSettings.clientID));
+            formVariables.Add(new KeyValuePair<string, string>("refresh_token", Preferences.Get("RefreshToken", string.Empty)));
 
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, @"https://identity.xero.com/connect/token");
+            request.Content = new FormUrlEncodedContent(formVariables);
+
+            var response = await client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+
+            var token = JsonConvert.DeserializeObject<Token>(await response.Content.ReadAsStringAsync());
+            Preferences.Set("AccessToken", token.access_token);
+            Preferences.Set("ExpiresIn", token.expires_in);
+            Preferences.Set("CurrentTime", UnixTime.GetCurrentTime());
+            Preferences.Set("RefreshToken", token.refresh_token);
+
+            DecodeAccessToken();
+            return true;
+        }
         private static async Task<HttpResponseMessage> HttpClientBuilder(RequestType requestType,params string[] identifier)
         {
             string url = @"https://api.xero.com/api.xro/2.0/";

@@ -74,6 +74,7 @@ namespace DeliveryAppWhiterocks.Views
             foreach (KeyValuePair<string, Stock> stock in itemDictionary)
             {
                 Stock stockX = stock.Value;
+                stockX.SetColor();
                 _stockInfo.Add(stockX);
                 totalWeight += stockX.Weight;
             }

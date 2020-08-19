@@ -6,8 +6,8 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 {
     public class AccessToken
     {
-        public int nbf { get; set; }
-        public int exp { get; set; }
+        public long nbf { get; set; }
+        public long exp { get; set; }
         public string iss { get; set; }
         public string aud { get; set; }
         public string client_id { get; set; }

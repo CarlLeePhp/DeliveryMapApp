@@ -55,6 +55,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
+        public InvoiceSQLite GetInvoiceByInvoiceID(string invoiceID)
+        {
+            lock (locker)
+            {
+                return database.Table<InvoiceSQLite>().Where(invoiceX => invoiceX.InvoiceID == invoiceID).FirstOrDefault();
+            }
+        }
+
         public int CountIncompleteInvoices()
         {
             lock (locker)
@@ -93,20 +101,12 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             {
                 database.Insert(invoice);
                 //create LineItem to associate it with the invoice
-
-                if (App.ContactDatabase.CheckContactIfExisted(invoice.ContactID) == false)
+                
+                if (!App.ContactDatabase.CheckContactIfExisted(contact.ContactID))
                 {
-                    Address address = contact.Addresses[1];
-                    ContactSQLite contactSQLite = new ContactSQLite()
-                    {
-                        ContactID = contact.ContactID,
-                        Fullname = contact.Name,
-                        Address = (address.AddressLine1.Trim()+" "+address.AddressLine2.Trim()+" "+address.AddressLine3.Trim()+" "+address.AddressLine4.Trim()).Trim(),
-                        City = contact.Addresses[1].City,
-                        PostalCode = contact.Addresses[1].PostalCode,
-                    };
+                    ContactSQLite contactSQLite = App.ContactDatabase.PrepareContactSQLite(contact);
                     App.ContactDatabase.InsertContact(contactSQLite);
-                }
+                } 
 
                 foreach(LineItem item in lineitem) {
                     //sort desc by ID, get the first one (biggest id number)
@@ -123,8 +123,9 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                     //Save to db
                     App.LineItemDatabase.InsertLineItem(lineItemSQLite);
 
+                    
                     //check if item already exist, if not add it into database
-                    if(App.ItemDatabase.CheckIfExisted(item.ItemCode) == false)
+                    if (!App.ItemDatabase.CheckIfExisted(item.ItemCode))
                     {
                         ItemSQLite newItem = new ItemSQLite()
                         {
@@ -134,10 +135,11 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                             Weight = item.Weight
                         };
                         App.ItemDatabase.InsertItem(newItem);
-                    }
+                    } 
                 }
             }
         }
+
         public void UpdateInvoiceStatus(InvoiceSQLite invoice)
         {
             lock (locker)

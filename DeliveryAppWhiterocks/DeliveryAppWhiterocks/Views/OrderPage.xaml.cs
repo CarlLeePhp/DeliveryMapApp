@@ -25,7 +25,6 @@ namespace DeliveryAppWhiterocks.Views
             //App.Current.MainPage = this;
             Init();
             _deliveryOrders = new ObservableCollection<Invoice>();
-            //SupplyOrder();
 
             
         }
@@ -103,32 +102,44 @@ namespace DeliveryAppWhiterocks.Views
         //Get data from XERO API
         private async void LoadDeliveryBtn_Clicked(object sender, EventArgs e)
         {
+            if (!App.CheckIfInternet())
+            {
+                await DisplayAlert("Oops", "No internet connection, couldn't load data from XERO", "OK");
+                return;
+            }
             // no access token in Preferences: first run -> login
             // more than 30 days -> login
             // more than 30 mins -> get new access token
             // otherwise -> get data directly
             XeroAPI.DecodeAccessToken();
-            if (XeroAPI._accessToken != null)
-            {
-                long currentUnixTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                if(currentUnixTimeStamp - XeroAPI._accessToken.nbf > 1800 && currentUnixTimeStamp - XeroAPI._accessToken.nbf < 30 * 24 * 3600)
-                {
-                    // get a new access token
-                }
+            long currentUnixTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-                await DisplayAlert("Login Time", XeroAPI._accessToken.nbf.ToString(), "OK");
+            if(XeroAPI._accessToken == null || currentUnixTimeStamp - XeroAPI._accessToken.nbf >= 30 * 24 * 3600)
+            {
+                await Navigation.PushModalAsync(new XEROWebPage());
+                GridOverlay.IsVisible = false;
             }
-            
-            
-            
-            //if (App.CheckIfInternet()) {
-            //    await Navigation.PushModalAsync(new XEROWebPage());
-            //    GridOverlay.IsVisible = false;
-                
-            //} else
-            //{
-            //    await DisplayAlert("Oops", "No internet connection, couldn't load data from XERO", "OK");
-            //}
+            else if (currentUnixTimeStamp - XeroAPI._accessToken.nbf > 1800)
+            {
+                // get a new access token
+                await XeroAPI.RefreshToken();
+                await XeroAPI.GetInvoices();
+                await XeroAPI.FillData();
+
+                await DisplayAlert("Xero API", "You got a new access Token", "OK");
+            }
+            else
+            {
+                // get the data by the access token;
+                await XeroAPI.GetInvoices();
+                await XeroAPI.FillData();
+                await DisplayAlert("Xero API", "You got the data", "OK");
+            }
+
+            SupplyOrder();
+            CheckHasDataLabel();
+
+
         }
 
         private void GetDirectionBtn_Clicked(object sender, EventArgs e)

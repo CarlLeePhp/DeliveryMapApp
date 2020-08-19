@@ -1,4 +1,5 @@
 ﻿using DeliveryAppWhiterocks.Models.Database.SQLite;
+using DeliveryAppWhiterocks.Models.XeroAPI;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -63,6 +64,23 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             {
                 database.DeleteAll<ContactSQLite>();
             }
+        }
+
+
+
+        public ContactSQLite PrepareContactSQLite(Contact contact)
+        {
+            Address address = contact.Addresses[1];
+            ContactSQLite contactSQLite = new ContactSQLite()
+            {
+                ContactID = contact.ContactID,
+                Fullname = contact.Name,
+                Address = (address.AddressLine1.Trim() + " " + address.AddressLine2.Trim() + " " + address.AddressLine3.Trim() + " " + address.AddressLine4.Trim()).Trim(),
+                City = contact.Addresses[1].City,
+                PostalCode = contact.Addresses[1].PostalCode,
+            };
+
+            return contactSQLite;
         }
     }
 }

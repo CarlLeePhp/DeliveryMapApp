@@ -55,5 +55,13 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 database.DeleteAll<ItemSQLite>();
             }
         }
+
+        public void UpdateItem(ItemSQLite item)
+        {
+            lock (locker)
+            {
+                database.Update(item);
+            }
+        }
     }
 }

@@ -50,7 +50,6 @@ namespace DeliveryAppWhiterocks
 
         public void loadLocalData()
         {
-            
             App.InvoiceDatabase.DeleteAllInvoices();
             App.LineItemDatabase.DeleteAllLineItems();
             App.ContactDatabase.DeleteAllContacts();
