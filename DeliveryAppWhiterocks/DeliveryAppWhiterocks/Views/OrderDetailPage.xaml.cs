@@ -39,9 +39,11 @@ namespace DeliveryAppWhiterocks.Views
                 PageHeaderLabel.Text = _selectedInvoice.InvoiceNumber;
             }
 
+            PageHeaderLabel.Text += _selectedInvoice.Type == "ACCPAY" ? " - Pickup" : " - Dropoff";
+
             customerNameLabel.Text = _selectedInvoice.Contact.Name;
             customerAddressLabel.Text = $"{_selectedInvoice.Contact.Addresses[1].AddressLine1}, {_selectedInvoice.Contact.Addresses[1].City}";
-            
+
             App.CheckInternetIfConnected(noInternetLbl, this);
         }
 
@@ -109,13 +111,14 @@ namespace DeliveryAppWhiterocks.Views
                 {
                     _selectedInvoice.Status = "Completed";
                     CompletedOrderButton.Text = "Mark as incomplete";
-                    PageHeaderLabel.Text += " Completed";
+                    PageHeaderLabel.Text = $"{_selectedInvoice.InvoiceNumber} Completed";
                 }
-                
             }
+            PageHeaderLabel.Text += _selectedInvoice.Type == "ACCPAY" ? " - Pickup" : " - Dropoff";
             if (userAction)
             {
                 InvoiceSQLite invoice = new InvoiceSQLite();
+                invoice.InvoiceType = _selectedInvoice.Type;
                 invoice.InvoiceID = _selectedInvoice.InvoiceID;
                 invoice.InvoiceNumber = _selectedInvoice.InvoiceNumber;
                 invoice.CompletedDeliveryStatus = (_selectedInvoice.Status == "Completed");

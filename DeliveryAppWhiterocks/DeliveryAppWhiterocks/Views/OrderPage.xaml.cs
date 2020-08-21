@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -80,9 +79,11 @@ namespace DeliveryAppWhiterocks.Views
                 };
 
                 Invoice invoice = new Invoice() {
+                    Type = invoiceSqlite.InvoiceType,
                     InvoiceID = invoiceSqlite.InvoiceID, 
                     InvoiceNumber =invoiceSqlite.InvoiceNumber, 
-                    Contact = contact
+                    Contact = contact,
+                    TypeColor = contactSqlite.Type == ContactType.Customer ? Constants.IsDropOffColor : Constants.IsPickUpColor
                 };
                 _deliveryOrders.Add(invoice);
             }
@@ -148,10 +149,6 @@ namespace DeliveryAppWhiterocks.Views
 
             SupplyOrder();
             CheckHasDataLabel();
-
-            await DisplayAlert("InvoiceResponse", string.Format("ID: {0} Status:{1} Provider Name: {2} DataTime: {3}",
-                XeroAPI._InvoiceResponse.Id, XeroAPI._InvoiceResponse.Status, XeroAPI._InvoiceResponse.ProviderName, XeroAPI._InvoiceResponse.DateTimeUTC.ToString()
-                ), "OK");
 
         }
 

@@ -6,6 +6,7 @@ using System.Text;
 using DeliveryAppWhiterocks.Models.XeroAPI;
 using DeliveryAppWhiterocks.Models.Database.SQLite;
 using Xamarin.Forms;
+using DeliveryAppWhiterocks.Models;
 
 namespace DeliveryAppWhiterocks.ViewModels
 {
@@ -55,10 +56,12 @@ namespace DeliveryAppWhiterocks.ViewModels
 
                 Invoice invoice = new Invoice()
                 {
+                    Type = invoiceSqlite.InvoiceType,
                     InvoiceID = invoiceSqlite.InvoiceID,
                     InvoiceNumber = invoiceSqlite.InvoiceNumber,
                     Contact = contact,
-                    Status = "Completed"
+                    Status = "Completed",
+                    TypeColor = contactSqlite.Type == ContactType.Customer ? Constants.IsDropOffColor : Constants.IsPickUpColor
                 };
                 _deliveryOrders.Add(invoice);
             }

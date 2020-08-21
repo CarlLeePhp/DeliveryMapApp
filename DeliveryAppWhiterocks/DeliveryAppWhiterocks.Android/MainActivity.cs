@@ -7,7 +7,7 @@ using Xamarin.Forms.GoogleMaps.Android;
 
 namespace DeliveryAppWhiterocks.Droid
 {
-    [Activity(Label = "DeliveryAppWhiterocks", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "Whiterocks Delivery", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         const int RequestLocationId = 0;
@@ -34,7 +34,7 @@ namespace DeliveryAppWhiterocks.Droid
             // Override default BitmapDescriptorFactory by your implementation. 
             var platformConfig = new PlatformConfig
             {
-                BitmapDescriptorFactory = new CachingNativeBitmapDescriptorFactory()
+                BitmapDescriptorFactory = new BitmapConfig()
             };
             Xamarin.FormsGoogleMaps.Init(this, savedInstanceState, platformConfig); // initialize for Xamarin.Forms.GoogleMaps
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);

@@ -45,15 +45,15 @@ namespace DeliveryAppWhiterocks
             loadLocalData();
             await Task.Delay(7000);
             //await this.Navigation.PushAsync(new LoginPage());
-            await this.Navigation.PushAsync(new OrderPage ());
+            await this.Navigation.PushAsync(new OrderPage());
         }
 
         public void loadLocalData()
         {
-            App.InvoiceDatabase.DeleteAllInvoices();
-            App.LineItemDatabase.DeleteAllLineItems();
-            App.ContactDatabase.DeleteAllContacts();
-            App.ItemDatabase.DeleteAllItems();
+            //App.InvoiceDatabase.DeleteAllInvoices();
+            //App.LineItemDatabase.DeleteAllLineItems();
+            //App.ContactDatabase.DeleteAllContacts();
+            //App.ItemDatabase.DeleteAllItems();
         }
     }
 }

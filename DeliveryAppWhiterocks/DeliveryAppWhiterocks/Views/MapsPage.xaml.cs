@@ -22,8 +22,6 @@ namespace DeliveryAppWhiterocks.Views
     public partial class MapsPage : ContentPage
     {
         List<string> _waypoints = new List<string>();
-        
-        
 
         //properties for sliding up menu
         
@@ -282,8 +280,10 @@ namespace DeliveryAppWhiterocks.Views
                         Position = position,
                         Label = $"{invoice.InvoiceNumber}",
                         //set tag so i can reference it when a pin is clicked
-                        Tag = invoice
+                        Tag = invoice,
+                        Icon = BitmapDescriptorFactory.FromBundle(invoice.InvoiceType),
                     };
+                    
                     _pins.Add(pin);
 
                     map.SelectedPinChanged += Map_SelectedPinChanged;
