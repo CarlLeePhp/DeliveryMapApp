@@ -15,6 +15,8 @@ using DeliveryAppWhiterocks.Models.Database.SQLite;
 using Xamarin.Forms;
 using System.Text.RegularExpressions;
 using Xamarin.Forms.Shapes;
+using System.Linq;
+using Xero.NetStandard.OAuth2.Model.Accounting;
 
 namespace DeliveryAppWhiterocks.Models.XeroAPI
 {
@@ -158,7 +160,9 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                             App.ContactDatabase.UpdateContactPosition(newContact);
                         }
 
-                        foreach(LineItem lineItem in _InvoiceResponse.Invoices[i].LineItems)
+                        List<LineItemSQLite> lineItemSQLiteList = App.LineItemDatabase.GetLineItemByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
+                        
+                        foreach (LineItem lineItem in _InvoiceResponse.Invoices[i].LineItems)
                         {
                             //check if item already exist, if not add it into database
                             ItemSQLite itemSQLite = App.ItemDatabase.GetItemByID(lineItem.ItemCode);
@@ -168,18 +172,27 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                                 {
                                     ItemCode = lineItem.ItemCode,
                                     Description = lineItem.Description,
-                                    UnitAmount = lineItem.UnitAmount,
                                     Weight = lineItem.Weight
                                 };
                                 App.ItemDatabase.InsertItem(newItem);
-                            } else if (itemSQLite.UnitAmount != lineItem.UnitAmount || itemSQLite.Weight != lineItem.Weight)
+                            } else if (itemSQLite.Weight != lineItem.Weight)
                             {
-                                itemSQLite.UnitAmount = lineItem.UnitAmount;
                                 itemSQLite.Weight = lineItem.Weight;
                                 itemSQLite.Description = lineItem.Description;
                                 App.ItemDatabase.UpdateItem(itemSQLite);
                             }
+
+                            LineItemSQLite lineItemSQLite = lineItemSQLiteList.Where(lineItemX => lineItemX.ItemCode == lineItem.ItemCode).FirstOrDefault();
+                            if (lineItemSQLite == null) continue;
+                            if (lineItemSQLite.UnitAmount != lineItem.UnitAmount || lineItemSQLite.Quantity != lineItemSQLite.Quantity)
+                            {
+                                lineItemSQLite.UnitAmount = lineItem.UnitAmount;
+                                lineItemSQLite.Quantity = (int)lineItem.Quantity;
+                                App.LineItemDatabase.UpdateLineItem(lineItemSQLite);
+                            }
                         }
+
+                        
                     }
                 }
             }

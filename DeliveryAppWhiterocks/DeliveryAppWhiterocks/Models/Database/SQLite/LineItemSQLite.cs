@@ -12,5 +12,6 @@ namespace DeliveryAppWhiterocks.Models.Database.SQLite
         public string InvoiceID { get; set; }
         public string ItemCode { get; set; }
         public int Quantity { get; set; }
+        public double UnitAmount { get; set; }
     }
 }

@@ -115,10 +115,11 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                     LineItemSQLite lineItemSQLite = new LineItemSQLite()
                     {
                         // if it's not set set the itemline id to 1 else increment 1 from the biggest value
-                        ItemLineID = (maxItemLineID == null ? 1 : maxItemLineID.ItemLineID +1),
+                        ItemLineID = (maxItemLineID == null ? 1 : maxItemLineID.ItemLineID + 1),
                         InvoiceID = invoice.InvoiceID,
                         ItemCode = item.ItemCode,
-                        Quantity = (int)item.Quantity
+                        Quantity = (int)item.Quantity,
+                        UnitAmount = item.UnitAmount,
                     };
                     //Save to db
                     App.LineItemDatabase.InsertLineItem(lineItemSQLite);
@@ -131,7 +132,6 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                         {
                             ItemCode = item.ItemCode,
                             Description = item.Description,
-                            UnitAmount = item.UnitAmount,
                             Weight = item.Weight
                         };
                         App.ItemDatabase.InsertItem(newItem);
