@@ -139,8 +139,6 @@ namespace DeliveryAppWhiterocks.Views
 
             SupplyOrder();
             CheckHasDataLabel();
-
-
         }
 
         private void GetDirectionBtn_Clicked(object sender, EventArgs e)
