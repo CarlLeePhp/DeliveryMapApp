@@ -61,8 +61,8 @@ namespace DeliveryAppWhiterocks.Views
                 {
                     Description = itemSql.Description,
                     Quantity = lineItemsSql.Quantity,
-                    UnitAmount = itemSql.UnitAmount,
-                    TotalAmount = lineItemsSql.Quantity * itemSql.UnitAmount
+                    UnitAmount = lineItemsSql.UnitAmount,
+                    TotalAmount = lineItemsSql.Quantity * lineItemsSql.UnitAmount
                 };
                 itemsSubtotal += item.TotalAmount;
                 _itemsCollection.Add(item);

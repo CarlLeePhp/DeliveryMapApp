@@ -52,5 +52,13 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 return database.Table<LineItemSQLite>().OrderByDescending(lineItemX => lineItemX.ItemLineID).FirstOrDefault();
             }
         }
+
+        public void UpdateLineItem(LineItemSQLite lineItemSQLite)
+        {
+            lock (locker)
+            {
+                database.Update(lineItemSQLite);
+            }
+        }
     }
 }
