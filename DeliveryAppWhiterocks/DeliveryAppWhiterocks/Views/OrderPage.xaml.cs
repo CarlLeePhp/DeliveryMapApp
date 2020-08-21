@@ -102,6 +102,16 @@ namespace DeliveryAppWhiterocks.Views
         //Get data from XERO API
         private async void LoadDeliveryBtn_Clicked(object sender, EventArgs e)
         {
+            // test data
+            // Get invoice
+            // _InvoiceResponse = JsonConvert.DeserializeObject<InvoiceResponse>(responseBody);
+
+            //XeroAPI._InvoiceResponse = new InvoiceResponse();
+            //XeroAPI._InvoiceResponse.Id = "b0379bbd-a973-acd5-81a37798b2ab";
+            //XeroAPI._InvoiceResponse.Status = "OK";
+            //XeroAPI._InvoiceResponse.ProviderName = "WhiterocksStudAndFeed";
+            //XeroAPI._InvoiceResponse.DateTimeUTC = DateTime.UtcNow;
+
             if (!App.CheckIfInternet())
             {
                 await DisplayAlert("Oops", "No internet connection, couldn't load data from XERO", "OK");
@@ -139,6 +149,9 @@ namespace DeliveryAppWhiterocks.Views
             SupplyOrder();
             CheckHasDataLabel();
 
+            await DisplayAlert("InvoiceResponse", string.Format("ID: {0} Status:{1} Provider Name: {2} DataTime: {3}",
+                XeroAPI._InvoiceResponse.Id, XeroAPI._InvoiceResponse.Status, XeroAPI._InvoiceResponse.ProviderName, XeroAPI._InvoiceResponse.DateTimeUTC.ToString()
+                ), "OK");
 
         }
 
