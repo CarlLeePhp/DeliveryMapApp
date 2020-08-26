@@ -40,6 +40,8 @@ namespace DeliveryAppWhiterocks.Views
         {
             NavigationPage.SetHasNavigationBar(this, false);
             App.CheckInternetIfConnected(noInternetLbl, this);
+           
+            
         }
 
         private void CheckHasDataLabel()
@@ -102,6 +104,7 @@ namespace DeliveryAppWhiterocks.Views
         //Get data from XERO API
         private async void LoadDeliveryBtn_Clicked(object sender, EventArgs e)
         {
+            
             if (!App.CheckIfInternet())
             {
                 await DisplayAlert("Oops", "No internet connection, couldn't load data from XERO", "OK");
@@ -138,6 +141,7 @@ namespace DeliveryAppWhiterocks.Views
 
             SupplyOrder();
             CheckHasDataLabel();
+
         }
 
         private void GetDirectionBtn_Clicked(object sender, EventArgs e)
@@ -165,6 +169,11 @@ namespace DeliveryAppWhiterocks.Views
         private void TapPickup_Tapped(object sender, EventArgs e)
         {
             Navigation.PushModalAsync(new AddPickupPage());
+        }
+
+        private void TapSetting_Tapped(object sender, EventArgs e)
+        {
+            Navigation.PushModalAsync(new SettingPage());
         }
 
         private void DeliveryInvoice_SelectionChanged(object sender, SelectionChangedEventArgs e)

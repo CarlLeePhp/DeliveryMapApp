@@ -7,7 +7,7 @@ using Xamarin.Forms.GoogleMaps.Android;
 
 namespace DeliveryAppWhiterocks.Droid
 {
-    [Activity(Label = "DeliveryAppWhiterocks", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "Whiterocks Delivery", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         const int RequestLocationId = 0;

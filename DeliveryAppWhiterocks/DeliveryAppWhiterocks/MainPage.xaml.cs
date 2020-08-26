@@ -44,8 +44,7 @@ namespace DeliveryAppWhiterocks
             base.OnAppearing();
             loadLocalData();
             await Task.Delay(7000);
-            //await this.Navigation.PushAsync(new LoginPage());
-            await this.Navigation.PushAsync(new OrderPage());
+            Application.Current.MainPage = new NavigationPage(new OrderPage());
         }
 
         public void loadLocalData()

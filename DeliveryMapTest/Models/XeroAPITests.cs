@@ -11,13 +11,6 @@ namespace DeliveryMapTest.Models
         }
 
         [Test]
-        public void Test1()
-        {
-            string result = XeroAPI.Hello();
-            Assert.AreEqual("Hello", result);
-        }
-
-        [Test]
         public void GetWeightTest()
         {
             double weight = XeroAPI.GetWeight("Apple Pie 23kg");
