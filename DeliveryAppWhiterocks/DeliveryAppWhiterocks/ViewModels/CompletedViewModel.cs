@@ -61,7 +61,7 @@ namespace DeliveryAppWhiterocks.ViewModels
                     InvoiceNumber = invoiceSqlite.InvoiceNumber,
                     Contact = contact,
                     Status = "Completed",
-                    TypeColor = contactSqlite.Type == ContactType.Customer ? Constants.IsDropOffColor : Constants.IsPickUpColor
+                    TypeColor = invoiceSqlite.InvoiceType == "ACCREC" ? Constants.IsDropOffColor : Constants.IsPickUpColor
                 };
                 _deliveryOrders.Add(invoice);
             }

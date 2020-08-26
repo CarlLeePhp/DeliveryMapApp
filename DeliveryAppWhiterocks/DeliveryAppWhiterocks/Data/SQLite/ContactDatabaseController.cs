@@ -42,11 +42,27 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
+        public List<ContactSQLite> GetAllContact()
+        {
+            lock (locker)
+            {
+                return database.Table<ContactSQLite>().ToList();
+            }
+        }
+
         public ContactSQLite GetContactByID(string contactID)
         {
             lock (locker)
             {
                 return database.Table<ContactSQLite>().Where(contact => contact.ContactID == contactID).FirstOrDefault();
+            }
+        }
+
+        public ContactSQLite GetContactByName(string fullName)
+        {
+            lock (locker)
+            {
+                return database.Table<ContactSQLite>().Where(contact => contact.Fullname == fullName).FirstOrDefault();
             }
         }
 
@@ -65,8 +81,6 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 database.DeleteAll<ContactSQLite>();
             }
         }
-
-
 
         public ContactSQLite PrepareContactSQLite(Contact contact)
         {

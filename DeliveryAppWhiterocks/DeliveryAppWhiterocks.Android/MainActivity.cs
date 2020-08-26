@@ -29,9 +29,9 @@ namespace DeliveryAppWhiterocks.Droid
             base.OnCreate(savedInstanceState);
             Xamarin.Forms.Forms.SetFlags("Expander_Experimental");
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
 
-            // Override default BitmapDescriptorFactory by your implementation. 
+            //Override default BitmapDescriptorFactory, 
+            //the bitmap config will create a custom marker renderer in maps page depending on 
             var platformConfig = new PlatformConfig
             {
                 BitmapDescriptorFactory = new BitmapConfig()

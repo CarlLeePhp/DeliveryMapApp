@@ -79,6 +79,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
+        public int CountPickupInvoice()
+        {
+            lock (locker)
+            {
+                return database.Table<InvoiceSQLite>().Count(invoiceX => invoiceX.InvoiceNumber.StartsWith("OPC-"));
+            }
+        }
+
 
         public bool CheckIfExisted(string InvoiceID)
         {
@@ -92,6 +100,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 {
                     return true;
                 }
+            }
+        }
+
+        public void InsertInvoice(InvoiceSQLite invoice)
+        {
+            lock (locker)
+            {
+                database.Insert(invoice);
             }
         }
 
@@ -132,13 +148,15 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                         {
                             ItemCode = item.ItemCode,
                             Description = item.Description,
-                            Weight = item.Weight
+                            Weight = item.Weight,
+                            UnitCost = invoice.InvoiceType == "ACCPAY" ? item.UnitAmount : 0
                         };
                         App.ItemDatabase.InsertItem(newItem);
                     } 
                 }
             }
         }
+
 
         public void UpdateInvoiceStatus(InvoiceSQLite invoice)
         {

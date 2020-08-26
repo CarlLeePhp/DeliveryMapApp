@@ -2,61 +2,113 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:forms="clr-namespace:dotMorten.Xamarin.Forms;assembly=dotMorten.Xamarin.Forms.AutoSuggestBox"
              mc:Ignorable="d"
-             x:Class="DeliveryAppWhiterocks.Views.AddPickupPage">
+             x:Class="DeliveryAppWhiterocks.Views.AddPickupPage"
+             >
     <ContentPage.Content>
-        <Grid ColumnSpacing="0"
+
+        <ScrollView >
+
+            <StackLayout>
+
+                <Grid ColumnSpacing="0"
                   HorizontalOptions="FillAndExpand"
                   VerticalOptions="Start"
                   RowSpacing="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="0.2*"/>
-                <RowDefinition Height="20"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="8*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-
-            <!--TopHeader Nav-->
-            <StackLayout BackgroundColor="Black" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
-                <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="25"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="0.2*"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="0.8*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"></ColumnDefinition>
                         <ColumnDefinition Width="8*"></ColumnDefinition>
                         <ColumnDefinition Width="1*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalTextAlignment="Center" x:Name="noInternetLbl" FontAttributes="Bold" HorizontalTextAlignment="Center" BackgroundColor="Red" TextColor="White"></Label>
 
-                    <Image Grid.Column="0" Grid.Row="1" Margin="15,15,0,0" HeightRequest="50" WidthRequest="50" x:Name="appIconImg" Source="@drawable/close.png">
-                        <!--Add Tap Event-->
-                        <Image.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="ImgMenu" Command="{Binding CloseCommand}"/>
-                        </Image.GestureRecognizers>
-                    </Image>
+                    <!--TopHeader Nav-->
+                    <StackLayout BackgroundColor="Black" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="25"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="8*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalTextAlignment="Center" x:Name="noInternetLbl" FontAttributes="Bold" HorizontalTextAlignment="Center" BackgroundColor="Red" TextColor="White"></Label>
+                            <Image Grid.Column="0" Grid.Row="1" Margin="15,15,0,0" HeightRequest="16" MinimumHeightRequest="16" x:Name="appIconImg" Source="@drawable/close.png">
+                                <!--Add Tap Event-->
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="ImgMenu" Tapped="ImgMenu_Tapped"/>
+                                </Image.GestureRecognizers>
+                            </Image>
+                            <Label Grid.Row="1" Grid.Column="1" Margin="0,15,0,0" HorizontalOptions="Center" VerticalOptions="End" VerticalTextAlignment="End" FontAttributes="Bold" FontSize="26" TextColor="White">Add Pickup</Label>
+                        </Grid>
+                    </StackLayout>
 
-                    <Label Grid.Row="1" Grid.Column="1" Margin="0,15,0,0" HorizontalOptions="Center" VerticalOptions="End" VerticalTextAlignment="End" FontAttributes="Bold" FontSize="26" TextColor="White">Add Pickup</Label>
+                    <StackLayout Grid.Row="1" Grid.Column="1" Padding="0,25,0,0" Spacing="0">
+                        <StackLayout VerticalOptions="Fill">
+                            <ListView x:Name="ItemsListView" SelectionMode="Single" HeightRequest="90" ItemAppearing="ItemsListView_ItemAppearing" CachingStrategy="RecycleElement" RowHeight="50" SeparatorColor="Silver">
+                                <ListView.Header>
+                                    <StackLayout>
+                                        <Grid Margin="20,10,20,10">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto"></RowDefinition>
+                                                <RowDefinition Height="auto"></RowDefinition>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="0.6*"></ColumnDefinition>
+                                                <ColumnDefinition Width="0.2*"></ColumnDefinition>
+                                                <ColumnDefinition Width="0.2*"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Row="0" Grid.Column="0" TextColor="#B00905" FontSize="Medium" Text="Item Description"></Label>
+                                            <Label Grid.Row="0" Grid.Column="1" TextColor="#B00905" FontSize="Medium" Text="Price"></Label>
+                                            <Label Grid.Row="0" Grid.Column="2" TextColor="#B00905" FontSize="Medium" Text="Qty"></Label>
+                                        </Grid>
+                                        <BoxView Grid.Row="1" Grid.ColumnSpan="3" HeightRequest="1" Color="#80574D"></BoxView>
+                                    </StackLayout>
+                                </ListView.Header>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <ViewCell>
+                                            <Grid Margin="20,0,20,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="0.6*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="0.2*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="0.2*"></ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+                                                <Label Grid.Column="0" FontSize="Medium" Text="{Binding Description}"></Label>
+                                                <Label Grid.Column="1" FontSize="Medium" Text="{Binding UnitAmount}"></Label>
+                                                <Label Grid.Column="2" FontSize="Medium" Text="{Binding Quantity}"></Label>
+                                            </Grid>
+                                        </ViewCell>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackLayout>
+                    </StackLayout>
+
+                    <StackLayout Grid.Row="2" Grid.Column="1" Margin="0,0,0,80" Spacing="20">
+                        <Frame HasShadow="True" Padding="25" Margin="0,30,0,0">
+                            <StackLayout>
+                                <Label Text="Pickup Information" FontAttributes="Bold" FontSize="Title" HorizontalOptions="Center" TextColor="#CE0B06" />
+                                <forms:AutoSuggestBox x:Name="ContactAutoSuggestBox" PlaceholderText="Contact Name" WidthRequest="200"
+                                TextChanged="ContactAutoSuggestBox_TextChanged" SuggestionChosen="ContactAutoSuggestBox_SuggestionChosen"/>
+                                <Entry x:Name="AddressEntry" Placeholder="Pickup Address"></Entry>
+                                <Entry x:Name="CityEntry" Placeholder="Pickup City"></Entry>
+                                <Button x:Name="AddItemButton" Text="Add Pickup Item" TextColor="White" FontAttributes="Bold" BackgroundColor="#5cb85c" CornerRadius="5" Clicked="AddItemButton_Clicked"></Button>
+                                <Button IsVisible="false" x:Name="DeleteAllItemButton" Text="Clear Items" TextColor="Black" FontAttributes="Bold" BackgroundColor="#FFFFFF" BorderColor="Silver" BorderWidth="1" CornerRadius="5" Clicked="DeleteAllItemButton_Clicked"></Button>
+                            </StackLayout>
+                        </Frame>
+                        <Button Text="Save" TextColor="White" BackgroundColor="#CE0B06" x:Name="SavePickupButton" Clicked="SavePickupButton_Clicked"/>
+                    </StackLayout>
                 </Grid>
             </StackLayout>
-
-
-            <StackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Spacing="20" Margin="25">
-                <Frame HasShadow="True" Padding="25" Margin="0,30,0,0">
-                    <StackLayout>
-                        <Label Text="Supplier Information" FontAttributes="Bold" FontSize="Title" HorizontalOptions="Center" TextColor="#CE0B06" />
-                        <Entry Placeholder="Full Name" PlaceholderColor="#80574D" TextColor="#80574D" x:Name="EntryName" Keyboard="Text" />
-                        <Entry Placeholder="Address" PlaceholderColor="#80574D" TextColor="#80574D" x:Name="EntryAddress" Keyboard="Text" />
-                    </StackLayout>
-                </Frame>
-                <Button Text="Save" TextColor="White" BackgroundColor="#CE0B06" x:Name="SavePickupButton" />
-            </StackLayout>
-        </Grid>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

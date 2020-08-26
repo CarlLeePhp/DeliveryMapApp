@@ -24,8 +24,6 @@ namespace DeliveryAppWhiterocks.Views
             //App.Current.MainPage = this;
             Init();
             _deliveryOrders = new ObservableCollection<Invoice>();
-
-            
         }
 
         public string Hello()
@@ -83,10 +81,11 @@ namespace DeliveryAppWhiterocks.Views
                     InvoiceID = invoiceSqlite.InvoiceID, 
                     InvoiceNumber =invoiceSqlite.InvoiceNumber, 
                     Contact = contact,
-                    TypeColor = contactSqlite.Type == ContactType.Customer ? Constants.IsDropOffColor : Constants.IsPickUpColor
+                    TypeColor = invoiceSqlite.InvoiceType == "ACCREC" ? Constants.IsDropOffColor : Constants.IsPickUpColor
                 };
                 _deliveryOrders.Add(invoice);
             }
+            _deliveryOrders.Reverse();
             DeliveryInvoice.ItemsSource = _deliveryOrders;
         }
 
@@ -161,6 +160,11 @@ namespace DeliveryAppWhiterocks.Views
         private void TapFinish_Tapped(object sender, EventArgs e)
         {
             Navigation.PushModalAsync(new CompletedPage());
+        }
+
+        private void TapPickup_Tapped(object sender, EventArgs e)
+        {
+            Navigation.PushModalAsync(new AddPickupPage());
         }
 
         private void DeliveryInvoice_SelectionChanged(object sender, SelectionChangedEventArgs e)

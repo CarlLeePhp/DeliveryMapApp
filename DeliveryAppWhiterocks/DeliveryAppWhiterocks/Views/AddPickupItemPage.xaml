@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:forms="clr-namespace:dotMorten.Xamarin.Forms;assembly=dotMorten.Xamarin.Forms.AutoSuggestBox"
+             mc:Ignorable="d"
+             x:Class="DeliveryAppWhiterocks.Views.AddPickupItemPage">
+    <ContentPage.Content>
+        
+       
+        <Grid ColumnSpacing="0"
+                  HorizontalOptions="FillAndExpand"
+                  VerticalOptions="Start"
+                  RowSpacing="0">
+            <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="8*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+
+                <StackLayout Spacing="5" Orientation="Vertical">
+                    <!--No internet label-->
+                    <StackLayout HeightRequest="25">
+                        <Label VerticalTextAlignment="Center" x:Name="noInternetLbl" FontAttributes="Bold" HorizontalTextAlignment="Center" BackgroundColor="Red" TextColor="White"></Label>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                           <Image Source="close"
+                           HeightRequest="50"
+                           WidthRequest="50"
+                           Margin="20,10,10,0"
+                           VerticalOptions="Start"
+                           HorizontalOptions="Start">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer x:Name="TapBack" Tapped="TapBack_Tapped"/>
+                            </Image.GestureRecognizers>
+                        </Image>
+                    </StackLayout>
+                </StackLayout>
+            </Grid>
+
+            <StackLayout Grid.Row="1" Grid.Column="1">
+                <Frame HasShadow="True" Padding="25" Margin="0,30,0,0">
+                    <StackLayout>
+                        <Label x:Name="AddItemHeaderLabel" Text="Add Item" FontAttributes="Bold" FontSize="Title" HorizontalOptions="Center" TextColor="#CE0B06" />
+                    </StackLayout>
+                </Frame>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Item Name" FontSize="Subtitle" Margin="5,30,0,0" TextColor="#CE0B06"></Label>
+                    <forms:AutoSuggestBox x:Name="ItemAutoSuggestBox" Margin="0,0,0,0" PlaceholderText="Item Name"
+                                TextChanged="ItemAutoSuggestBox_TextChanged" SuggestionChosen="ItemAutoSuggestBox_SuggestionChosen"/>
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+                        <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
+                            <Label Text="Quantity" FontSize="Subtitle" Margin="5,30,0,0" TextColor="#CE0B06"></Label>
+                            <Entry x:Name="QuantityEntry" TextChanged="Quantity_TextChanged" Placeholder="0" ></Entry>
+                        </StackLayout>
+                        <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
+                            <Label Text="Unit Price - NZD" FontSize="Subtitle" Margin="5,30,0,0" TextColor="#CE0B06"></Label>
+                            <Entry x:Name="UnitPriceEntry" TextChanged="UnitPrice_TextChanged" Placeholder="e.g. 45.45"></Entry>
+                        </StackLayout>
+                        <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
+                            <Label Text="Unit Weight - Kg" FontSize="Subtitle" Margin="5,30,0,0" TextColor="#CE0B06"></Label>
+                            <Entry x:Name="WeightEntry" TextChanged="Weight_TextChanged" Placeholder="e.g. 30.50"></Entry>
+                        </StackLayout>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="End" Margin="0,30,0,0">
+                        <Button Clicked="TapBack_Tapped" Text="Cancel" TextColor="Black" FontAttributes="Bold" BackgroundColor="#FFFFFF" BorderColor="Silver" BorderWidth="1"></Button>
+                        <Button Clicked="AddItemButton_Clicked" x:Name="AddItemButton" Text="Add item" BackgroundColor="#CE0B06"  TextColor="White" ></Button>
+                    </StackLayout>
+                </StackLayout>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

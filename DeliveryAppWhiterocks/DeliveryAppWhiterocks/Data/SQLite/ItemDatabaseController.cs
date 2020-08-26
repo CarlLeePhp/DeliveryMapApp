@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 
 namespace DeliveryAppWhiterocks.Data.SQLite
 {
@@ -37,6 +38,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             lock (locker)
             {
                 return database.Table<ItemSQLite>().Where(item => item.ItemCode == itemCode).FirstOrDefault();
+            }
+        }
+
+        public List<ItemSQLite> GetAllItems()
+        {
+            lock (locker)
+            {
+                return database.Table<ItemSQLite>().ToList();
             }
         }
 

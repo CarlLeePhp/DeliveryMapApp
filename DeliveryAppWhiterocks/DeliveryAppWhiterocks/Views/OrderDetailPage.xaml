@@ -71,9 +71,6 @@
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-                <!--<ListView.Footer>
-                    <Label x:Name="SubtotalLabel" Text="test: 01" FontAttributes="Bold" FontSize="Large" HorizontalTextAlignment="End"></Label>
-                </ListView.Footer>-->
             </ListView>
            
             

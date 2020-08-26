@@ -172,13 +172,22 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                                 {
                                     ItemCode = lineItem.ItemCode,
                                     Description = lineItem.Description,
-                                    Weight = lineItem.Weight
+                                    Weight = lineItem.Weight,
                                 };
+                                if(_InvoiceResponse.Invoices[i].Type == "ACCPAY")
+                                {
+                                    newItem.UnitCost = lineItem.UnitAmount;
+                                }
                                 App.ItemDatabase.InsertItem(newItem);
-                            } else if (itemSQLite.Weight != lineItem.Weight)
+                            } else if (itemSQLite.Weight != lineItem.Weight || (_InvoiceResponse.Invoices[i].Type == "ACCPAY" && itemSQLite.UnitCost != lineItem.UnitAmount))
                             {
                                 itemSQLite.Weight = lineItem.Weight;
                                 itemSQLite.Description = lineItem.Description;
+
+                                if (_InvoiceResponse.Invoices[i].Type == "ACCPAY" && itemSQLite.UnitCost != lineItem.UnitAmount)
+                                {
+                                    itemSQLite.UnitCost = lineItem.UnitAmount;
+                                }
                                 App.ItemDatabase.UpdateItem(itemSQLite);
                             }
 
@@ -191,8 +200,6 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                                 App.LineItemDatabase.UpdateLineItem(lineItemSQLite);
                             }
                         }
-
-                        
                     }
                 }
             }

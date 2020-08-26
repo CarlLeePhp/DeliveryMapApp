@@ -204,7 +204,7 @@
                                VerticalTextAlignment="Center"
                                FontSize="20" />
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="TapSlMenuPickup" />
+                            <TapGestureRecognizer x:Name="TapSlMenuPickup" Tapped="TapPickup_Tapped"/>
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
                     <BoxView BackgroundColor="black" HeightRequest="1"></BoxView>
