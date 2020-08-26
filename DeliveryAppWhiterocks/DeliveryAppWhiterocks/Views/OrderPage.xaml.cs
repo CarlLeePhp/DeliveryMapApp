@@ -110,6 +110,7 @@ namespace DeliveryAppWhiterocks.Views
                 await DisplayAlert("Oops", "No internet connection, couldn't load data from XERO", "OK");
                 return;
             }
+            spinnerActivity.IsVisible = true;
             // no access token in Preferences: first run -> login
             // more than 30 days -> login
             // more than 30 mins -> get new access token
@@ -129,19 +130,20 @@ namespace DeliveryAppWhiterocks.Views
                 await XeroAPI.GetInvoices();
                 await XeroAPI.FillData();
 
-                await DisplayAlert("Xero API", "You got a new access Token", "OK");
+                //await DisplayAlert("Xero API", "You got a new access Token", "OK");
             }
             else
             {
                 // get the data by the access token;
                 await XeroAPI.GetInvoices();
                 await XeroAPI.FillData();
-                await DisplayAlert("Xero API", "You got the data", "OK");
+                
             }
-
+            await DisplayAlert("Xero API", "Data has been loaded", "OK");
             SupplyOrder();
             CheckHasDataLabel();
 
+            spinnerActivity.IsVisible = false;
         }
 
         private void GetDirectionBtn_Clicked(object sender, EventArgs e)

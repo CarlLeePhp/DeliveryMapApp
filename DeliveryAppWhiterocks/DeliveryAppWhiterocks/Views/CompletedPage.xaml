@@ -35,7 +35,7 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalTextAlignment="Center" x:Name="noInternetLbl" FontAttributes="Bold" HorizontalTextAlignment="Center" BackgroundColor="Red" TextColor="White"></Label>
 
-                    <Image Grid.Column="0" Grid.Row="1" Margin="15,15,0,0" HeightRequest="50" WidthRequest="50" x:Name="appIconImg" Source="@drawable/close.png">
+                    <Image Grid.Column="0" Grid.Row="1" Margin="15,15,0,0" HeightRequest="16" WidthRequest="16" x:Name="appIconImg" Source="@drawable/close.png">
                         <!--Add Tap Event-->
                         <Image.GestureRecognizers>
                             <TapGestureRecognizer x:Name="ImgMenu" Command="{Binding CloseCommand}"/>

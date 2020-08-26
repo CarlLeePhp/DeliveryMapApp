@@ -144,7 +144,7 @@
                              x:Name="SlMenu">
                     <Grid BackgroundColor="#1a1a1b"
                           HeightRequest="120">
-                        
+
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="8*" />
@@ -157,9 +157,9 @@
                                    FontSize="Large"
                                    TextColor="White" />
                         </StackLayout>
-                        
+
                     </Grid>
-                    
+
                     <StackLayout Spacing="30"
                                  Orientation="Horizontal"
                                  Margin="20,0,0,0">
@@ -227,10 +227,10 @@
                     <StackLayout Spacing="30"
                                  Orientation="Horizontal"
                                  Margin="20,0,0,0">
-                        <Image Source="@drawable/hourglass.png"
+                        <Image Source="@drawable/Settings.png"
                                HeightRequest="30"
                                WidthRequest="30" />
-                        <Label Text="Setting"
+                        <Label Text="Settings"
                                TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
@@ -263,6 +263,11 @@
                     </BoxView.GestureRecognizers>
                 </BoxView>
             </Grid>
+
+            <!--Spinner-->
+            <StackLayout x:Name="spinnerActivity" IsVisible="false" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                <ActivityIndicator IsRunning="True" Color="Silver"></ActivityIndicator>
+            </StackLayout>
         </Grid>
     </ContentPage.Content>
 </ContentPage>
