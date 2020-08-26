@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DeliveryAppWhiterocks.Views.SettingPage">
+
+    <Grid>
+        
+        <Grid ColumnSpacing="0"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="Start"
+                RowSpacing="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.2*"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="*"/>
+                
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="8*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <!--TopHeader Nav-->
+            <StackLayout BackgroundColor="Black" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="8*"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalTextAlignment="Center" x:Name="noInternetLbl" FontAttributes="Bold" HorizontalTextAlignment="Center" BackgroundColor="Red" TextColor="White"></Label>
+                    <Image Grid.Column="0" Grid.Row="1" Margin="15,15,0,0" HeightRequest="16" MinimumHeightRequest="16" Source="@drawable/close.png">
+                        <!--Add Tap Event-->
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="TapClose" Tapped="TapClose_Tapped"/>
+                        </Image.GestureRecognizers>
+                    </Image>
+
+                    <Label Grid.Row="1" Grid.Column="1" Margin="0,15,0,0" HorizontalOptions="Center" VerticalOptions="End" VerticalTextAlignment="End" FontAttributes="Bold" FontSize="26" TextColor="White">Setting</Label>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Column="1" Grid.Row="2">
+            <TableView Intent="Settings">
+                <TableRoot>
+                        <TableSection>
+
+                            <EntryCell Placeholder="Enter End Point"></EntryCell>
+                            <!--<EntryCell x:Name="endPoint"  Label="End Point" Placeholder="End Point Setting"  />-->
+                            <!--<EntryCell x:Name="gst" Label="GST" Placeholder="0.15" />-->
+                            
+                            <!--<ViewCell>
+                                <Button Text="Save" Clicked="Button_Clicked" BackgroundColor="#CE0B06" TextColor="White"/>
+                            </ViewCell>-->
+                        </TableSection>
+                        <TableSection>
+
+                            <EntryCell Placeholder="Enter GST"></EntryCell>
+                            
+                        </TableSection>
+
+                        <TableSection>
+                            <ViewCell>
+                                <Button Text="Save" Clicked="Button_Clicked" BackgroundColor="#CE0B06" TextColor="White"/>
+                            </ViewCell>
+                        </TableSection>
+
+                    </TableRoot>
+                    
+                </TableView>
+            
+            </StackLayout>
+        </Grid>
+    </Grid>
+
+</ContentPage>

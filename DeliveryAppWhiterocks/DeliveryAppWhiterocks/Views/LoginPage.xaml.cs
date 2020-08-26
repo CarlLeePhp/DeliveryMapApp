@@ -89,7 +89,7 @@ namespace DeliveryAppWhiterocks.Views
                 {
                     App.UserDatabase.SaveUser(user);
                     activityIndicator.IsVisible = false;
-                    await this.Navigation.PushAsync(new OrderPage());
+                    await this.Navigation.PushAsync(new NavigationPage( new OrderPage()));
                 }
                 else
                 {

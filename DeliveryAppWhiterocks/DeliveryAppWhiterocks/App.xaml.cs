@@ -40,7 +40,7 @@ namespace DeliveryAppWhiterocks
             //this line here is necessary to stop the keyboard for blocking the entry/input field in webview
             this.On<Android>().UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Resize);
             
-            MainPage = new NavigationPage(new MainPage());
+            MainPage = new MainPage();
         }
 
         private void Init()

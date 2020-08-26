@@ -25,7 +25,6 @@ namespace DeliveryAppWhiterocks.Views
             Init();
             _deliveryOrders = new ObservableCollection<Invoice>();
 
-            
         }
 
         public string Hello()
@@ -42,6 +41,8 @@ namespace DeliveryAppWhiterocks.Views
         {
             NavigationPage.SetHasNavigationBar(this, false);
             App.CheckInternetIfConnected(noInternetLbl, this);
+           
+            
         }
 
         private void CheckHasDataLabel()
@@ -103,16 +104,7 @@ namespace DeliveryAppWhiterocks.Views
         //Get data from XERO API
         private async void LoadDeliveryBtn_Clicked(object sender, EventArgs e)
         {
-            // test data
-            // Get invoice
-            // _InvoiceResponse = JsonConvert.DeserializeObject<InvoiceResponse>(responseBody);
-
-            //XeroAPI._InvoiceResponse = new InvoiceResponse();
-            //XeroAPI._InvoiceResponse.Id = "b0379bbd-a973-acd5-81a37798b2ab";
-            //XeroAPI._InvoiceResponse.Status = "OK";
-            //XeroAPI._InvoiceResponse.ProviderName = "WhiterocksStudAndFeed";
-            //XeroAPI._InvoiceResponse.DateTimeUTC = DateTime.UtcNow;
-
+            
             if (!App.CheckIfInternet())
             {
                 await DisplayAlert("Oops", "No internet connection, couldn't load data from XERO", "OK");
@@ -173,7 +165,10 @@ namespace DeliveryAppWhiterocks.Views
         {
             Navigation.PushModalAsync(new CompletedPage());
         }
-
+        private void TapSetting_Tapped(object sender, EventArgs e)
+        {
+            Navigation.PushModalAsync(new SettingPage());
+        }
         private void DeliveryInvoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var currentSelection = e.CurrentSelection.FirstOrDefault() as Invoice;
