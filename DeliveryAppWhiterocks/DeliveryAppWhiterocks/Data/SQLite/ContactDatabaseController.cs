@@ -84,7 +84,20 @@ namespace DeliveryAppWhiterocks.Data.SQLite
 
         public ContactSQLite PrepareContactSQLite(Contact contact)
         {
-            Address address = contact.Addresses[1];
+            Address address;
+            if (contact.Addresses.Count > 1) { 
+                address = contact.Addresses[1] ;
+            } else
+            {
+                address = new Address()
+                {
+                    AddressLine1 = "",
+                    AddressLine2 = "",
+                    AddressLine3 = "",
+                    AddressLine4 = "",
+                    City = "",
+                };
+            } 
             ContactSQLite contactSQLite = new ContactSQLite()
             {
                 ContactID = contact.ContactID,

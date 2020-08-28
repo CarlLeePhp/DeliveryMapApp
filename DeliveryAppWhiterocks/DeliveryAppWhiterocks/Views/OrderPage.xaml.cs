@@ -24,6 +24,7 @@ namespace DeliveryAppWhiterocks.Views
             //App.Current.MainPage = this;
             Init();
             _deliveryOrders = new ObservableCollection<Invoice>();
+            SupplyOrder();
         }
 
         public string Hello()
@@ -33,7 +34,8 @@ namespace DeliveryAppWhiterocks.Views
         protected override void OnAppearing()
         {
             _childPageLoaded = false;
-            SupplyOrder(); // Moved from Constructor
+            //SupplyOrder(); // Moved from Constructor
+            DeliveryInvoice.ItemsSource = _deliveryOrders;
             CheckHasDataLabel();
         }
         private void Init()
@@ -57,7 +59,7 @@ namespace DeliveryAppWhiterocks.Views
         }
 
         //get data from database when the order page started
-        public void SupplyOrder()
+        public async void SupplyOrder()
         {
             _deliveryOrders.Clear();
             //load data from database
@@ -87,7 +89,7 @@ namespace DeliveryAppWhiterocks.Views
                 };
                 _deliveryOrders.Add(invoice);
             }
-            _deliveryOrders.Reverse();
+            
             DeliveryInvoice.ItemsSource = _deliveryOrders;
         }
 
@@ -131,15 +133,16 @@ namespace DeliveryAppWhiterocks.Views
                 await XeroAPI.FillData();
 
                 //await DisplayAlert("Xero API", "You got a new access Token", "OK");
+                await DisplayAlert("Xero API", "Data has been loaded", "OK");
             }
             else
             {
                 // get the data by the access token;
                 await XeroAPI.GetInvoices();
                 await XeroAPI.FillData();
-                
+                await DisplayAlert("Xero API", "Data has been loaded", "OK");
             }
-            await DisplayAlert("Xero API", "Data has been loaded", "OK");
+            
             SupplyOrder();
             CheckHasDataLabel();
 

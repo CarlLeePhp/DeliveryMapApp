@@ -96,7 +96,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             }
             if (tenantId == "")
             {
-                Preferences.Set("TenantID", tenant[0].tenantId);
+                Preferences.Set("TenantID", tenant[1].tenantId);
             }
             else
             {
@@ -224,10 +224,11 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                 item.Weight = weight;
 
                 if (!string.IsNullOrEmpty(item.ItemCode)) { 
-                    codeX = item.ItemCode; 
+                    codeX = item.ItemCode;
                 } else if (!string.IsNullOrEmpty(item.Description))
                 {
                     codeX = item.Description;
+                    item.ItemCode = item.Description;
                 } else
                 {
                     return false;
