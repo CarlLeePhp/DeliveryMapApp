@@ -96,7 +96,10 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                     AddressLine3 = "",
                     AddressLine4 = "",
                     City = "",
+                    PostalCode = "",
                 };
+                contact.Addresses.Add(new Address());
+                contact.Addresses.Add(address);
             } 
             ContactSQLite contactSQLite = new ContactSQLite()
             {
