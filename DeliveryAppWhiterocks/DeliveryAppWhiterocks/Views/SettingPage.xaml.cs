@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using DeliveryAppWhiterocks.ViewModels;
+using System.ComponentModel;
 
 namespace DeliveryAppWhiterocks.Views
 {
@@ -15,26 +16,38 @@ namespace DeliveryAppWhiterocks.Views
     public partial class SettingPage : ContentPage
     {
         private INavigation _navigation;
+        SettingViewModel ViewModel => BindingContext as SettingViewModel;
         public SettingPage(INavigation navigation)
         {
             InitializeComponent();
             _navigation = navigation;
-            Initial();
-        }
-        private void Initial()
-        {
             App.CheckInternetIfConnected(noInternetLbl, this);
-            BindingContext = new SettingViewModel(Navigation);
-
+            BindingContextChanged += Page_BindingContextChanged;
+            BindingContext = new SettingViewModel(_navigation);
+        }
+        void Page_BindingContextChanged(object sender, EventArgs e)
+        {
+            ViewModel.ErrorsChanged += ViewModel_ErrorChanged;
+        }
+        void ViewModel_ErrorChanged(object sender, DataErrorsChangedEventArgs e)
+        {
+            var propHasErrors = (ViewModel.GetErrors(e.PropertyName) as List<string>)?.Any() == true;
+            switch (e.PropertyName)
+            {
+                case nameof(ViewModel.EndPoint):
+                    endPoint.LabelColor = propHasErrors ? Color.Red : Color.Gray;
+                    break;
+                case nameof(ViewModel.TaxAmount):
+                    taxAmount.LabelColor = propHasErrors ? Color.Red : Color.Gray;
+                    break;
+                default:
+                    break;
+            }
         }
         private async void TapClose_Tapped(object sender, EventArgs e)
         {
             await Navigation.PopModalAsync();
         }
-        private async void Button_Clicked(object sender, EventArgs e)
-        {
-            await DisplayAlert("Testing", "Button was clicked", "Yes");
-           
-        }
+        
     }
 }

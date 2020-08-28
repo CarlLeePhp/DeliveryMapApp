@@ -49,12 +49,12 @@
                 <TableRoot>
                         <TableSection>
 
-                            <EntryCell Placeholder="Enter End Point" Label="End Point" Text="{Binding EndPoint}"></EntryCell>
+                            <EntryCell x:Name="endPoint" Placeholder="Enter End Point" Label="End Point" Text="{Binding EndPoint}"></EntryCell>
                             
                         </TableSection>
                         <TableSection>
 
-                            <EntryCell Placeholder="Enter GST" Label="GST" Text="{Binding TaxAmount}"></EntryCell>
+                            <EntryCell x:Name="taxAmount" Placeholder="Enter GST" Label="GST" Text="{Binding TaxAmount}"></EntryCell>
                             
                         </TableSection>
 
