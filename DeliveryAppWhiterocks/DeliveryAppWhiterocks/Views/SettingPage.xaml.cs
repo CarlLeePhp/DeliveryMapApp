@@ -7,23 +7,25 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using DeliveryAppWhiterocks.ViewModels;
 
 namespace DeliveryAppWhiterocks.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SettingPage : ContentPage
     {
-        public SettingPage()
+        private INavigation _navigation;
+        public SettingPage(INavigation navigation)
         {
             InitializeComponent();
+            _navigation = navigation;
             Initial();
         }
         private void Initial()
         {
             App.CheckInternetIfConnected(noInternetLbl, this);
-            //endPoint.Text = Constants.endPoint;
-            //gst.Text = Constants.taxAmount.ToString();
-            
+            BindingContext = new SettingViewModel(Navigation);
+
         }
         private async void TapClose_Tapped(object sender, EventArgs e)
         {

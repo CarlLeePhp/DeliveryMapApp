@@ -177,7 +177,7 @@ namespace DeliveryAppWhiterocks.Views
 
         private void TapSetting_Tapped(object sender, EventArgs e)
         {
-            Navigation.PushModalAsync(new SettingPage());
+            Navigation.PushModalAsync(new SettingPage(Navigation));
         }
 
         private void DeliveryInvoice_SelectionChanged(object sender, SelectionChangedEventArgs e)

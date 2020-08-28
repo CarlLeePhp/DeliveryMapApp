@@ -37,7 +37,7 @@
                     <Image Grid.Column="0" Grid.Row="1" Margin="15,15,0,0" HeightRequest="16" MinimumHeightRequest="16" Source="@drawable/close.png">
                         <!--Add Tap Event-->
                         <Image.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="TapClose" Tapped="TapClose_Tapped"/>
+                            <TapGestureRecognizer x:Name="TapClose" Command="{Binding CloseCommand}"/>
                         </Image.GestureRecognizers>
                     </Image>
 
@@ -49,23 +49,18 @@
                 <TableRoot>
                         <TableSection>
 
-                            <EntryCell Placeholder="Enter End Point"></EntryCell>
-                            <!--<EntryCell x:Name="endPoint"  Label="End Point" Placeholder="End Point Setting"  />-->
-                            <!--<EntryCell x:Name="gst" Label="GST" Placeholder="0.15" />-->
+                            <EntryCell Placeholder="Enter End Point" Label="End Point" Text="{Binding EndPoint}"></EntryCell>
                             
-                            <!--<ViewCell>
-                                <Button Text="Save" Clicked="Button_Clicked" BackgroundColor="#CE0B06" TextColor="White"/>
-                            </ViewCell>-->
                         </TableSection>
                         <TableSection>
 
-                            <EntryCell Placeholder="Enter GST"></EntryCell>
+                            <EntryCell Placeholder="Enter GST" Label="GST" Text="{Binding TaxAmount}"></EntryCell>
                             
                         </TableSection>
 
                         <TableSection>
                             <ViewCell>
-                                <Button Text="Save" Clicked="Button_Clicked" BackgroundColor="#CE0B06" TextColor="White"/>
+                                <Button Text="Save" Command="{Binding SaveCommand}" BackgroundColor="#CE0B06" TextColor="White"/>
                             </ViewCell>
                         </TableSection>
 
