@@ -1,4 +1,6 @@
-﻿using DeliveryAppWhiterocks.Models.XeroAPI;
+﻿using DeliveryAppWhiterocks.Models;
+using DeliveryAppWhiterocks.Models.Database.SQLite;
+using DeliveryAppWhiterocks.Models.XeroAPI;
 using DeliveryAppWhiterocks.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,8 @@ namespace DeliveryAppWhiterocks.Views
     public partial class CompletedPage : ContentPage
     {
         bool _childPageLoaded = false;
+        Invoice _currentSelected;
+
         public CompletedPage()
         {
             InitializeComponent();
@@ -26,7 +30,40 @@ namespace DeliveryAppWhiterocks.Views
         {
             _childPageLoaded = false;
             init();
-            BindingContext = new CompletedViewModel(Navigation);
+            if(_currentSelected == null) { 
+                BindingContext = new CompletedViewModel(Navigation);
+            } else
+            {
+                CompletedViewModel model = BindingContext as CompletedViewModel;
+                int selectedIndex = model.DeliveryOrders.IndexOf(_currentSelected);
+
+                InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceID(_currentSelected.InvoiceID);
+                ContactSQLite contactSqlite = App.ContactDatabase.GetContactByID(invoiceSQLite.ContactID);
+                List<Address> address = new List<Address>();
+                //add emtpy one to mimic the structure of our client
+                address.Add(new Address());
+                if (contactSqlite.City != "") contactSqlite.City = string.Format(", {0}", contactSqlite.City);
+                address.Add(new Address() { AddressLine1 = contactSqlite.Address, City = contactSqlite.City });
+
+                Contact contact = new Contact()
+                {
+                    ContactID = contactSqlite.ContactID,
+                    Name = contactSqlite.Fullname,
+                    Addresses = address
+                };
+
+                Invoice invoice = new Invoice()
+                {
+                    Type = invoiceSQLite.InvoiceType,
+                    InvoiceID = invoiceSQLite.InvoiceID,
+                    InvoiceNumber = invoiceSQLite.InvoiceNumber,
+                    Contact = contact,
+                    Status = "Completed",
+                    TypeColor = invoiceSQLite.InvoiceType == "ACCREC" ? Constants.IsDropOffColor : Constants.IsPickUpColor
+                };
+
+                model.DeliveryOrders[selectedIndex] = invoice;
+            }
         }
         private void DeliveryInvoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -34,7 +71,7 @@ namespace DeliveryAppWhiterocks.Views
             if (currentSelection == null || _childPageLoaded) return;
             _childPageLoaded = true;
             Navigation.PushModalAsync(new OrderDetailPage(currentSelection));
-
+            _currentSelected = currentSelection;
             ((CollectionView)sender).SelectedItem = null;
         }
 
