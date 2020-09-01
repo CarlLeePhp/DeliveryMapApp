@@ -65,7 +65,6 @@ namespace DeliveryAppWhiterocks.ViewModels
                 };
                 _deliveryOrders.Add(invoice);
             }
-            
         } // Constructor
 
         private async void Close()
