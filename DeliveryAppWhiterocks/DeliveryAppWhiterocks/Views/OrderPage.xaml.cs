@@ -17,6 +17,7 @@ namespace DeliveryAppWhiterocks.Views
     {
         ObservableCollection<Invoice> _deliveryOrders;
         bool _childPageLoaded = false;
+        Invoice _currentInvoice;
 
         public OrderPage()
         {
@@ -24,7 +25,7 @@ namespace DeliveryAppWhiterocks.Views
             //App.Current.MainPage = this;
             Init();
             _deliveryOrders = new ObservableCollection<Invoice>();
-            SupplyOrder(); 
+            
         }
 
         public string Hello()
@@ -34,16 +35,28 @@ namespace DeliveryAppWhiterocks.Views
         protected override void OnAppearing()
         {
             _childPageLoaded = false;
+            if (_currentInvoice != null)
+            {
+                int collectionIndex = _deliveryOrders.IndexOf(_currentInvoice);
 
-            DeliveryInvoice.ItemsSource = _deliveryOrders;
+                InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceID(_currentInvoice.InvoiceID);
+
+                if (invoiceSQLite.CompletedDeliveryStatus)
+                {
+                    _deliveryOrders.Remove(_deliveryOrders[collectionIndex]);
+                    DeliveryInvoice.ItemsSource = _deliveryOrders;
+                }
+                _currentInvoice = null;
+            } else
+            {
+                SupplyOrder();
+            }
             CheckHasDataLabel();
         }
         private void Init()
         {
             NavigationPage.SetHasNavigationBar(this, false);
             App.CheckInternetIfConnected(noInternetLbl, this);
-           
-            
         }
 
         private void CheckHasDataLabel()
@@ -67,6 +80,7 @@ namespace DeliveryAppWhiterocks.Views
             //orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Morning rd 132, Otago","30", "BLackstuff", 3, 3.5));
             foreach (InvoiceSQLite invoiceSqlite in App.InvoiceDatabase.GetAllIncompleteInvoices())
             {
+                if (Constants.TenantID != "" && invoiceSqlite.TenantID != Constants.TenantID) continue;
                 ContactSQLite contactSqlite = App.ContactDatabase.GetContactByID(invoiceSqlite.ContactID);
                 List<Address> address = new List<Address>();
                 //add emtpy one to mimic the structure of our client
@@ -129,6 +143,7 @@ namespace DeliveryAppWhiterocks.Views
             {
                 // get a new access token
                 await XeroAPI.RefreshToken();
+                await XeroAPI.GetTenantID();
                 await XeroAPI.GetInvoices();
                 await XeroAPI.FillData();
 
@@ -138,13 +153,13 @@ namespace DeliveryAppWhiterocks.Views
             else
             {
                 // get the data by the access token;
+                await XeroAPI.GetTenantID();
                 await XeroAPI.GetInvoices();
                 await XeroAPI.FillData();
                 await DisplayAlert("Xero API", "Data has been loaded", "OK");
             }
 
-            SupplyOrder();
-            CheckHasDataLabel();
+            
             spinnerActivity.IsVisible = false;
         }
 
@@ -186,7 +201,7 @@ namespace DeliveryAppWhiterocks.Views
             if (currentSelection == null || _childPageLoaded) return;
             _childPageLoaded = true;
             Navigation.PushModalAsync(new OrderDetailPage(currentSelection));
-
+            _currentInvoice = currentSelection;
             ((CollectionView)sender).SelectedItem = null;
         }
     }

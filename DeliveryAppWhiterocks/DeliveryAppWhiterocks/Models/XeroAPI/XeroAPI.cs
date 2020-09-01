@@ -86,22 +86,31 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             string responseBody = await response.Content.ReadAsStringAsync();
             var tenant = JsonConvert.DeserializeObject<List<Tenant>>(responseBody);
 
-            // find a tenant by authentication_event_id
-            // In case nothing could be found, just use the first one
-            string tenantId = "";
+            
+            string tenantId = Constants.TenantID;
+            bool isExist = false;
             foreach (Tenant t in tenant)
             {
-                if (t.authEventId == _accessToken.authentication_event_id)
-                    tenantId = t.tenantId;
+                if (tenantId == t.tenantId) isExist = true;
             }
-            if (tenantId == "")
-            {
-                Preferences.Set("TenantID", tenant[1].tenantId);
-            }
-            else
+            if (isExist)
             {
                 Preferences.Set("TenantID", tenantId);
             }
+            else
+            {
+                Preferences.Set("TenantID", tenant[0].tenantId);
+                App.TenantDatabase.DeleteAllTenants();
+                for(int i=0; i<tenant.Count; i++)
+                {
+                    TenantSQLite tenantSQLite = new TenantSQLite();
+                    tenantSQLite.TenantID = tenant[i].tenantId;
+                    tenantSQLite.TenantName = tenant[i].tenantName;
+                    tenantSQLite.TenantIndex = i;
+                    App.TenantDatabase.InsertTenant(tenantSQLite);
+                }
+            }
+            
             return true;
         }
 
@@ -125,7 +134,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
         public static async Task<bool> FillData()
         {
-            
+            var tenantID = Preferences.Get("TenantID", string.Empty);
             for (int i = 0; i < _InvoiceResponse.Invoices.Count; i++)
             {
                 InvoiceSQLite invoiceInDatabase = App.InvoiceDatabase.GetInvoiceByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
@@ -141,6 +150,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                     {
                         InvoiceType = _InvoiceResponse.Invoices[i].Type,
                         InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
+                        TenantID = tenantID,
                         InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
                         CompletedDeliveryStatus = false,
                         ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
@@ -150,11 +160,12 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                     //Insert data normally if the data doesnt exist else check for update
                     if(invoiceInDatabase == null) { 
                         App.InvoiceDatabase.InsertInvoice(invoiceSqlite, _InvoiceResponse.Invoices[i].LineItems, _InvoiceResponse.Invoices[i].Contact);
-                    } else
+                    }
+                    else
                     {
                         ContactSQLite contactInDatabase = App.ContactDatabase.GetContactByID(invoiceInDatabase.ContactID);
                         ContactSQLite newContact = App.ContactDatabase.PrepareContactSQLite(_InvoiceResponse.Invoices[i].Contact);
-
+                        
                         if(contactInDatabase.Address != newContact.Address)
                         {
                             App.ContactDatabase.UpdateContactPosition(newContact);

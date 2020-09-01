@@ -21,6 +21,7 @@ namespace DeliveryAppWhiterocks
         static LineItemDatabaseController lineItemDatabase;
         static ItemDatabaseController itemDatabase;
         static ContactDatabaseController contactDatabase;
+        static TenantDatabaseController tenantDatabase;
 
         //could be obsolete in the future, when i have time i will update this
         //using grid might be more efficient, i stopped using this
@@ -120,6 +121,17 @@ namespace DeliveryAppWhiterocks
                     contactDatabase = new ContactDatabaseController();
                 }
                 return contactDatabase;
+            }
+        }
+        public static TenantDatabaseController TenantDatabase
+        {
+            get
+            {
+                if(tenantDatabase == null)
+                {
+                    tenantDatabase = new TenantDatabaseController();
+                }
+                return tenantDatabase;
             }
         }
         #endregion

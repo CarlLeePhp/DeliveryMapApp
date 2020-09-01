@@ -21,6 +21,7 @@ namespace DeliveryAppWhiterocks.Models
 
         public static Color IsDropOffColor = Color.FromHex("2b3b46");
         public static Color IsPickUpColor = Color.FromHex("2c4b3d");
+        public static string TenantID = "";
 
         public static double taxAmount = 0.15;
 

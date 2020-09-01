@@ -63,7 +63,21 @@
                                 <Button Text="Save" Command="{Binding SaveCommand}" BackgroundColor="#CE0B06" TextColor="White"/>
                             </ViewCell>
                         </TableSection>
-
+                        <TableSection>
+                            <ViewCell>
+                                <Picker x:Name="tenants" Title="Select a Organization"
+                                        ItemsSource="{Binding Tenants}"
+                                        ItemDisplayBinding="{Binding TenantName}"
+                                        SelectedItem="{Binding SelectedTenant}">
+                                    
+                                </Picker>
+                            </ViewCell>
+                        </TableSection>
+                        <TableSection>
+                            <ViewCell>
+                                <Label x:Name="currentTenant" />
+                            </ViewCell>
+                        </TableSection>
                     </TableRoot>
                     
                 </TableView>

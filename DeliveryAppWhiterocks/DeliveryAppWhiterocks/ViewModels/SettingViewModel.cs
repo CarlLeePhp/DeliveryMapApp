@@ -4,6 +4,7 @@ using System.Text;
 using Xamarin.Forms;
 using DeliveryAppWhiterocks.Models;
 using Xamarin.Essentials;
+using DeliveryAppWhiterocks.Models.Database.SQLite;
 
 namespace DeliveryAppWhiterocks.ViewModels
 {
@@ -37,6 +38,28 @@ namespace DeliveryAppWhiterocks.ViewModels
                 SaveCommand.ChangeCanExecute();
             }
         }
+        private IList<TenantSQLite> _tenants;
+        public IList<TenantSQLite> Tenants
+        {
+            get { return _tenants; }
+            set
+            {
+                _tenants = value;
+                OnPropertyChanged();
+
+            }
+        }
+        private TenantSQLite _selectedTenant;
+
+        public TenantSQLite SelectedTenant
+        {
+            get { return _selectedTenant; }
+            set {
+                _selectedTenant = value;
+                OnPropertyChanged();
+                Constants.TenantID = _selectedTenant.TenantID;
+            }
+        }
 
         Command _saveCommand;
         public Command SaveCommand => _saveCommand ?? (_saveCommand = new Command(Save, CanSave));
@@ -54,6 +77,7 @@ namespace DeliveryAppWhiterocks.ViewModels
             _navigation = navigation;
             TaxAmount = Constants.taxAmount;
             EndPoint = Preferences.Get("EndPoint", "");
+            Tenants = App.TenantDatabase.GetAllTenants();
             // Register Commands
             CloseCommand = new Command(CloseView);
 

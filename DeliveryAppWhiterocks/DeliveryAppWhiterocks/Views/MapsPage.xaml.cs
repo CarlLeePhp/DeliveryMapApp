@@ -80,7 +80,6 @@ namespace DeliveryAppWhiterocks.Views
         private async Task<bool> Update()
         {
             _currentLocation = await Geolocation.GetLastKnownLocationAsync();
-            
             if (_currentLocation == null)
             {
                 return false;

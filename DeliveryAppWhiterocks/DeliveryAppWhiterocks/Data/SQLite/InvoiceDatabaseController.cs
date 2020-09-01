@@ -26,7 +26,7 @@ namespace DeliveryAppWhiterocks.Data.SQLite
         {
             lock (locker)
             {
-                return database.Table<InvoiceSQLite>().Where(invoice => invoice.CompletedDeliveryStatus == false).ToList();
+                return database.Table<InvoiceSQLite>().Where(invoice => invoice.CompletedDeliveryStatus == false ).ToList();
             }
         }
 
@@ -171,6 +171,13 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             lock (locker)
             {
                 database.DeleteAll<InvoiceSQLite>();
+            }
+        }
+        public void DeleteInvoiceByID(string invoiceID)
+        {
+            lock (locker)
+            {
+                database.Delete(invoiceID);
             }
         }
     }
