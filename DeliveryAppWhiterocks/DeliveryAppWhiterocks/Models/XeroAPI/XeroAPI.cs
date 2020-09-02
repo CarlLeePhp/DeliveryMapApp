@@ -216,7 +216,6 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             }
             return true;
         }
-
         private static async Task<bool> FillItems(Invoice invoice, int i)
         {
             Dictionary<string, Stock> itemDictionary = new Dictionary<string, Stock>();

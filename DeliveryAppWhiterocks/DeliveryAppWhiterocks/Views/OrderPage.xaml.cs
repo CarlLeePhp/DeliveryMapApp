@@ -117,7 +117,8 @@ namespace DeliveryAppWhiterocks.Views
             GridOverlay.IsVisible = false;
         }
 
-        //Get data from XERO API
+        
+        // Get data from XERO API.
         private async void LoadDeliveryBtn_Clicked(object sender, EventArgs e)
         {
             
