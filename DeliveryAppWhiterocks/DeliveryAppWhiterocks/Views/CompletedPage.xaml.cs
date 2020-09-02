@@ -38,31 +38,10 @@ namespace DeliveryAppWhiterocks.Views
                 int selectedIndex = model.DeliveryOrders.IndexOf(_currentSelected);
 
                 InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceID(_currentSelected.InvoiceID);
-                ContactSQLite contactSqlite = App.ContactDatabase.GetContactByID(invoiceSQLite.ContactID);
-                List<Address> address = new List<Address>();
-                //add emtpy one to mimic the structure of our client
-                address.Add(new Address());
-                if (contactSqlite.City != "") contactSqlite.City = string.Format(", {0}", contactSqlite.City);
-                address.Add(new Address() { AddressLine1 = contactSqlite.Address, City = contactSqlite.City });
 
-                Contact contact = new Contact()
-                {
-                    ContactID = contactSqlite.ContactID,
-                    Name = contactSqlite.Fullname,
-                    Addresses = address
-                };
-
-                Invoice invoice = new Invoice()
-                {
-                    Type = invoiceSQLite.InvoiceType,
-                    InvoiceID = invoiceSQLite.InvoiceID,
-                    InvoiceNumber = invoiceSQLite.InvoiceNumber,
-                    Contact = contact,
-                    Status = "Completed",
-                    TypeColor = invoiceSQLite.InvoiceType == "ACCREC" ? Constants.IsDropOffColor : Constants.IsPickUpColor
-                };
-
-                model.DeliveryOrders[selectedIndex] = invoice;
+                if (!invoiceSQLite.CompletedDeliveryStatus) { 
+                    model.DeliveryOrders.Remove(_currentSelected);
+                }
             }
         }
         private void DeliveryInvoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
