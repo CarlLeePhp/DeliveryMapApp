@@ -30,6 +30,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
+        public List<InvoiceSQLite> GetAllIncompletePickupInvoice()
+        {
+            lock (locker)
+            {
+                return database.Table<InvoiceSQLite>().Where(invoice => invoice.CompletedDeliveryStatus == false && invoice.InvoiceType == "ACCREC").ToList();
+            }
+        }
+
         public List<InvoiceSQLite> GetAllCompletedInvoices()
         {
             lock (locker)

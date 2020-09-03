@@ -146,7 +146,7 @@ namespace DeliveryAppWhiterocks.Views
                 await XeroAPI.GetTenantID();
                 await XeroAPI.GetInvoices();
                 await XeroAPI.FillData();
-
+                SupplyOrder();
                 //await DisplayAlert("Xero API", "You got a new access Token", "OK");
                 await DisplayAlert("Xero API", "Data has been loaded", "OK");
             }
@@ -156,6 +156,7 @@ namespace DeliveryAppWhiterocks.Views
                 await XeroAPI.GetTenantID();
                 await XeroAPI.GetInvoices();
                 await XeroAPI.FillData();
+                SupplyOrder();
                 await DisplayAlert("Xero API", "Data has been loaded", "OK");
             }
 
