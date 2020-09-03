@@ -48,7 +48,7 @@ namespace DeliveryAppWhiterocks.Views
         {
             Dictionary<string, Stock> itemDictionary = new Dictionary<string, Stock>();
 
-            List<InvoiceSQLite> invoiceSQLite = App.InvoiceDatabase.GetAllIncompleteInvoices();
+            List<InvoiceSQLite> invoiceSQLite = App.InvoiceDatabase.GetAllIncompletePickupInvoice();
 
             foreach (InvoiceSQLite invoice in invoiceSQLite)
             {
