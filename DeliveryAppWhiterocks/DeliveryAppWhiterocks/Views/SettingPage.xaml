@@ -69,13 +69,8 @@
                                         ItemsSource="{Binding Tenants}"
                                         ItemDisplayBinding="{Binding TenantName}"
                                         SelectedItem="{Binding SelectedTenant}">
-                                    
+
                                 </Picker>
-                            </ViewCell>
-                        </TableSection>
-                        <TableSection>
-                            <ViewCell>
-                                <Label x:Name="currentTenant" />
                             </ViewCell>
                         </TableSection>
                     </TableRoot>

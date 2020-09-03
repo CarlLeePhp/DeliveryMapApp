@@ -26,17 +26,7 @@ namespace DeliveryAppWhiterocks.Views
             BindingContextChanged += Page_BindingContextChanged;
             BindingContext = new SettingViewModel(_navigation);
 
-            // testing
-            if(Constants.TenantID == "")
-            {
-                currentTenant.Text = "There is no Organization selected";
-            }
-            else
-            {
-                currentTenant.Text = Constants.TenantID;
-            }
             
-            // testing end
         }
         void Page_BindingContextChanged(object sender, EventArgs e)
         {
