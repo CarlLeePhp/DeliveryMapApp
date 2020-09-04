@@ -24,7 +24,6 @@ namespace DeliveryAppWhiterocks.Views
         List<string> _waypoints = new List<string>();
 
         //properties for sliding up menu
-        
         PanGestureRecognizer _panGesture = new PanGestureRecognizer();
         double _transY;
         //end sliding up menu props
@@ -32,6 +31,7 @@ namespace DeliveryAppWhiterocks.Views
         ObservableCollection<Invoice> _invoicesCollection = new ObservableCollection<Invoice>();
         List<Invoice> _invoices = new List<Invoice>();
         List<InvoiceSQLite> _invoiceSQLite = new List<InvoiceSQLite>();
+        Invoice _currentSelectedInvoice;
 
         List<Pin> _pins = new List<Pin>();
 
@@ -131,15 +131,32 @@ namespace DeliveryAppWhiterocks.Views
 
         protected async override void OnAppearing()
         {
-            _invoiceSQLite = App.InvoiceDatabase.GetAllIncompleteInvoices();
-            if (_counter == 0) _counter = _invoiceSQLite.Count();
-            if (_counter > _invoiceSQLite.Count() || _firstVisited)
+            if (_currentSelectedInvoice != null)
             {
-                await InitPins();
-                MapDirections("(initializing) ");
-                _counter = _invoiceSQLite.Count();
-                _firstVisited = false;
-                _outsideRouteUpdateCounter = 0;
+                InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceID(_currentSelectedInvoice.InvoiceID);
+                if (invoiceSQLite.CompletedDeliveryStatus)
+                {
+                    _invoicesCollection.Remove(_currentSelectedInvoice);
+                    _invoices.Remove(_currentSelectedInvoice);
+                    DeliveryItemView.ItemsSource = _invoicesCollection;
+                    Pin thePin = _pins.Where(pinX => pinX.Label == _currentSelectedInvoice.InvoiceNumber).FirstOrDefault();
+                    map.Pins.Remove(thePin);
+                    _waypoints.Remove($"{thePin.Position.Latitude}%2C{thePin.Position.Longitude}");
+                }
+                _currentSelectedInvoice = null;
+            }
+            else
+            {
+                _invoiceSQLite = App.InvoiceDatabase.GetAllIncompleteInvoices();
+                if (_counter == 0) _counter = _invoiceSQLite.Count();
+                if (_counter > _invoiceSQLite.Count() || _firstVisited)
+                {
+                    await InitPins();
+                    MapDirections("(initializing) ");
+                    _counter = _invoiceSQLite.Count();
+                    _firstVisited = false;
+                    _outsideRouteUpdateCounter = 0;
+                }
             }
         }
 
@@ -392,7 +409,7 @@ namespace DeliveryAppWhiterocks.Views
         {
             var button = sender as Button;
             Invoice invoiceSelected = button.BindingContext as Invoice;
-            
+            _currentSelectedInvoice = invoiceSelected;
             await Navigation.PushModalAsync(new OrderDetailPage(invoiceSelected));
         }
 
@@ -405,14 +422,16 @@ namespace DeliveryAppWhiterocks.Views
                 var button = sender as Button;
                
                 Invoice invoiceSelected = button.BindingContext as Invoice;
-                invoiceSelected.Status = "Completed";
+                
 
                 InvoiceSQLite invoice = new InvoiceSQLite();
                 invoice.InvoiceID = invoiceSelected.InvoiceID;
                 invoice.InvoiceNumber = invoiceSelected.InvoiceNumber;
-                invoice.CompletedDeliveryStatus = (invoiceSelected.Status == "Completed");
+                invoice.CompletedDeliveryStatus = true;
                 invoice.ContactID = invoiceSelected.Contact.ContactID;
                 invoice.Subtotal = invoiceSelected.SubTotal;
+                invoice.TenantID = Preferences.Get("TenantID", string.Empty);
+                invoice.InvoiceType = invoiceSelected.Type;
 
                 App.InvoiceDatabase.UpdateInvoiceStatus(invoice);
                 UpdateStatus(invoiceSelected);
@@ -439,7 +458,7 @@ namespace DeliveryAppWhiterocks.Views
                 if (distanceToInvoiceInKm * 1000 < 30) googleAPICallRequired = false;
             }
 
-            if(googleAPICallRequired) MapDirections("(Force-Refresh) ");
+            if (googleAPICallRequired) MapDirections("(Force-Refresh) ");
             _counter--;
         }
     }
