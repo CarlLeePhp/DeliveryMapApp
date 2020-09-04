@@ -62,8 +62,10 @@ namespace DeliveryAppWhiterocks.Views
             _timer = new Timer((e) =>
             {
                 Device.BeginInvokeOnMainThread(async () => {
-                    try { 
-                        await Update();
+                    try {
+                        if (App.CheckIfInternet()) { 
+                            await Update();
+                        }
                     }
                     catch
                     {
@@ -87,6 +89,7 @@ namespace DeliveryAppWhiterocks.Views
 
             if (_prevLocation == null) _prevLocation = _currentLocation;
 
+
             if (map.Polylines.Count > 0 && _prevLocation != _currentLocation)
             {
                 if (map.Polylines[0].Positions.Count == 0) return false;
@@ -95,7 +98,7 @@ namespace DeliveryAppWhiterocks.Views
                 _prevLocation = _currentLocation;
                 map.Polylines[0].Positions[0] = new Position(_currentLocation.Latitude, _currentLocation.Longitude);
                 Position pointB = new Position(0, 0);
-                if (map.Polylines[0].Positions.Count > 1)
+                if (map.Polylines[0].Positions.Count > 0)
                 {
                     //this is Point B, next point
                     pointB = map.Polylines[0].Positions[1];
@@ -233,7 +236,11 @@ namespace DeliveryAppWhiterocks.Views
                     //Get better format from address
                     #region Format the Address
                     string fullAddress = customerContact.Address;
-                    if (customerContact.City != "")
+                    if(fullAddress == "")
+                    {
+                        return true;
+                    }
+                    else if (customerContact.City != "")
                     {
                         fullAddress += $", {customerContact.City}";
                     }
@@ -311,6 +318,7 @@ namespace DeliveryAppWhiterocks.Views
             if (_waypoints.Count > 0 && App.CheckIfInternet()) {
                 
                 _invoicesCollection.Clear();
+
                 _direction = await GoogleMapsAPI.MapDirectionsWithWaypoints(lastKnownPosition, _waypoints.ToArray());
 
                 //Only create a line if it returns something from google
@@ -318,7 +326,7 @@ namespace DeliveryAppWhiterocks.Views
                     List<Position> directionPolylines = PolylineHelper.Decode(_direction.Routes[0].OverviewPolyline.Points).ToList();
 
                     CreatePolylinesOnMap(directionPolylines);
-                    
+
                     foreach (int order in GoogleMapsAPI._waypointsOrder)
                     {
                         _invoicesCollection.Add(_invoices[order]);
@@ -348,7 +356,7 @@ namespace DeliveryAppWhiterocks.Views
                 StrokeWidth = 8,
             };
 
-            for (int i = 0; i < directionPolylines.Count - 1; i++)
+            for (int i = 0; i < directionPolylines.Count ; i++)
             {
                 polyline.Positions.Add(directionPolylines[i]);
             }

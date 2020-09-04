@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -124,6 +124,7 @@ namespace DeliveryAppWhiterocks.Views
                 invoice.CompletedDeliveryStatus = (_selectedInvoice.Status == "Completed");
                 invoice.ContactID = _selectedInvoice.Contact.ContactID;
                 invoice.Subtotal = _selectedInvoice.SubTotal;
+                invoice.TenantID = Preferences.Get("TenantID", string.Empty);
                 
                 App.InvoiceDatabase.UpdateInvoiceStatus(invoice);
             }

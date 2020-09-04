@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Text;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace DeliveryAppWhiterocks.Data.SQLite
@@ -26,7 +27,8 @@ namespace DeliveryAppWhiterocks.Data.SQLite
         {
             lock (locker)
             {
-                return database.Table<InvoiceSQLite>().Where(invoice => invoice.CompletedDeliveryStatus == false ).ToList();
+                string currentTenant = Preferences.Get("TenantID", string.Empty);
+                return database.Table<InvoiceSQLite>().Where(invoice => invoice.TenantID == currentTenant && invoice.CompletedDeliveryStatus == false ).ToList();
             }
         }
 
@@ -34,7 +36,8 @@ namespace DeliveryAppWhiterocks.Data.SQLite
         {
             lock (locker)
             {
-                return database.Table<InvoiceSQLite>().Where(invoice => invoice.CompletedDeliveryStatus == false && invoice.InvoiceType == "ACCREC").ToList();
+                string currentTenant = Preferences.Get("TenantID",string.Empty);
+                return database.Table<InvoiceSQLite>().Where(invoice => invoice.TenantID == currentTenant && invoice.CompletedDeliveryStatus == false && invoice.InvoiceType == "ACCREC" ).ToList();
             }
         }
 
@@ -42,18 +45,12 @@ namespace DeliveryAppWhiterocks.Data.SQLite
         {
             lock (locker)
             {
-                return database.Table<InvoiceSQLite>().Where(invoice => invoice.CompletedDeliveryStatus == true).ToList();
+                string currentTenant = Preferences.Get("TenantID", string.Empty);
+                return database.Table<InvoiceSQLite>().Where(invoice => invoice.TenantID == currentTenant && invoice.CompletedDeliveryStatus == true).ToList();
             }
         }
 
-        
-        public List<InvoiceSQLite> GetAllInvoices()
-        {
-            lock (locker)
-            {
-                return database.Table<InvoiceSQLite>().ToList();
-            }
-        }
+      
 
         public InvoiceSQLite GetInvoiceByInvoiceNumber(string invoiceNumber)
         {
@@ -79,35 +76,12 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
-        public int CountAllCompletedInvoices()
-        {
-            lock (locker)
-            {
-                return database.Table<InvoiceSQLite>().Where(invoice => invoice.CompletedDeliveryStatus == true).Count();
-            }
-        }
-
         public int CountPickupInvoice()
         {
             lock (locker)
             {
-                return database.Table<InvoiceSQLite>().Count(invoiceX => invoiceX.InvoiceNumber.StartsWith("OPC-"));
-            }
-        }
-
-
-        public bool CheckIfExisted(string InvoiceID)
-        {
-            lock (locker)
-            {
-                var invoice = database.Table<InvoiceSQLite>().Where(invoiceX => invoiceX.InvoiceID == InvoiceID).FirstOrDefault();
-                if(invoice == null)
-                {
-                    return false;
-                } else
-                {
-                    return true;
-                }
+                string currentTenant = Preferences.Get("TenantID", string.Empty);
+                return database.Table<InvoiceSQLite>().Count(invoiceX => invoiceX.TenantID == currentTenant  && invoiceX.InvoiceNumber.StartsWith("OPC-"));
             }
         }
 

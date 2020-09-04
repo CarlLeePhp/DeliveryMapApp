@@ -87,18 +87,15 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             var tenant = JsonConvert.DeserializeObject<List<Tenant>>(responseBody);
 
             
-            string tenantId = Constants.TenantID;
+            string tenantId = Preferences.Get("TenantID", string.Empty);
             bool isExist = false;
             foreach (Tenant t in tenant)
             {
                 if (tenantId == t.tenantId) isExist = true;
             }
-            if (isExist)
+            if (!isExist)
             {
-                Preferences.Set("TenantID", tenantId);
-            }
-            else
-            {
+                
                 Preferences.Set("TenantID", tenant[0].tenantId);
                 App.TenantDatabase.DeleteAllTenants();
                 for(int i=0; i<tenant.Count; i++)

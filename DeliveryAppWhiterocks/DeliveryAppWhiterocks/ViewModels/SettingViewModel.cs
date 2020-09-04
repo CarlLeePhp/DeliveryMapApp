@@ -57,7 +57,7 @@ namespace DeliveryAppWhiterocks.ViewModels
             set {
                 _selectedTenant = value;
                 OnPropertyChanged();
-                Constants.TenantID = _selectedTenant.TenantID;
+                Preferences.Set("TenantID", _selectedTenant.TenantID);
             }
         }
 
