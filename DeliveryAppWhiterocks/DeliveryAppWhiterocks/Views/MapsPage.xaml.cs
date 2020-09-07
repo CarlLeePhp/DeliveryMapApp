@@ -245,6 +245,7 @@ namespace DeliveryAppWhiterocks.Views
 
             foreach (InvoiceSQLite invoice in _invoiceSQLite)
             {
+                Console.WriteLine();
                 ContactSQLite customerContact = App.ContactDatabase.GetContactByID(invoice.ContactID);
                 Position position;
 
@@ -269,7 +270,6 @@ namespace DeliveryAppWhiterocks.Views
                         position = await GoogleMapsAPI.GetPositionFromKnownAddress(fullAddress);
                         customerContact.Latitude = position.Latitude;
                         customerContact.Longitude = position.Longitude;
-                        
                     } else
                     {
                         try { 

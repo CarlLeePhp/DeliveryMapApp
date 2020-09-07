@@ -113,24 +113,29 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
         public static async Task<bool> GetInvoices()
         {
-            var tenantID = Preferences.Get("TenantID", string.Empty);
-            if (tenantID == string.Empty)
+            try { 
+                var tenantID = Preferences.Get("TenantID", string.Empty);
+                if (tenantID == string.Empty)
+                {
+                    return false;
+                }
+            
+                HttpResponseMessage response = await HttpClientBuilder(RequestType.Invoices);
+
+                if (!response.IsSuccessStatusCode) return false;
+
+                string responseBody = await response.Content.ReadAsStringAsync();
+                _InvoiceResponse = JsonConvert.DeserializeObject<InvoiceResponse>(responseBody);
+            } catch
             {
                 return false;
             }
-            
-            HttpResponseMessage response = await HttpClientBuilder(RequestType.Invoices);
-
-            if (!response.IsSuccessStatusCode) return false;
-
-            string responseBody = await response.Content.ReadAsStringAsync();
-            _InvoiceResponse = JsonConvert.DeserializeObject<InvoiceResponse>(responseBody);
-
             return true;
         }
 
         public static async Task<bool> FillData()
         {
+
             var tenantID = Preferences.Get("TenantID", string.Empty);
             for (int i = 0; i < _InvoiceResponse.Invoices.Count; i++)
             {
@@ -208,6 +213,14 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                                 App.LineItemDatabase.UpdateLineItem(lineItemSQLite);
                             }
                         }
+                    }
+                }
+                else if(_InvoiceResponse.Invoices[i].Status == "VOIDED")
+                {
+                    InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
+                    if(invoiceSQLite != null)
+                    {
+                        App.InvoiceDatabase.DeleteInvoiceByID(invoiceSQLite.InvoiceID);
                     }
                 }
             }

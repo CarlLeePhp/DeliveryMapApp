@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using DeliveryAppWhiterocks.Models.XeroAPI;
+using Xamarin.Essentials;
 
 namespace DeliveryAppWhiterocks.Views
 {
@@ -132,6 +133,7 @@ namespace DeliveryAppWhiterocks.Views
                 InvoiceType = "ACCPAY",
                 CompletedDeliveryStatus = false,
                 ContactID = contact.ContactID,
+                TenantID = Preferences.Get("TenantID", string.Empty),
             };
             App.InvoiceDatabase.InsertInvoice(invoice);
 

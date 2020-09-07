@@ -32,11 +32,15 @@ namespace DeliveryAppWhiterocks.Views
                     int length = e.Url.IndexOf("&scope=") - indexStart;
                     Preferences.Set("Code", e.Url.Substring(indexStart, length));
 
-                    var isSuccess = await XeroAPI.GetToken();
-                    await XeroAPI.GetTenantID();
-                    await XeroAPI.GetInvoices();
-                    //await DisplayAlert("OK", $"{XeroAPI._InvoiceResponse.Invoices[0].InvoiceID}", "OK");
-                    await XeroAPI.FillData();
+                    try { 
+                        await XeroAPI.GetToken();
+                        await XeroAPI.GetTenantID();
+                        await XeroAPI.GetInvoices();
+                        await XeroAPI.FillData();
+                    } 
+                    catch {
+                        await DisplayAlert("XERO API", "Failure in retrieving data from XERO", "OK");
+                    }
 
                     await Navigation.PopModalAsync();
                 }
