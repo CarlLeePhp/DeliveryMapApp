@@ -101,8 +101,9 @@
                                             <Label Grid.Row="0" Margin="5" HorizontalTextAlignment="End" VerticalTextAlignment="End" TextColor="White" FontSize="Subtitle" Grid.Column="1" Text="{Binding Contact.Name}"></Label>
                                             <StackLayout Grid.Row="1" Margin="5" Grid.ColumnSpan="2">
                                                 <BoxView BackgroundColor="White" HeightRequest="1"></BoxView>
-                                                <StackLayout Orientation="Horizontal" Spacing="4">
+                                                <StackLayout x:Name="test" Orientation="Horizontal" Spacing="4">
                                                     <Label TextColor="White" Text="{Binding Contact.Addresses[1].AddressLine1}"></Label>
+                                                    
                                                     <Label TextColor="White" Text="{Binding Contact.Addresses[1].City}"></Label>
                                                 </StackLayout>
                                             </StackLayout>

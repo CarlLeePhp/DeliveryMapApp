@@ -15,6 +15,7 @@ namespace DeliveryAppWhiterocks.Models.Database.SQLite
         public string ContactID { get; set; }
         public double Subtotal { get; set; }
         public string TenantID { get; set; }
-
+        public long UpdateTimeTicksXERO { get; set; }
+        public long UpdateTimeTicksApp { get; set; }
     }
 }

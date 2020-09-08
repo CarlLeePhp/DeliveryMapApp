@@ -51,7 +51,7 @@ namespace DeliveryAppWhiterocks.Views
             {
                 SupplyOrder();
             }
-            CheckHasDataLabel();
+            
         }
         private void Init()
         {
@@ -76,8 +76,6 @@ namespace DeliveryAppWhiterocks.Views
         {
             _deliveryOrders.Clear();
             //load data from database
-            //do foreach
-            //orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Morning rd 132, Otago","30", "BLackstuff", 3, 3.5));
             foreach (InvoiceSQLite invoiceSqlite in App.InvoiceDatabase.GetAllIncompleteInvoices())
             {
                 if (Constants.TenantID != "" && invoiceSqlite.TenantID != Constants.TenantID) continue;
@@ -105,6 +103,7 @@ namespace DeliveryAppWhiterocks.Views
             }
             
             DeliveryInvoice.ItemsSource = _deliveryOrders;
+            CheckHasDataLabel();
         }
 
         private void ImgMenu_Tapped(object sender, EventArgs e)
@@ -135,33 +134,40 @@ namespace DeliveryAppWhiterocks.Views
             XeroAPI.DecodeAccessToken();
             long currentUnixTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            if(XeroAPI._accessToken == null || currentUnixTimeStamp - XeroAPI._accessToken.nbf >= 30 * 24 * 3600)
+            try { 
+
+                if(XeroAPI._accessToken == null || currentUnixTimeStamp - XeroAPI._accessToken.nbf >= 30 * 24 * 3600)
+                {
+                    await Navigation.PushModalAsync(new XEROWebPage());
+                    GridOverlay.IsVisible = false;
+                }
+                else if (currentUnixTimeStamp - XeroAPI._accessToken.nbf > 1800)
+                {
+                    // get a new access token
+                    await XeroAPI.RefreshToken();
+                    await XeroAPI.GetTenantID();
+                    await XeroAPI.GetInvoices();
+                    await XeroAPI.FillData();
+                    SupplyOrder();
+                    //await DisplayAlert("Xero API", "You got a new access Token", "OK");
+                    await DisplayAlert("Xero API", "Data has been loaded", "OK");
+
+                }
+                else
+                {
+                    // get the data by the access token;
+                    await XeroAPI.GetTenantID();
+                    await XeroAPI.GetInvoices();
+                    await XeroAPI.FillData();
+                    SupplyOrder();
+                    await DisplayAlert("Xero API", "Data has been loaded", "OK");
+                }
+            } catch
             {
-                await Navigation.PushModalAsync(new XEROWebPage());
-                GridOverlay.IsVisible = false;
-            }
-            else if (currentUnixTimeStamp - XeroAPI._accessToken.nbf > 1800)
-            {
-                // get a new access token
-                await XeroAPI.RefreshToken();
-                await XeroAPI.GetTenantID();
-                await XeroAPI.GetInvoices();
-                await XeroAPI.FillData();
-                SupplyOrder();
-                //await DisplayAlert("Xero API", "You got a new access Token", "OK");
-                await DisplayAlert("Xero API", "Data has been loaded", "OK");
-            }
-            else
-            {
-                // get the data by the access token;
-                await XeroAPI.GetTenantID();
-                await XeroAPI.GetInvoices();
-                await XeroAPI.FillData();
-                SupplyOrder();
-                await DisplayAlert("Xero API", "Data has been loaded", "OK");
+                await DisplayAlert("Xero API", "Failure in loading data from XERO", "OK");
             }
 
-            
+
             spinnerActivity.IsVisible = false;
         }
 
