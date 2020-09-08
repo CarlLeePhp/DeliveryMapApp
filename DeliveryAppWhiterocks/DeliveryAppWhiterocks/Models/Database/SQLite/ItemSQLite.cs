@@ -12,5 +12,6 @@ namespace DeliveryAppWhiterocks.Models.Database.SQLite
         public string Description { get; set; }
         public double Weight { get; set; }
         public double UnitCost { get; set; } = 0;
+        public long UpdateTimeTicks { get; set; }
     }
 }

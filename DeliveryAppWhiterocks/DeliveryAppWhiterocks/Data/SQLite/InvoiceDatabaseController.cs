@@ -122,19 +122,30 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                     //Save to db
                     App.LineItemDatabase.InsertLineItem(lineItemSQLite);
 
-                    
+                    ItemSQLite itemSQLite = App.ItemDatabase.GetItemByID(item.ItemCode);
                     //check if item already exist, if not add it into database
-                    if (!App.ItemDatabase.CheckIfExisted(item.ItemCode))
+                    if (itemSQLite == null)
                     {
                         ItemSQLite newItem = new ItemSQLite()
                         {
                             ItemCode = item.ItemCode,
                             Description = item.Description,
                             Weight = item.Weight,
-                            UnitCost = invoice.InvoiceType == "ACCPAY" ? item.UnitAmount : 0
+                            UnitCost = invoice.InvoiceType == "ACCPAY" ? item.UnitAmount : 0,
+                            UpdateTimeTicks = invoice.UpdateTimeTicks
                         };
                         App.ItemDatabase.InsertItem(newItem);
-                    } 
+                    } else
+                    {
+                        if(invoice.UpdateTimeTicks > itemSQLite.UpdateTimeTicks)
+                        {
+                            itemSQLite.Weight = item.Weight;
+                            itemSQLite.Description = item.Description;
+                            itemSQLite.UnitCost = invoice.InvoiceType == "ACCPAY" ? item.UnitAmount : 0;
+                            itemSQLite.UpdateTimeTicks = invoice.UpdateTimeTicks;
+                            App.ItemDatabase.UpdateItem(itemSQLite);
+                        }
+                    }
                 }
             }
         }

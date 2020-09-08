@@ -245,7 +245,6 @@ namespace DeliveryAppWhiterocks.Views
 
             foreach (InvoiceSQLite invoice in _invoiceSQLite)
             {
-                Console.WriteLine();
                 ContactSQLite customerContact = App.ContactDatabase.GetContactByID(invoice.ContactID);
                 Position position;
 
@@ -256,7 +255,7 @@ namespace DeliveryAppWhiterocks.Views
                     string fullAddress = customerContact.Address;
                     if(fullAddress == "")
                     {
-                        return true;
+                        continue;
                     }
                     else if (customerContact.City != "")
                     {

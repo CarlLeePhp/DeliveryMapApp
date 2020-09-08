@@ -156,7 +156,8 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                         InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
                         CompletedDeliveryStatus = false,
                         ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
-                        Subtotal = _InvoiceResponse.Invoices[i].SubTotal
+                        Subtotal = _InvoiceResponse.Invoices[i].SubTotal,
+                        UpdateTimeTicks = _InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks
                     };
                     
                     //Insert data normally if the data doesnt exist else check for update
@@ -173,13 +174,14 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                             App.ContactDatabase.UpdateContactPosition(newContact);
                         }
 
-                        List<LineItemSQLite> lineItemSQLiteList = App.LineItemDatabase.GetLineItemByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
+                        if (_InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks == invoiceInDatabase.UpdateTimeTicks) continue;
                         
-                        foreach (LineItem lineItem in _InvoiceResponse.Invoices[i].LineItems)
+                        List<LineItemSQLite> lineItemSQLiteList = App.LineItemDatabase.GetLineItemByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
+
+                        foreach(LineItem lineItem in _InvoiceResponse.Invoices[i].LineItems)
                         {
-                            //check if item already exist, if not add it into database
                             ItemSQLite itemSQLite = App.ItemDatabase.GetItemByID(lineItem.ItemCode);
-                            if (itemSQLite == null)
+                            if(itemSQLite == null)
                             {
                                 ItemSQLite newItem = new ItemSQLite()
                                 {
@@ -187,30 +189,55 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                                     Description = lineItem.Description,
                                     Weight = lineItem.Weight,
                                 };
-                                if(_InvoiceResponse.Invoices[i].Type == "ACCPAY")
+                                if (_InvoiceResponse.Invoices[i].Type == "ACCPAY")
                                 {
                                     newItem.UnitCost = lineItem.UnitAmount;
                                 }
                                 App.ItemDatabase.InsertItem(newItem);
-                            } else if (itemSQLite.Weight != lineItem.Weight || (_InvoiceResponse.Invoices[i].Type == "ACCPAY" && itemSQLite.UnitCost != lineItem.UnitAmount))
-                            {
-                                itemSQLite.Weight = lineItem.Weight;
-                                itemSQLite.Description = lineItem.Description;
 
-                                if (_InvoiceResponse.Invoices[i].Type == "ACCPAY" && itemSQLite.UnitCost != lineItem.UnitAmount)
+                                var maxItemLineID = App.LineItemDatabase.GetLastLineItem();
+                                //create the id by referencing lineitemtable
+                                LineItemSQLite lineItemSQLite = new LineItemSQLite()
+                                {
+                                    // if it's not set set the itemline id to 1 else increment 1 from the biggest value
+                                    ItemLineID = (maxItemLineID == null ? 1 : maxItemLineID.ItemLineID + 1),
+                                    InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
+                                    ItemCode = lineItem.ItemCode,
+                                    Quantity = (int)lineItem.Quantity,
+                                    UnitAmount = lineItem.UnitAmount,
+                                };
+                                //Save to db
+                                App.LineItemDatabase.InsertLineItem(lineItemSQLite);
+                            } else
+                            {
+                                itemSQLite.Description = lineItem.Description;
+                                itemSQLite.ItemCode = lineItem.ItemCode;
+                                itemSQLite.Weight = lineItem.Weight;
+                                if (_InvoiceResponse.Invoices[i].Type == "ACCPAY")
                                 {
                                     itemSQLite.UnitCost = lineItem.UnitAmount;
                                 }
                                 App.ItemDatabase.UpdateItem(itemSQLite);
-                            }
+                                LineItemSQLite theLineItem = lineItemSQLiteList.Where(lineItemX => lineItemX.ItemCode == lineItem.ItemCode).FirstOrDefault();
 
-                            LineItemSQLite lineItemSQLite = lineItemSQLiteList.Where(lineItemX => lineItemX.ItemCode == lineItem.ItemCode).FirstOrDefault();
-                            if (lineItemSQLite == null) continue;
-                            if (lineItemSQLite.UnitAmount != lineItem.UnitAmount || lineItemSQLite.Quantity != lineItemSQLite.Quantity)
-                            {
-                                lineItemSQLite.UnitAmount = lineItem.UnitAmount;
-                                lineItemSQLite.Quantity = (int)lineItem.Quantity;
+                                LineItemSQLite lineItemSQLite = new LineItemSQLite()
+                                {
+                                    ItemLineID = theLineItem.ItemLineID,
+                                    InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
+                                    ItemCode = lineItem.ItemCode,
+                                    Quantity = (int)lineItem.Quantity,
+                                    UnitAmount = lineItem.UnitAmount,
+                                };
                                 App.LineItemDatabase.UpdateLineItem(lineItemSQLite);
+                                if(theLineItem != null) lineItemSQLiteList.Remove(theLineItem);
+                            }
+                        }
+
+                        if(lineItemSQLiteList.Count > 0)
+                        {
+                            foreach(LineItemSQLite lineItemSQLite in lineItemSQLiteList)
+                            {
+                                App.LineItemDatabase.DeleteLineItemsByItemLineID(lineItemSQLite.ItemLineID);
                             }
                         }
                     }
@@ -259,13 +286,13 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                     //Get Weight from description
                     //has an {itemName " "?} + {number} kg
                     //possible format 20kg , 20 kg , (20kg), (20)kg, (20) kg
-                    Stock stock = new Stock(codeX, item.Description, weight, item.Quantity);
+                    Stock stock = new Stock(codeX, item.Description, weight * item.Quantity, item.Quantity);
                     itemDictionary.Add(codeX, stock);
                 } else
                 {
                     //Get Weight from description
                     itemDictionary[codeX].AddStockQuantity(Convert.ToInt32(item.Quantity));
-                    itemDictionary[codeX].AddStockWeight(weight);
+                    itemDictionary[codeX].Weight *= itemDictionary[codeX].Quantity;
                 }
             }
             return true;

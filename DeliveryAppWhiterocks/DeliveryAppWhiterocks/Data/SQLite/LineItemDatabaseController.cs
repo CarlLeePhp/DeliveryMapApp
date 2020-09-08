@@ -37,6 +37,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
+        public void DeleteLineItemsByItemLineID(int itemLineID)
+        {
+            lock (locker)
+            {
+                database.Delete(itemLineID);
+            }
+        }
+
         public List<LineItemSQLite> GetLineItemByInvoiceID(string invoiceID)
         {
             lock (locker)
