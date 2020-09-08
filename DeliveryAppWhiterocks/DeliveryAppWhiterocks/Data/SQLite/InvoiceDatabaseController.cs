@@ -132,17 +132,17 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                             Description = item.Description,
                             Weight = item.Weight,
                             UnitCost = invoice.InvoiceType == "ACCPAY" ? item.UnitAmount : 0,
-                            UpdateTimeTicks = invoice.UpdateTimeTicks
+                            UpdateTimeTicks = invoice.UpdateTimeTicksXERO,
                         };
                         App.ItemDatabase.InsertItem(newItem);
                     } else
                     {
-                        if(invoice.UpdateTimeTicks > itemSQLite.UpdateTimeTicks)
+                        if(invoice.UpdateTimeTicksXERO > itemSQLite.UpdateTimeTicks)
                         {
                             itemSQLite.Weight = item.Weight;
                             itemSQLite.Description = item.Description;
                             itemSQLite.UnitCost = invoice.InvoiceType == "ACCPAY" ? item.UnitAmount : 0;
-                            itemSQLite.UpdateTimeTicks = invoice.UpdateTimeTicks;
+                            itemSQLite.UpdateTimeTicks = invoice.UpdateTimeTicksXERO;
                             App.ItemDatabase.UpdateItem(itemSQLite);
                         }
                     }
@@ -166,11 +166,11 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 database.DeleteAll<InvoiceSQLite>();
             }
         }
-        public void DeleteInvoiceByID(string invoiceID)
+        public void DeleteInvoiceByInvoice(InvoiceSQLite invoice)
         {
             lock (locker)
             {
-                database.Delete(invoiceID);
+                database.Delete(invoice);
             }
         }
     }

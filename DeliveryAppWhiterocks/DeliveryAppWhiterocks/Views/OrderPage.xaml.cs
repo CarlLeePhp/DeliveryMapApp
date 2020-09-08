@@ -76,8 +76,6 @@ namespace DeliveryAppWhiterocks.Views
         {
             _deliveryOrders.Clear();
             //load data from database
-            //do foreach
-            //orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Morning rd 132, Otago","30", "BLackstuff", 3, 3.5));
             foreach (InvoiceSQLite invoiceSqlite in App.InvoiceDatabase.GetAllIncompleteInvoices())
             {
                 if (Constants.TenantID != "" && invoiceSqlite.TenantID != Constants.TenantID) continue;

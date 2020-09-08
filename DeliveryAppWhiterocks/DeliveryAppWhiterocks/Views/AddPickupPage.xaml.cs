@@ -134,6 +134,7 @@ namespace DeliveryAppWhiterocks.Views
                 CompletedDeliveryStatus = false,
                 ContactID = contact.ContactID,
                 TenantID = Preferences.Get("TenantID", string.Empty),
+                UpdateTimeTicksApp = DateTime.Now.Ticks,
             };
             App.InvoiceDatabase.InsertInvoice(invoice);
 
@@ -154,6 +155,7 @@ namespace DeliveryAppWhiterocks.Views
                 App.LineItemDatabase.InsertLineItem(lineItemSQLite);
 
                 //check if item already exist, if not add it into database
+                
                 if (!App.ItemDatabase.CheckIfExisted(item.ItemCode))
                 {
                     ItemSQLite newItem = new ItemSQLite()

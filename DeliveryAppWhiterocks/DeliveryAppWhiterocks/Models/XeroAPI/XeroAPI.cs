@@ -157,7 +157,8 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                         CompletedDeliveryStatus = false,
                         ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
                         Subtotal = _InvoiceResponse.Invoices[i].SubTotal,
-                        UpdateTimeTicks = _InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks
+                        UpdateTimeTicksXERO = _InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks,
+                        UpdateTimeTicksApp = _InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks,
                     };
                     
                     //Insert data normally if the data doesnt exist else check for update
@@ -174,7 +175,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                             App.ContactDatabase.UpdateContactPosition(newContact);
                         }
 
-                        if (_InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks == invoiceInDatabase.UpdateTimeTicks) continue;
+                        if (_InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks == invoiceInDatabase.UpdateTimeTicksXERO) continue;
                         
                         List<LineItemSQLite> lineItemSQLiteList = App.LineItemDatabase.GetLineItemByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
 
@@ -247,7 +248,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                     InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
                     if(invoiceSQLite != null)
                     {
-                        App.InvoiceDatabase.DeleteInvoiceByID(invoiceSQLite.InvoiceID);
+                        App.InvoiceDatabase.DeleteInvoiceByInvoice(invoiceSQLite);
                     }
                 }
             }
