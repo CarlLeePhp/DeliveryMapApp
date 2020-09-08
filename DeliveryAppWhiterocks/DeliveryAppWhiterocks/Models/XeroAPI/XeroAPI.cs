@@ -237,7 +237,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                         {
                             foreach(LineItemSQLite lineItemSQLite in lineItemSQLiteList)
                             {
-                                App.LineItemDatabase.DeleteLineItemsByItemLineID(lineItemSQLite.ItemLineID);
+                                App.LineItemDatabase.DeleteLineItem(lineItemSQLite);
                             }
                         }
                     }

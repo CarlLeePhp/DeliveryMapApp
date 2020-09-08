@@ -10,7 +10,6 @@ namespace DeliveryAppWhiterocks.Models
         public string Username { get; set; }
         public string Password { get; set; }
         public DateTime Expire_Date { get; set; }
-
         public Token() { }
     }
 }

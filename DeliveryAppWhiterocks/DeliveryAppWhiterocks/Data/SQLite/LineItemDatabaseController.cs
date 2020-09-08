@@ -37,11 +37,11 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             }
         }
 
-        public void DeleteLineItemsByItemLineID(int itemLineID)
+        public void DeleteLineItem(LineItemSQLite itemLine)
         {
             lock (locker)
             {
-                database.Delete(itemLineID);
+                database.Delete(itemLine);
             }
         }
 
