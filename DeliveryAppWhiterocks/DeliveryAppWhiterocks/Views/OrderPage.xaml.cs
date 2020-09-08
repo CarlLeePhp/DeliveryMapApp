@@ -167,9 +167,10 @@ namespace DeliveryAppWhiterocks.Views
 
         private void GetDirectionBtn_Clicked(object sender, EventArgs e)
         {
-            if (App.CheckIfInternet()) { 
+            if (App.CheckIfInternet() && !_childPageLoaded) {
+                _childPageLoaded = true;
                 List<Invoice> invoices = _deliveryOrders.ToList();
-                Navigation.PushModalAsync(new MapsPage(invoices));
+                Navigation.PushAsync(new MapsPage(invoices));
             } else
             {
                 DisplayAlert("Oops", "No internet connection, Google Maps requires an internet connection", "OK");

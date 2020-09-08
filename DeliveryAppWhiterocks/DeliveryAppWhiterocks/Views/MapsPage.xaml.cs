@@ -190,7 +190,7 @@ namespace DeliveryAppWhiterocks.Views
                         {
                             //QuickMenuPullLayout.TranslationY = Math.Max(0,
                             //    Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY));
-                            QuickMenuPullLayout.TranslateTo(QuickMenuPullLayout.TranslationX, Math.Max(0, Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY)), 250, Easing.Linear);
+                            QuickMenuPullLayout.TranslateTo(QuickMenuPullLayout.TranslationX, Math.Max(60, Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY)), 250, Easing.Linear);
                         });
                     }, 2);
 
@@ -413,6 +413,7 @@ namespace DeliveryAppWhiterocks.Views
                 invoice.CompletedDeliveryStatus = (invoiceSelected.Status == "Completed");
                 invoice.ContactID = invoiceSelected.Contact.ContactID;
                 invoice.Subtotal = invoiceSelected.SubTotal;
+                invoice.TenantID = Preferences.Get("TenantID", string.Empty);
 
                 App.InvoiceDatabase.UpdateInvoiceStatus(invoice);
                 UpdateStatus(invoiceSelected);
