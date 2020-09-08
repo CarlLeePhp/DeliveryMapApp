@@ -135,7 +135,6 @@ namespace DeliveryAppWhiterocks.Views
             long currentUnixTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             try { 
-
                 if(XeroAPI._accessToken == null || currentUnixTimeStamp - XeroAPI._accessToken.nbf >= 30 * 24 * 3600)
                 {
                     await Navigation.PushModalAsync(new XEROWebPage());
