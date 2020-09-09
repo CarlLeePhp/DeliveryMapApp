@@ -45,7 +45,8 @@ namespace DeliveryAppWhiterocks.Views
         int _outsideRouteUpdateCounter = 0;
 
         GoogleDirection _direction;
-       
+
+        double _currentWeight = 0;
 
         //DEST CONSTANT ONLY FOR TESTING REMOVE LATER
         int numberOfAPICalls = 0;
@@ -81,6 +82,8 @@ namespace DeliveryAppWhiterocks.Views
             //Got the information from https://winstongubantes.blogspot.com/2017/11/creating-draggable-sliding-up-panel-in.html
             InitMenu(); 
             InitializeObservables();
+            List<InvoiceSQLite> tempInvoices = App.InvoiceDatabase.GetAllIncompletePickupInvoice();
+            InitWeightLabel(tempInvoices);
         }
 
         private async Task<bool> Update()
@@ -140,12 +143,8 @@ namespace DeliveryAppWhiterocks.Views
                 InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceID(_currentSelectedInvoice.InvoiceID);
                 if (invoiceSQLite.CompletedDeliveryStatus)
                 {
-                    _invoicesCollection.Remove(_currentSelectedInvoice);
-                    _invoices.Remove(_currentSelectedInvoice);
-                    DeliveryItemView.ItemsSource = _invoicesCollection;
-                    Pin thePin = _pins.Where(pinX => pinX.Label == _currentSelectedInvoice.InvoiceNumber).FirstOrDefault();
-                    map.Pins.Remove(thePin);
-                    _waypoints.Remove($"{thePin.Position.Latitude}%2C{thePin.Position.Longitude}");
+                    UpdateStatus(_currentSelectedInvoice);
+                    UpdateWeightLabel(_currentSelectedInvoice);
                 }
                 _currentSelectedInvoice = null;
             }
@@ -162,6 +161,20 @@ namespace DeliveryAppWhiterocks.Views
                     _outsideRouteUpdateCounter = 0;
                 }
             }
+        }
+
+        private void InitWeightLabel(List<InvoiceSQLite> invoiceSQLite)
+        {
+            Dictionary<string, Stock> itemDictionary = StockManager.GetStock(invoiceSQLite);
+
+            _currentWeight = 0;
+            foreach (KeyValuePair<string, Stock> stock in itemDictionary)
+            {
+                Stock stockX = stock.Value;
+                _currentWeight += stockX.Weight;
+            }
+            
+            TotalWeightLabel.Text = string.Format($"{_currentWeight:F2} Kg");
         }
 
         //SLIDEUP MENU REGION
@@ -435,13 +448,24 @@ namespace DeliveryAppWhiterocks.Views
 
                 App.InvoiceDatabase.UpdateInvoiceStatus(invoice);
                 UpdateStatus(invoiceSelected);
+                UpdateWeightLabel(invoiceSelected);
+
+                bool googleAPICallRequired = true;
+                InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceNumber(invoiceSelected.InvoiceNumber);
+                if (invoiceSQLite != null)
+                {
+                    ContactSQLite contact = App.ContactDatabase.GetContactByID(invoiceSQLite.ContactID);
+                    double distanceToInvoiceInKm = Location.CalculateDistance(_currentLocation, new Location((double)contact.Latitude, (double)contact.Longitude), DistanceUnits.Kilometers);
+
+                    if (distanceToInvoiceInKm * 1000 < 30) googleAPICallRequired = false;
+                }
+
+                if (googleAPICallRequired) MapDirections("(Force-Refresh) ");
             }
         } // Mark As Completed
 
         public void UpdateStatus(Invoice invoiceSelected)
         {
-            bool googleAPICallRequired = true;
-
             _invoicesCollection.Remove(invoiceSelected);
             _invoices.Remove(invoiceSelected);
             DeliveryItemView.ItemsSource = _invoicesCollection;
@@ -449,17 +473,25 @@ namespace DeliveryAppWhiterocks.Views
             map.Pins.Remove(thePin);
             _waypoints.Remove($"{thePin.Position.Latitude}%2C{thePin.Position.Longitude}");
 
-            InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceNumber(invoiceSelected.InvoiceNumber);
-            if(invoiceSQLite != null)
-            {
-                ContactSQLite contact =  App.ContactDatabase.GetContactByID(invoiceSQLite.ContactID);
-                double distanceToInvoiceInKm = Location.CalculateDistance(_currentLocation, new Location((double)contact.Latitude,(double)contact.Longitude), DistanceUnits.Kilometers);
-
-                if (distanceToInvoiceInKm * 1000 < 30) googleAPICallRequired = false;
-            }
-
-            if (googleAPICallRequired) MapDirections("(Force-Refresh) ");
             _counter--;
+        }
+
+        public void UpdateWeightLabel(Invoice invoiceSelected)
+        {
+            InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceID(invoiceSelected.InvoiceID);
+            List<InvoiceSQLite> temp = new List<InvoiceSQLite>();
+            temp.Add(invoiceSQLite);
+
+            double invoiceWeight = StockManager.CalculateStockWeight(StockManager.GetStock(temp));
+
+            if(invoiceSQLite.InvoiceType == "ACCREC")
+            {
+                _currentWeight -= invoiceWeight;
+            } else
+            {
+                _currentWeight += invoiceWeight;
+            }
+            TotalWeightLabel.Text = $"{(_currentWeight):F2} Kg";
         }
 
         private void ImgClose_Tapped(object sender, EventArgs e)

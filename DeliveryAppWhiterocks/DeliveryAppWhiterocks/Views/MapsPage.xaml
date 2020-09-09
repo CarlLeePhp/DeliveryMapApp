@@ -67,7 +67,7 @@
                         </Grid>
                         <!--Body of the view-->
                             <StackLayout x:Name="Notification" HeightRequest="200" Grid.Row="1" Margin="0,0,0,0">
-                                <CollectionView x:Name="DeliveryItemView" SelectionMode="Single">
+                                <CollectionView x:Name="DeliveryItemView" SelectionMode="Single" ItemsUpdatingScrollMode="KeepScrollOffset">
                                 <CollectionView.ItemsLayout>
                                     <GridItemsLayout Orientation="Vertical"></GridItemsLayout>
                                 </CollectionView.ItemsLayout>
@@ -134,7 +134,7 @@
                     </Image.GestureRecognizers>
                 </Image>
                 
-                <Label x:Name="weightLabel" Text="PLACEHOLDER" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" FontAttributes="Bold" FontSize="26" TextColor="White"></Label>
+                <Label x:Name="TotalWeightLabel" Text="PLACEHOLDER" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" FontAttributes="Bold" FontSize="26" TextColor="White"></Label>
             </StackLayout>
         </Grid>
     </ContentPage.Content>
