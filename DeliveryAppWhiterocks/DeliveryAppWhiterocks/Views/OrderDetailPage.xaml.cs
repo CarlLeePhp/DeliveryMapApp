@@ -117,14 +117,9 @@ namespace DeliveryAppWhiterocks.Views
             PageHeaderLabel.Text += _selectedInvoice.Type == "ACCPAY" ? " - Pickup" : " - Dropoff";
             if (userAction)
             {
-                InvoiceSQLite invoice = new InvoiceSQLite();
-                invoice.InvoiceType = _selectedInvoice.Type;
-                invoice.InvoiceID = _selectedInvoice.InvoiceID;
-                invoice.InvoiceNumber = _selectedInvoice.InvoiceNumber;
+                InvoiceSQLite invoice = App.InvoiceDatabase.GetInvoiceByInvoiceID(_selectedInvoice.InvoiceID);
                 invoice.CompletedDeliveryStatus = (_selectedInvoice.Status == "Completed");
-                invoice.ContactID = _selectedInvoice.Contact.ContactID;
-                invoice.Subtotal = _selectedInvoice.SubTotal;
-                invoice.TenantID = Preferences.Get("TenantID", string.Empty);
+                invoice.UpdateTimeTicksApp = DateTime.Now.Ticks;
                 
                 App.InvoiceDatabase.UpdateInvoiceStatus(invoice);
             }

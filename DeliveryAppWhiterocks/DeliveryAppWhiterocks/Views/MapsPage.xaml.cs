@@ -29,6 +29,7 @@ namespace DeliveryAppWhiterocks.Views
         //end sliding up menu props
 
         ObservableCollection<Invoice> _invoicesCollection = new ObservableCollection<Invoice>();
+        List<Invoice> _storageInvoice = new List<Invoice>();
         List<Invoice> _invoices = new List<Invoice>();
         List<InvoiceSQLite> _invoiceSQLite = new List<InvoiceSQLite>();
         Invoice _currentSelectedInvoice;
@@ -54,16 +55,19 @@ namespace DeliveryAppWhiterocks.Views
         public MapsPage(List<Invoice> invoices)
         {
             InitializeComponent();
-            _invoices = invoices;
-            
+            NavigationPage.SetHasNavigationBar(this, false);
+            _storageInvoice = invoices;
             //Enable the blue circle that mark the current location of user
             map.MyLocationEnabled = true;
             CenterMapToCurrentLocation();
             _timer = new Timer((e) =>
             {
-                Device.BeginInvokeOnMainThread(async () => {
-                    try {
-                        if (App.CheckIfInternet()) { 
+                Device.BeginInvokeOnMainThread(async () =>
+                {
+                    try
+                    {
+                        if (App.CheckIfInternet())
+                        {
                             await Update();
                         }
                     }
@@ -171,12 +175,12 @@ namespace DeliveryAppWhiterocks.Views
                 await Task.Delay(200);
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    Notification.HeightRequest = this.Height - QuickMenuLayout.Height;
+                    Notification.HeightRequest = MapContentLayout.Height - QuickMenuLayout.Height;
                     QuickMenuPullLayout.TranslationY = Notification.HeightRequest;
                 });
             });
 
-            QuickMenuPullLayout.BackgroundColor = new Color(247, 247, 247, 0.9);
+            MenuPaddingBottomStackLayout.HeightRequest = App.screenHeight / 2;
         }
 
         private void InitializeObservables()
@@ -207,7 +211,7 @@ namespace DeliveryAppWhiterocks.Views
                         {
                             //QuickMenuPullLayout.TranslationY = Math.Max(0,
                             //    Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY));
-                            QuickMenuPullLayout.TranslateTo(QuickMenuPullLayout.TranslationX, Math.Max(60, Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY)), 250, Easing.Linear);
+                            QuickMenuPullLayout.TranslateTo(QuickMenuPullLayout.TranslationX, Math.Max(0, Math.Min(Notification.HeightRequest, QuickMenuPullLayout.TranslationY + e.TotalY)), 250, Easing.Linear);
                         });
                     }, 2);
 
@@ -243,9 +247,9 @@ namespace DeliveryAppWhiterocks.Views
             map.Pins.Clear();
             _waypoints.Clear();
 
-            foreach (InvoiceSQLite invoice in _invoiceSQLite)
+            for (int i=0; i <_invoiceSQLite.Count; i++)
             {
-                ContactSQLite customerContact = App.ContactDatabase.GetContactByID(invoice.ContactID);
+                ContactSQLite customerContact = App.ContactDatabase.GetContactByID(_invoiceSQLite[i].ContactID);
                 Position position;
 
                 if (!customerContact.Latitude.HasValue) { 
@@ -280,7 +284,7 @@ namespace DeliveryAppWhiterocks.Views
                         catch
                         {
                             position = new Position(0, 0);
-                            await DisplayAlert("Alert", String.Format("Couldnt map the position of {0}",invoice.InvoiceNumber), "OK");
+                            await DisplayAlert("Alert", String.Format("Couldnt map the position of {0}", _invoiceSQLite[i].InvoiceNumber), "OK");
                         }
                     }
 
@@ -300,10 +304,10 @@ namespace DeliveryAppWhiterocks.Views
                     var pin = new Pin()
                     {
                         Position = position,
-                        Label = $"{invoice.InvoiceNumber}",
+                        Label = $"{_invoiceSQLite[i].InvoiceNumber}",
                         //set tag so i can reference it when a pin is clicked
-                        Tag = invoice,
-                        Icon = BitmapDescriptorFactory.FromBundle(invoice.InvoiceType),
+                        Tag = _invoiceSQLite[i],
+                        Icon = BitmapDescriptorFactory.FromBundle(_invoiceSQLite[i].InvoiceType),
                     };
                     
                     _pins.Add(pin);
@@ -311,6 +315,8 @@ namespace DeliveryAppWhiterocks.Views
                     map.SelectedPinChanged += Map_SelectedPinChanged;
                     map.Pins.Add(pin);
                     #endregion
+
+                    _invoices.Add(_storageInvoice[i]);
                 }
             }
             return true;
@@ -347,7 +353,7 @@ namespace DeliveryAppWhiterocks.Views
                     {
                         _invoicesCollection.Add(_invoices[order]);
                     }
-
+                    
                     DeliveryItemView.ItemsSource = _invoicesCollection;
                 } else
                 {
@@ -421,18 +427,11 @@ namespace DeliveryAppWhiterocks.Views
                 var button = sender as Button;
                
                 Invoice invoiceSelected = button.BindingContext as Invoice;
-                
 
-                InvoiceSQLite invoice = new InvoiceSQLite();
-                invoice.InvoiceID = invoiceSelected.InvoiceID;
-                invoice.InvoiceNumber = invoiceSelected.InvoiceNumber;
+
+                InvoiceSQLite invoice = App.InvoiceDatabase.GetInvoiceByInvoiceID(invoiceSelected.InvoiceID);
                 invoice.CompletedDeliveryStatus = true;
-                invoice.ContactID = invoiceSelected.Contact.ContactID;
-                invoice.Subtotal = invoiceSelected.SubTotal;
-                invoice.TenantID = Preferences.Get("TenantID", string.Empty);
-
-                invoice.InvoiceType = invoiceSelected.Type;
-
+                invoice.UpdateTimeTicksApp = DateTime.Now.Ticks;
 
                 App.InvoiceDatabase.UpdateInvoiceStatus(invoice);
                 UpdateStatus(invoiceSelected);
@@ -461,6 +460,11 @@ namespace DeliveryAppWhiterocks.Views
 
             if (googleAPICallRequired) MapDirections("(Force-Refresh) ");
             _counter--;
+        }
+
+        private void ImgClose_Tapped(object sender, EventArgs e)
+        {
+            Navigation.PopAsync(true);
         }
     }
 }
