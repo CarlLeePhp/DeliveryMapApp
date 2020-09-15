@@ -103,7 +103,6 @@
                                                 <BoxView BackgroundColor="White" HeightRequest="1"></BoxView>
                                                 <StackLayout x:Name="test" Orientation="Horizontal" Spacing="4">
                                                     <Label TextColor="White" Text="{Binding Contact.Addresses[1].AddressLine1}"></Label>
-                                                    
                                                     <Label TextColor="White" Text="{Binding Contact.Addresses[1].City}"></Label>
                                                 </StackLayout>
                                             </StackLayout>
@@ -123,7 +122,7 @@
 
                         <Button Text="Load Delivery" Clicked="LoadDeliveryBtn_Clicked" TextColor="#80574D" BackgroundColor="Transparent" >
                         </Button>
-
+                        
                         <BoxView BackgroundColor="black" WidthRequest="1"></BoxView>
 
                         <Button Text="Get Directions" Clicked="GetDirectionBtn_Clicked" TextColor="#80574D" BackgroundColor="Transparent">

@@ -179,10 +179,10 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                         
                         List<LineItemSQLite> lineItemSQLiteList = App.LineItemDatabase.GetLineItemByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
 
-                        foreach(LineItem lineItem in _InvoiceResponse.Invoices[i].LineItems)
+                        foreach (LineItem lineItem in _InvoiceResponse.Invoices[i].LineItems)
                         {
                             ItemSQLite itemSQLite = App.ItemDatabase.GetItemByID(lineItem.ItemCode);
-                            if(itemSQLite == null)
+                            if (itemSQLite == null)
                             {
                                 ItemSQLite newItem = new ItemSQLite()
                                 {
@@ -209,7 +209,8 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                                 };
                                 //Save to db
                                 App.LineItemDatabase.InsertLineItem(lineItemSQLite);
-                            } else
+                            }
+                            else
                             {
                                 itemSQLite.Description = lineItem.Description;
                                 itemSQLite.ItemCode = lineItem.ItemCode;
@@ -220,21 +221,39 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                                 }
                                 App.ItemDatabase.UpdateItem(itemSQLite);
                                 LineItemSQLite theLineItem = lineItemSQLiteList.Where(lineItemX => lineItemX.ItemCode == lineItem.ItemCode).FirstOrDefault();
-
-                                LineItemSQLite lineItemSQLite = new LineItemSQLite()
+                                if(theLineItem == null)
                                 {
-                                    ItemLineID = theLineItem.ItemLineID,
-                                    InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
-                                    ItemCode = lineItem.ItemCode,
-                                    Quantity = (int)lineItem.Quantity,
-                                    UnitAmount = lineItem.UnitAmount,
-                                };
-                                App.LineItemDatabase.UpdateLineItem(lineItemSQLite);
-                                if(theLineItem != null) lineItemSQLiteList.Remove(theLineItem);
+                                    //sort desc by ID, get the first one (biggest id number)
+                                    var maxItemLineID = App.LineItemDatabase.GetLastLineItem();
+                                    //create the id by referencing lineitemtable
+                                    theLineItem = new LineItemSQLite()
+                                    {
+                                        // if it's not set set the itemline id to 1 else increment 1 from the biggest value
+                                        ItemLineID = (maxItemLineID == null ? 1 : maxItemLineID.ItemLineID + 1),
+                                        InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
+                                        ItemCode = lineItem.ItemCode,
+                                        Quantity = (int)lineItem.Quantity,
+                                        UnitAmount = lineItem.UnitAmount,
+                                    };
+                                    //Save to db
+                                    App.LineItemDatabase.InsertLineItem(theLineItem);
+                                } else
+                                {
+                                    LineItemSQLite lineItemSQLite = new LineItemSQLite()
+                                    {
+                                        ItemLineID = theLineItem.ItemLineID,
+                                        InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
+                                        ItemCode = lineItem.ItemCode,
+                                        Quantity = (int)lineItem.Quantity,
+                                        UnitAmount = lineItem.UnitAmount,
+                                    };
+                                    App.LineItemDatabase.UpdateLineItem(lineItemSQLite);
+                                    lineItemSQLiteList.Remove(theLineItem);
+                                }
                             }
                         }
 
-                        if(lineItemSQLiteList.Count > 0)
+                        if (lineItemSQLiteList.Count > 0)
                         {
                             foreach(LineItemSQLite lineItemSQLite in lineItemSQLiteList)
                             {

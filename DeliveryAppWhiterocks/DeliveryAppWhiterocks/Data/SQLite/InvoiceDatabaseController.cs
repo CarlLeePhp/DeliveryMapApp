@@ -28,7 +28,9 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             lock (locker)
             {
                 string currentTenant = Preferences.Get("TenantID", string.Empty);
-                return database.Table<InvoiceSQLite>().Where(invoice => invoice.TenantID == currentTenant && invoice.CompletedDeliveryStatus == false ).ToList();
+                List<InvoiceSQLite> invoiceList = database.Table<InvoiceSQLite>().Where(invoice => invoice.TenantID == currentTenant && invoice.CompletedDeliveryStatus == false ).ToList();
+                //invoiceList.Reverse();
+                return invoiceList;
             }
         }
 

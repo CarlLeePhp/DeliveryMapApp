@@ -101,7 +101,6 @@ namespace DeliveryAppWhiterocks.Views
                 };
                 _deliveryOrders.Add(invoice);
             }
-            
             DeliveryInvoice.ItemsSource = _deliveryOrders;
             CheckHasDataLabel();
         }
@@ -135,7 +134,6 @@ namespace DeliveryAppWhiterocks.Views
             long currentUnixTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             try { 
-
                 if(XeroAPI._accessToken == null || currentUnixTimeStamp - XeroAPI._accessToken.nbf >= 30 * 24 * 3600)
                 {
                     await Navigation.PushModalAsync(new XEROWebPage());
@@ -176,7 +174,7 @@ namespace DeliveryAppWhiterocks.Views
             if (App.CheckIfInternet() && !_childPageLoaded) {
                 _childPageLoaded = true;
                 List<Invoice> invoices = _deliveryOrders.ToList();
-                Navigation.PushAsync(new MapsPage(invoices));
+                Navigation.PushAsync(new MapsPage(invoices),true);
             } else
             {
                 DisplayAlert("Oops", "No internet connection, Google Maps requires an internet connection", "OK");
