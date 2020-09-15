@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DeliveryAppWhiterocks.Views.SettingPage">
+             x:Class="DeliveryAppWhiterocks.Views.SettingPage"
+             xmlns:localBehavior="clr-namespace:DeliveryAppWhiterocks.Behaviors">
 
     <Grid>
         
@@ -45,38 +46,42 @@
                 </Grid>
             </StackLayout>
             <StackLayout Grid.Column="1" Grid.Row="2">
-            <TableView Intent="Settings">
-                <TableRoot>
-                        <TableSection>
-
-                            <EntryCell x:Name="endPoint" Placeholder="Enter End Point" Label="End Point" Text="{Binding EndPoint}"></EntryCell>
-                            
-                        </TableSection>
-                        <TableSection>
-
-                            <EntryCell x:Name="taxAmount" Placeholder="Enter GST" Label="GST" Text="{Binding TaxAmount}"></EntryCell>
-                            
-                        </TableSection>
-
-                        <TableSection>
-                            <ViewCell>
-                                <Button Text="Save" Command="{Binding SaveCommand}" BackgroundColor="#CE0B06" TextColor="White"/>
-                            </ViewCell>
-                        </TableSection>
-                        <TableSection>
-                            <ViewCell>
-                                <Picker x:Name="tenants" Title="Select a Organization"
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" VerticalTextAlignment="Center" FontSize="Medium">End Point:</Label>
+                    <Entry x:Name="endPoint"  Grid.Column="1" Placeholder="Enter a End Point" Text="{Binding EndPoint}">
+                        <Entry.Behaviors>
+                            <localBehavior:EventToCommandBehavior
+                                EventName="Unfocused"
+                                Command="{Binding EndPointCompleted}" />
+                        </Entry.Behaviors>
+                    </Entry>
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" VerticalTextAlignment="Center" FontSize="Medium">GST:</Label>
+                    <Entry x:Name="taxAmount"  Grid.Column="1" Placeholder="Enter GST" Text="{Binding TaxAmount}" />
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" VerticalTextAlignment="Center" FontSize="Medium">Orgnization:</Label>
+                    <Picker Grid.Column="1" x:Name="tenants" Title="Select a Organization"
                                         ItemsSource="{Binding Tenants}"
                                         ItemDisplayBinding="{Binding TenantName}"
                                         SelectedItem="{Binding SelectedTenant}">
 
-                                </Picker>
-                            </ViewCell>
-                        </TableSection>
-                    </TableRoot>
-                    
-                </TableView>
-            
+                    </Picker>
+                </Grid>
+                
             </StackLayout>
         </Grid>
     </Grid>

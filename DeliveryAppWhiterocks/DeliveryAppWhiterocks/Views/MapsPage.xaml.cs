@@ -48,7 +48,6 @@ namespace DeliveryAppWhiterocks.Views
 
         //DEST CONSTANT ONLY FOR TESTING REMOVE LATER
         int numberOfAPICalls = 0;
-        static Position destination = new Position(-46.4134, 168.3556);
 
         //remove the passing parameter later. now is used only for testing
         public MapsPage(List<Invoice> invoices)
@@ -86,6 +85,7 @@ namespace DeliveryAppWhiterocks.Views
             {
                 return false;
             }
+            
 
             if (_prevLocation == null) _prevLocation = _currentLocation;
 
@@ -105,7 +105,7 @@ namespace DeliveryAppWhiterocks.Views
                 }
                 else if (map.Polylines[0].Positions.Count == 1)
                 {
-                    pointB = destination;
+                    pointB = GoogleMapsAPI.DestinationPosition;
                 }
 
                 Location locationB = new Location(pointB.Latitude, pointB.Longitude);
@@ -311,6 +311,9 @@ namespace DeliveryAppWhiterocks.Views
                     map.SelectedPinChanged += Map_SelectedPinChanged;
                     map.Pins.Add(pin);
                     #endregion
+                } else
+                {
+                    await DisplayAlert("Warning", $"The address {customerContact.Address} With correspondence of {invoice.InvoiceNumber} Not Found","OK");
                 }
             }
             return true;
@@ -421,18 +424,9 @@ namespace DeliveryAppWhiterocks.Views
                 var button = sender as Button;
                
                 Invoice invoiceSelected = button.BindingContext as Invoice;
-                
 
-                InvoiceSQLite invoice = new InvoiceSQLite();
-                invoice.InvoiceID = invoiceSelected.InvoiceID;
-                invoice.InvoiceNumber = invoiceSelected.InvoiceNumber;
+                InvoiceSQLite invoice = App.InvoiceDatabase.GetInvoiceByInvoiceID(invoiceSelected.InvoiceID);
                 invoice.CompletedDeliveryStatus = true;
-                invoice.ContactID = invoiceSelected.Contact.ContactID;
-                invoice.Subtotal = invoiceSelected.SubTotal;
-                invoice.TenantID = Preferences.Get("TenantID", string.Empty);
-
-                invoice.InvoiceType = invoiceSelected.Type;
-
 
                 App.InvoiceDatabase.UpdateInvoiceStatus(invoice);
                 UpdateStatus(invoiceSelected);
