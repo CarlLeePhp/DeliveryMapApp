@@ -18,7 +18,10 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
         public static List<int> _waypointsOrder = new List<int>();
 
         //DEST CONSTANT ONLY FOR TESTING REMOVE LATER
-        static Position destination = new Position(-46.4134, 168.3556);
+        public static Position destination = new Position(-46.4134, 168.3556);
+        public static Position DestinationPosition { get; set; }
+        public static string DestinationAddress { get; set; }
+
 
         public static async Task<GoogleDirection> MapDirectionsWithWaypoints(Position initialLocation,params string[] waypoints)
         {
@@ -32,7 +35,7 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
             string formattedWaypoints = string.Join("|", waypoints);
 
             
-            var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={destination.Latitude},{destination.Longitude}&waypoints=optimize:true|{formattedWaypoints}&key={Constants.GoogleAPIKEY}&mode=driving");
+            var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={DestinationPosition.Latitude},{DestinationPosition.Longitude}&waypoints=optimize:true|{formattedWaypoints}&key={Constants.GoogleAPIKEY}&mode=driving");
             
             if (!response.IsSuccessStatusCode) return null;
 
@@ -94,12 +97,15 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
             if (!response.IsSuccessStatusCode) return pos;
             var responseBody = await response.Content.ReadAsStringAsync();
             var googleGeocoding = JsonConvert.DeserializeObject<GoogleGeocoding>(responseBody);
-            
 
-            double latitude = googleGeocoding.results.First().geometry.location.lat;
-            double longitude = googleGeocoding.results.First().geometry.location.lng;
-            pos = new Position(latitude, longitude);
-
+            try { 
+                double latitude = googleGeocoding.results.First().geometry.location.lat;
+                double longitude = googleGeocoding.results.First().geometry.location.lng;
+                pos = new Position(latitude, longitude);
+            } catch
+            {
+                Console.WriteLine($"{locationString} Not Found");
+            }
             return pos;
         }
     }

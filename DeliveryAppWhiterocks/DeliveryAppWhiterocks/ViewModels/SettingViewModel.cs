@@ -5,6 +5,8 @@ using Xamarin.Forms;
 using DeliveryAppWhiterocks.Models;
 using Xamarin.Essentials;
 using DeliveryAppWhiterocks.Models.Database.SQLite;
+using Xamarin.Forms.GoogleMaps;
+using DeliveryAppWhiterocks.Models.GoogleDirectionAPI;
 
 namespace DeliveryAppWhiterocks.ViewModels
 {
@@ -19,9 +21,7 @@ namespace DeliveryAppWhiterocks.ViewModels
             set 
             {
                 _endPoint = value;
-                Validate(() => !string.IsNullOrWhiteSpace(_endPoint), "End Point must be provided.");
                 OnPropertyChanged();
-                SaveCommand.ChangeCanExecute();
             }
         }
 
@@ -33,9 +33,9 @@ namespace DeliveryAppWhiterocks.ViewModels
             set
             {
                 _taxAmount = value;
-                Validate(() => _taxAmount > 0 && _taxAmount < 1, "GST must be between 0 and 1");
+                Validate(() => _taxAmount > 0 && _taxAmount < 1, "GST should between 0 and 1");
+                if(_taxAmount > 0 && _taxAmount < 1) Constants.taxAmount = TaxAmount;
                 OnPropertyChanged();
-                SaveCommand.ChangeCanExecute();
             }
         }
         private IList<TenantSQLite> _tenants;
@@ -61,17 +61,9 @@ namespace DeliveryAppWhiterocks.ViewModels
             }
         }
 
-        Command _saveCommand;
-        public Command SaveCommand => _saveCommand ?? (_saveCommand = new Command(Save, CanSave));
-        private async void Save()
-        {
-            Constants.taxAmount = TaxAmount;
-            Preferences.Set("EndPoint", EndPoint);
-            await _navigation.PopModalAsync();
-        }
-        bool CanSave() => !string.IsNullOrWhiteSpace(EndPoint) && !HasErrors;
+        
         public Command CloseCommand { get; set; }
-
+        public Command EndPointCompleted { get; set; }
         public SettingViewModel(INavigation navigation)
         {
             _navigation = navigation;
@@ -80,13 +72,25 @@ namespace DeliveryAppWhiterocks.ViewModels
             Tenants = App.TenantDatabase.GetAllTenants();
             // Register Commands
             CloseCommand = new Command(CloseView);
-
+            EndPointCompleted = new Command(CheckEndPoint);
         }
 
-        
         private async void CloseView()
         {
             await _navigation.PopModalAsync();
+        }
+        private async void CheckEndPoint()
+        {
+            Position position = await GoogleMapsAPI.GetPositionFromKnownAddress(_endPoint);
+            bool isSuccess = !(position.Latitude == 0 && position.Longitude == 0);
+            if (isSuccess)
+            {
+                Preferences.Set("EndPoint", EndPoint);
+                GoogleMapsAPI.DestinationAddress = EndPoint;
+                GoogleMapsAPI.DestinationPosition = position;
+            }
+            Validate(() => !isSuccess, "Set the End Point as " + _endPoint, "Message");
+            Validate(() => isSuccess, "The address is not valid, Please try again", "Message"); // Message is not a real property name
         }
     }
 }
