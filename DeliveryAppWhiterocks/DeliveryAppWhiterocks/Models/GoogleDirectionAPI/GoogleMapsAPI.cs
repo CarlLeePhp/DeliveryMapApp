@@ -59,8 +59,6 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
         {
             var httpClient = new HttpClient();
 
-          
-
             var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={destination.Latitude},{destination.Longitude}&key={Constants.GoogleAPIKEY}&mode=driving");
 
             if (!response.IsSuccessStatusCode) return null;

@@ -7,6 +7,7 @@ using DeliveryAppWhiterocks.Models.XeroAPI;
 using DeliveryAppWhiterocks.Models.Database.SQLite;
 using Xamarin.Forms;
 using DeliveryAppWhiterocks.Models;
+using System.Linq;
 
 namespace DeliveryAppWhiterocks.ViewModels
 {
@@ -35,10 +36,11 @@ namespace DeliveryAppWhiterocks.ViewModels
             // Register Commands
             CloseCommand = new Command(Close);
             _deliveryOrders.Clear();
-            //load data from database
-            //do foreach
-            //orderTemp.Add(new OrderTemp("INV-011", "Kappa smith", "Morning rd 132, Otago","30", "BLackstuff", 3, 3.5));
-            foreach (InvoiceSQLite invoiceSqlite in App.InvoiceDatabase.GetAllCompletedInvoices())
+
+            List<InvoiceSQLite> invoices = App.InvoiceDatabase.GetAllIncompleteInvoices();
+            invoices = invoices.OrderByDescending(invoiceX => invoiceX.UpdateTimeTicksApp).ToList();
+
+            foreach (InvoiceSQLite invoiceSqlite in invoices)
             {
                 ContactSQLite contactSqlite = App.ContactDatabase.GetContactByID(invoiceSqlite.ContactID);
                 List<Address> address = new List<Address>();

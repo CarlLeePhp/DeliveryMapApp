@@ -77,7 +77,9 @@ namespace DeliveryAppWhiterocks.Views
         {
             _deliveryOrders.Clear();
             //load data from database
-            foreach (InvoiceSQLite invoiceSqlite in App.InvoiceDatabase.GetAllIncompleteInvoices())
+            List<InvoiceSQLite> invoices = App.InvoiceDatabase.GetAllIncompleteInvoices();
+            invoices = invoices.OrderByDescending(invoiceX => invoiceX.UpdateTimeTicksApp).ToList();
+            foreach (InvoiceSQLite invoiceSqlite in invoices)
             {
                 if (Constants.TenantID != "" && invoiceSqlite.TenantID != Constants.TenantID) continue;
                 ContactSQLite contactSqlite = App.ContactDatabase.GetContactByID(invoiceSqlite.ContactID);
@@ -95,10 +97,11 @@ namespace DeliveryAppWhiterocks.Views
 
                 Invoice invoice = new Invoice() {
                     Type = invoiceSqlite.InvoiceType,
-                    InvoiceID = invoiceSqlite.InvoiceID, 
-                    InvoiceNumber =invoiceSqlite.InvoiceNumber, 
+                    InvoiceID = invoiceSqlite.InvoiceID,
+                    InvoiceNumber = invoiceSqlite.InvoiceNumber,
                     Contact = contact,
-                    TypeColor = invoiceSqlite.InvoiceType == "ACCREC" ? Constants.IsDropOffColor : Constants.IsPickUpColor
+                    TypeColor = invoiceSqlite.InvoiceType == "ACCREC" ? Constants.IsDropOffColor : Constants.IsPickUpColor,
+                    
                 };
                 _deliveryOrders.Add(invoice);
             }
@@ -206,6 +209,7 @@ namespace DeliveryAppWhiterocks.Views
         private void DeliveryInvoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var currentSelection = e.CurrentSelection.FirstOrDefault() as Invoice;
+            
             if (currentSelection == null || _childPageLoaded) return;
             _childPageLoaded = true;
             Navigation.PushModalAsync(new OrderDetailPage(currentSelection));

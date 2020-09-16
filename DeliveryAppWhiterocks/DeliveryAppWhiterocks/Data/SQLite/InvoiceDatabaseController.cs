@@ -29,6 +29,7 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             {
                 string currentTenant = Preferences.Get("TenantID", string.Empty);
                 List<InvoiceSQLite> invoiceList = database.Table<InvoiceSQLite>().Where(invoice => invoice.TenantID == currentTenant && invoice.CompletedDeliveryStatus == false ).ToList();
+
                 //invoiceList.Reverse();
                 return invoiceList;
             }
