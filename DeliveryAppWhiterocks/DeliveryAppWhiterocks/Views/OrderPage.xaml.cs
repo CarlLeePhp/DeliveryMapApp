@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Rg.Plugins.Popup.Services;
 
 namespace DeliveryAppWhiterocks.Views
 {
@@ -51,12 +52,12 @@ namespace DeliveryAppWhiterocks.Views
             {
                 SupplyOrder();
             }
-            
         }
         private void Init()
         {
             NavigationPage.SetHasNavigationBar(this, false);
             App.CheckInternetIfConnected(noInternetLbl, this);
+
         }
 
         private void CheckHasDataLabel()
@@ -210,6 +211,13 @@ namespace DeliveryAppWhiterocks.Views
             Navigation.PushModalAsync(new OrderDetailPage(currentSelection));
             _currentInvoice = currentSelection;
             ((CollectionView)sender).SelectedItem = null;
+        }
+
+        private async void HelpButton_Clicked(object sender, EventArgs e)
+        {
+
+            var page = new OrderHelpPopupPage();
+            await PopupNavigation.Instance.PushAsync(page);
         }
     }
 }

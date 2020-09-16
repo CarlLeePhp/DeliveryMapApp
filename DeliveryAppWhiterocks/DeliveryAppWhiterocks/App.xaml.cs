@@ -46,7 +46,7 @@ namespace DeliveryAppWhiterocks
 
         private void Init()
         {
-            Device.SetFlags(new string[] { "Expander_Experimental" });
+            Device.SetFlags(new string[] { "Expander_Experimental" , "Shapes_Experimental" });
         }
 
         protected override void OnStart()

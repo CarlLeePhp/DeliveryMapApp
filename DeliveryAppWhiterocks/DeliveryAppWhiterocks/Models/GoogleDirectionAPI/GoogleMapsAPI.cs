@@ -94,6 +94,7 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
             if (!response.IsSuccessStatusCode) return pos;
             var responseBody = await response.Content.ReadAsStringAsync();
             var googleGeocoding = JsonConvert.DeserializeObject<GoogleGeocoding>(responseBody);
+            
 
             double latitude = googleGeocoding.results.First().geometry.location.lat;
             double longitude = googleGeocoding.results.First().geometry.location.lng;

@@ -27,8 +27,10 @@ namespace DeliveryAppWhiterocks.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(savedInstanceState);
-            Xamarin.Forms.Forms.SetFlags("Expander_Experimental");
+            Xamarin.Forms.Forms.SetFlags(new string[] { "Expander_Experimental" , "Shapes_Experimental" });
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+
+            Rg.Plugins.Popup.Popup.Init(this, savedInstanceState);
 
             //Override default BitmapDescriptorFactory, 
             //the bitmap config will create a custom marker renderer in maps page depending on 
@@ -46,6 +48,18 @@ namespace DeliveryAppWhiterocks.Droid
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        public override void OnBackPressed()
+        {
+            if (Rg.Plugins.Popup.Popup.SendBackPressed(base.OnBackPressed))
+            {
+                // Do something if there are some pages in the `PopupStack`
+            }
+            else
+            {
+                // Do something if there are not any pages in the `PopupStack`
+            }
         }
 
         protected override void OnStart()

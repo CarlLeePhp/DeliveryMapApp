@@ -35,7 +35,7 @@
                   RowSpacing="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="0.2*"/>
-                    <RowDefinition Height="20"/>
+                    
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="0.1*"/>
                 </Grid.RowDefinitions>
@@ -58,19 +58,20 @@
                             <ColumnDefinition Width="1*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalTextAlignment="Center" x:Name="noInternetLbl" FontAttributes="Bold" HorizontalTextAlignment="Center" BackgroundColor="Red" TextColor="White"></Label>
-                        <Image Grid.Column="0" Grid.Row="1" Margin="15,15,0,0" HeightRequest="16" MinimumHeightRequest="16" x:Name="appIconImg" Source="@drawable/menu.png">
+                        <Image Grid.Row="1" Grid.Column="0"  Margin="15,15,0,0" HeightRequest="16" MinimumHeightRequest="16" x:Name="appIconImg" Source="@drawable/menu.png">
                             <!--Add Tap Event-->
                             <Image.GestureRecognizers>
                                 <TapGestureRecognizer x:Name="ImgMenu" Tapped="ImgMenu_Tapped"/>
                             </Image.GestureRecognizers>
                         </Image>
                         <Label Grid.Row="1" Grid.Column="1" Margin="0,15,0,0" HorizontalOptions="Center" VerticalOptions="End" VerticalTextAlignment="End" FontAttributes="Bold" FontSize="26" TextColor="White">Delivery Order</Label>
+
                     </Grid>
                 </StackLayout>
 
-                <StackLayout Orientation="Vertical" Grid.Row="2" Grid.ColumnSpan="3">
+                <AbsoluteLayout Grid.Row="1" Grid.ColumnSpan="3">
                     <!--InvoiceCollections-->
-                    <CollectionView  x:Name="DeliveryInvoice" SelectionMode="Single" SelectionChanged="DeliveryInvoice_SelectionChanged">
+                   <CollectionView x:Name="DeliveryInvoice" SelectionMode="Single" SelectionChanged="DeliveryInvoice_SelectionChanged">
                         <CollectionView.ItemsLayout>
                             <GridItemsLayout Orientation="Vertical"
                                   />
@@ -87,15 +88,15 @@
                                         <ColumnDefinition Width="0.1*"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <Frame BackgroundColor="{Binding TypeColor}" Grid.Row="0" Grid.Column="1" Margin="0,20,0,0" BorderColor="White" CornerRadius="3">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="0.1*"></RowDefinition>
-                                            <RowDefinition Height="0.1*"></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="0.1*"></RowDefinition>
+                                                <RowDefinition Height="0.1*"></RowDefinition>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="5*"></ColumnDefinition>
                                                 <ColumnDefinition Width="5*"></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
+                                            </Grid.ColumnDefinitions>
 
                                             <Label Grid.Row="0" Margin="5" TextColor="White" FontSize="Title" Grid.Column="0" Text="{Binding InvoiceNumber}"></Label>
                                             <Label Grid.Row="0" Margin="5" HorizontalTextAlignment="End" VerticalTextAlignment="End" TextColor="White" FontSize="Subtitle" Grid.Column="1" Text="{Binding Contact.Name}"></Label>
@@ -107,16 +108,20 @@
                                                 </StackLayout>
                                             </StackLayout>
                                         </Grid>
-                                </Frame>
-                                    
+                                    </Frame>
+
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                </StackLayout>
-                
+
+                   <Button x:Name="HelpButton" Clicked="HelpButton_Clicked" AbsoluteLayout.LayoutBounds="0.98,0.02,50,50" AbsoluteLayout.LayoutFlags="PositionProportional" FontAttributes="Bold" BackgroundColor="Black" TextColor="White" FontSize="Subtitle" Text="?" BorderColor="White" BorderWidth="3" CornerRadius="25" WidthRequest="48" HeightRequest="48"></Button>
+                   
+                </AbsoluteLayout>
+
+               
                 <!--BottomRibbon Nav Menu-->
-                <StackLayout  BackgroundColor="#1a1a1b"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
+                <StackLayout  BackgroundColor="#1a1a1b"  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
                     <BoxView Grid.Row="3" Grid.ColumnSpan="3"></BoxView>
                     <StackLayout Orientation="Horizontal" Spacing="45" HorizontalOptions="Center">
 

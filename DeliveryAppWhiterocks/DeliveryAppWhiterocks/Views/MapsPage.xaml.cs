@@ -50,7 +50,6 @@ namespace DeliveryAppWhiterocks.Views
 
         //DEST CONSTANT ONLY FOR TESTING REMOVE LATER
         int numberOfAPICalls = 0;
-        static Position destination = new Position(-46.4134, 168.3556);
 
         //remove the passing parameter later. now is used only for testing
         public MapsPage(List<Invoice> invoices)
@@ -109,10 +108,6 @@ namespace DeliveryAppWhiterocks.Views
                 {
                     //this is Point B, next point
                     pointB = map.Polylines[0].Positions[1];
-                }
-                else if (map.Polylines[0].Positions.Count == 1)
-                {
-                    pointB = destination;
                 }
 
                 Location locationB = new Location(pointB.Latitude, pointB.Longitude);
