@@ -19,8 +19,7 @@ namespace DeliveryAppWhiterocks.Views
             if(Device.Idiom == TargetIdiom.Phone) { 
                 popupContainerLayout.WidthRequest = App.screenWidth - 40;
             }
-            DropOffIndicator.BackgroundColor = Constants.IsDropOffColor;
-            PickupIndicator.BackgroundColor = Constants.IsPickUpColor;
+            
         }
 
         private void CloseButton_Clicked(object sender, EventArgs e)

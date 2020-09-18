@@ -92,6 +92,10 @@ namespace DeliveryAppWhiterocks.ViewModels
         }
         private async void CheckEndPoint()
         {
+            if(EndPoint == Preferences.Get("EndPoint", ""))
+            {
+                return;
+            }
             Position position = await GoogleMapsAPI.GetPositionFromKnownAddress(_endPoint);
             bool isSuccess = !(position.Latitude == 0 && position.Longitude == 0);
             if (isSuccess)
@@ -100,7 +104,7 @@ namespace DeliveryAppWhiterocks.ViewModels
                 GoogleMapsAPI.DestinationAddress = EndPoint;
                 GoogleMapsAPI.DestinationPosition = position;
             }
-            //?
+            
             Validate(() => !isSuccess, "Set the End Point as " + _endPoint, "Message");
             Validate(() => isSuccess, "The address is not valid, Please try again", "Message"); // Message is not a real property name
         }

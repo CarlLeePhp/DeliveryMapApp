@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DeliveryAppWhiterocks.Views.ViewCardsIndicator">
+  <ContentView.Content>
+      <StackLayout>
+            <Label Text="The Card with different Color represent different type of invoice" TextColor="Black" FontSize="Medium"></Label>
+            <Label Text="Legends" TextColor="#009688" FontSize="Title"></Label>
+            <Label x:Name="DropOffIndicator" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" HeightRequest="50" VerticalOptions="Center" FontSize="Subtitle" TextColor="White" FontAttributes="Bold" Text="Drop-Off"></Label>
+            <Label x:Name="PickupIndicator" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" HeightRequest="50" VerticalOptions="Center" TextColor="White" FontSize="Subtitle" FontAttributes="Bold" Text="Pick-up"></Label>
+            
+       </StackLayout>
+  </ContentView.Content>
+</ContentView>
