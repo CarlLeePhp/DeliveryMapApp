@@ -61,7 +61,18 @@ namespace DeliveryAppWhiterocks.ViewModels
             }
         }
 
-        
+        private TenantSQLite _currentTenant;
+
+        public TenantSQLite CurrentTenant
+        {
+            get { return _currentTenant; }
+            set { 
+                _currentTenant = value; 
+            }
+        }
+
+
+
         public Command CloseCommand { get; set; }
         public Command EndPointCompleted { get; set; }
         public SettingViewModel(INavigation navigation)
@@ -89,6 +100,7 @@ namespace DeliveryAppWhiterocks.ViewModels
                 GoogleMapsAPI.DestinationAddress = EndPoint;
                 GoogleMapsAPI.DestinationPosition = position;
             }
+            //?
             Validate(() => !isSuccess, "Set the End Point as " + _endPoint, "Message");
             Validate(() => isSuccess, "The address is not valid, Please try again", "Message"); // Message is not a real property name
         }

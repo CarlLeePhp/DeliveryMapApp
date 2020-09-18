@@ -40,5 +40,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
         public string BrandingThemeID { get; set; }
 
         public Color TypeColor { get; set; }
+        //Important
+        public long UpdateAppTick { get; set; }
     }
 }

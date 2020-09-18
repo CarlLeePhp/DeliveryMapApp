@@ -33,7 +33,6 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
             var httpClient = new HttpClient();
             
             string formattedWaypoints = string.Join("|", waypoints);
-
             
             var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={DestinationPosition.Latitude},{DestinationPosition.Longitude}&waypoints=optimize:true|{formattedWaypoints}&key={Constants.GoogleAPIKEY}&mode=driving");
             

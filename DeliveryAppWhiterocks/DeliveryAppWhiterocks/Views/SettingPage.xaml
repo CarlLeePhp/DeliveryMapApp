@@ -23,7 +23,7 @@
             </Grid.ColumnDefinitions>
 
             <!--TopHeader Nav-->
-            <StackLayout BackgroundColor="Black" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
+            <StackLayout BackgroundColor="Black" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Padding="0,0,0,30">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="25"/>
@@ -42,10 +42,22 @@
                         </Image.GestureRecognizers>
                     </Image>
 
-                    <Label Grid.Row="1" Grid.Column="1" Margin="0,15,0,0" HorizontalOptions="Center" VerticalOptions="End" VerticalTextAlignment="End" FontAttributes="Bold" FontSize="26" TextColor="White">Setting</Label>
+                    <Label Grid.Row="1" Grid.Column="1" Margin="0,15,0,0" HorizontalOptions="Center" VerticalOptions="End" VerticalTextAlignment="End" FontAttributes="Bold" FontSize="26" TextColor="White">Settings</Label>
                 </Grid>
             </StackLayout>
-            <StackLayout Grid.Column="1" Grid.Row="2">
+            
+            <StackLayout Grid.Column="1" Grid.Row="2" Margin="0,20,0,0" Spacing="30">
+
+                <Frame BackgroundColor="White" CornerRadius="5" >
+                    <StackLayout>
+                        <Picker Grid.Column="1" x:Name="tenants" Title="Select a Organization"
+                                        ItemsSource="{Binding Tenants}"
+                                        ItemDisplayBinding="{Binding TenantName}"
+                                        SelectedItem="{Binding SelectedTenant}">
+
+                        </Picker>
+                    </StackLayout>
+                </Frame>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -68,20 +80,6 @@
                     <Label Grid.Column="0" VerticalTextAlignment="Center" FontSize="Medium">GST:</Label>
                     <Entry x:Name="taxAmount"  Grid.Column="1" Placeholder="Enter GST" Text="{Binding TaxAmount}" />
                 </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                        <ColumnDefinition Width="10*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" VerticalTextAlignment="Center" FontSize="Medium">Orgnization:</Label>
-                    <Picker Grid.Column="1" x:Name="tenants" Title="Select a Organization"
-                                        ItemsSource="{Binding Tenants}"
-                                        ItemDisplayBinding="{Binding TenantName}"
-                                        SelectedItem="{Binding SelectedTenant}">
-
-                    </Picker>
-                </Grid>
-                
             </StackLayout>
         </Grid>
     </Grid>

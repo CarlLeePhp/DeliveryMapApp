@@ -78,7 +78,6 @@ namespace DeliveryAppWhiterocks.Views
             _deliveryOrders.Clear();
             //load data from database
             List<InvoiceSQLite> invoices = App.InvoiceDatabase.GetAllIncompleteInvoices();
-            invoices = invoices.OrderByDescending(invoiceX => invoiceX.UpdateTimeTicksApp).ToList();
             foreach (InvoiceSQLite invoiceSqlite in invoices)
             {
                 if (Constants.TenantID != "" && invoiceSqlite.TenantID != Constants.TenantID) continue;
@@ -101,11 +100,12 @@ namespace DeliveryAppWhiterocks.Views
                     InvoiceNumber = invoiceSqlite.InvoiceNumber,
                     Contact = contact,
                     TypeColor = invoiceSqlite.InvoiceType == "ACCREC" ? Constants.IsDropOffColor : Constants.IsPickUpColor,
-                    
+                    UpdateAppTick = invoiceSqlite.UpdateTimeTicksApp,
                 };
                 _deliveryOrders.Add(invoice);
             }
-            DeliveryInvoice.ItemsSource = _deliveryOrders;
+            DeliveryInvoice.ItemsSource = _deliveryOrders.OrderByDescending(invoiceX=>invoiceX.UpdateAppTick);
+            
             CheckHasDataLabel();
         }
 

@@ -353,7 +353,8 @@ namespace DeliveryAppWhiterocks.Views
                 _direction = await GoogleMapsAPI.MapDirectionsWithWaypoints(lastKnownPosition, _waypoints.ToArray());
 
                 //Only create a line if it returns something from google
-                if(_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0) { 
+                if (_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0)
+                {
                     List<Position> directionPolylines = PolylineHelper.Decode(_direction.Routes[0].OverviewPolyline.Points).ToList();
 
                     CreatePolylinesOnMap(directionPolylines);
@@ -362,12 +363,13 @@ namespace DeliveryAppWhiterocks.Views
                     {
                         _invoicesCollection.Add(_invoices[order]);
                     }
-                    
-                    DeliveryItemView.ItemsSource = _invoicesCollection;
-                } else
-                {
-                    await DisplayAlert("Oops","Unable to map the directions, please try to use internet connections or restart the app","OK");
                 }
+                else
+                {
+                    await DisplayAlert("Oops", "Unable to map the directions, please try to use internet connections or restart the app", "OK");
+                }
+
+                DeliveryItemView.ItemsSource = _invoicesCollection;
             } else if(_waypoints.Count() == 0 && App.CheckIfInternet())
             {
                 _direction = await GoogleMapsAPI.MapDirectionsNoWaypoints(lastKnownPosition);
