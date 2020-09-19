@@ -27,5 +27,22 @@ namespace DeliveryMapTest.APIs
             position = await GoogleMapsAPI.GetPositionFromKnownAddress(addressString);
             Assert.AreEqual(0, position.Latitude, 0.5);
         }
+
+        [Test]
+        public void SortWaypointsTest()
+        {
+            string[] waypoints =
+            {
+                $"45.1%2C30.1",
+                $"45.3%2C30.3",
+                $"45.3%2C30.1"
+            };
+            foreach(string line in waypoints)
+            {
+                System.Console.WriteLine(line);
+            }
+            GoogleMapsAPI.SortWaypoints(waypoints);
+            Assert.AreEqual("45.3%2C30.1", waypoints[1]);
+        }
     }
 }
