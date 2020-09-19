@@ -97,17 +97,19 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             {
                 
                 Preferences.Set("TenantID", tenant[0].tenantId);
-                App.TenantDatabase.DeleteAllTenants();
-                for(int i=0; i<tenant.Count; i++)
-                {
-                    TenantSQLite tenantSQLite = new TenantSQLite();
-                    tenantSQLite.TenantID = tenant[i].tenantId;
-                    tenantSQLite.TenantName = tenant[i].tenantName;
-                    tenantSQLite.TenantIndex = i;
-                    App.TenantDatabase.InsertTenant(tenantSQLite);
-                }
+                
             }
-            
+
+            App.TenantDatabase.DeleteAllTenants();
+            for (int i = 0; i < tenant.Count; i++)
+            {
+                TenantSQLite tenantSQLite = new TenantSQLite();
+                tenantSQLite.TenantID = tenant[i].tenantId;
+                tenantSQLite.TenantName = tenant[i].tenantName;
+                tenantSQLite.TenantIndex = i;
+                App.TenantDatabase.InsertTenant(tenantSQLite);
+            }
+
             return true;
         }
 
