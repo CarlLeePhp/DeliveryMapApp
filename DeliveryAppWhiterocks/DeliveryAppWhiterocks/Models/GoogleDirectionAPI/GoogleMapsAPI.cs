@@ -23,22 +23,18 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
         public static string DestinationAddress { get; set; }
 
 
-        public static async Task<GoogleDirection> MapDirectionsWithWaypoints(Position initialLocation,params string[] waypoints)
+        public static async Task<GoogleDirection> MapDirectionsWithWaypoints(Position initialLocation,string endLocation,params string[] waypoints)
         {
-            // Sort the waypoints when its count > 25
-            if(waypoints.Length > 25)
-            {
-                SortWaypoints(waypoints);
-            }
+            
             //GET REQUEST URI
             /*https://maps.googleapis.com/maps/api/directions/json?origin=Boston,MA&destination=Concord,MA&waypoints=via:enc:Charlestown,MA|Lexington,MA&key=YOUR_API_KEY&mode=driving*/
-
+            
             _waypointsOrder = new List<int>();
             var httpClient = new HttpClient();
             
             string formattedWaypoints = string.Join("|", waypoints);
             
-            var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={DestinationPosition.Latitude},{DestinationPosition.Longitude}&waypoints=optimize:true|{formattedWaypoints}&key={Constants.GoogleAPIKEY}&mode=driving");
+            var response = await httpClient.GetAsync($"{Constants.GoogleDirectionBaseUri}origin={initialLocation.Latitude},{initialLocation.Longitude}&destination={endLocation}&waypoints=optimize:true|{formattedWaypoints}&key={Constants.GoogleAPIKEY}&mode=driving");
             
             if (!response.IsSuccessStatusCode) return null;
 
@@ -69,6 +65,7 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
                 lat = double.Parse(parts[0]);
                 lon = double.Parse(parts[1]);
                 positions.Add(new Position(lat, lon));
+                _waypointsOrder.Add(i);
             }
             double minDistance;
             for(int i=0; i < waypoints.Length - 1; i++)
@@ -92,6 +89,9 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
                         string tmpWaypoint = waypoints[i + 1];
                         waypoints[i + 1] = waypoints[j];
                         waypoints[j] = tmpWaypoint;
+                        int tmpOrder = _waypointsOrder[i + 1];
+                        _waypointsOrder[i + 1] = _waypointsOrder[j];
+                        _waypointsOrder[j] = tmpOrder;
                     }
                 }
             }

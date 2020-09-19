@@ -48,6 +48,8 @@ namespace DeliveryAppWhiterocks.Views
 
         double _currentWeight = 0;
 
+        const int MAX_WAYPOINTS = 2; 
+
         //DEST CONSTANT ONLY FOR TESTING REMOVE LATER
         int numberOfAPICalls = 0;
 
@@ -348,26 +350,52 @@ namespace DeliveryAppWhiterocks.Views
             if (_waypoints.Count > 0 && App.CheckIfInternet()) {
                 
                 _invoicesCollection.Clear();
-
-                _direction = await GoogleMapsAPI.MapDirectionsWithWaypoints(lastKnownPosition, _waypoints.ToArray());
-
-                //Only create a line if it returns something from google
-                if (_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0)
-                {
-                    List<Position> directionPolylines = PolylineHelper.Decode(_direction.Routes[0].OverviewPolyline.Points).ToList();
-
-                    CreatePolylinesOnMap(directionPolylines);
-
-                    foreach (int order in GoogleMapsAPI._waypointsOrder)
+                
+                if(_waypoints.Count > MAX_WAYPOINTS) { 
+                    GoogleMapsAPI.SortWaypoints(_waypoints.ToArray());
+                    List<Invoice> tempInvoice = new List<Invoice>();
+                    for(int i = 0; i < GoogleMapsAPI._waypointsOrder.Count; i++)
                     {
-                        _invoicesCollection.Add(_invoices[order]);
+                        tempInvoice.Add(_invoices[GoogleMapsAPI._waypointsOrder[i]]);
+                    }
+                    _invoices = tempInvoice;
+                }
+                
+                for (int i = 0; i < _waypoints.Count; i+= MAX_WAYPOINTS)
+                {
+                    int waypointCountLeft = _waypoints.Count - i;
+                    string[] orderedWaypoints;
+                    if (waypointCountLeft > MAX_WAYPOINTS) { 
+                        orderedWaypoints = new string[MAX_WAYPOINTS];
+                        _waypoints.CopyTo(i, orderedWaypoints, 0, MAX_WAYPOINTS);
+                    } else
+                    {
+                        orderedWaypoints = new string[waypointCountLeft];
+                        _waypoints.CopyTo(i, orderedWaypoints, 0, waypointCountLeft);
+                    }
+
+                    
+                    _direction = await GoogleMapsAPI.MapDirectionsWithWaypoints(lastKnownPosition,orderedWaypoints[orderedWaypoints.Count()-1],orderedWaypoints);
+                    string[] newCurrentPosition = orderedWaypoints[orderedWaypoints.Count() - 1].Split( new string[] { "%2C" },StringSplitOptions.None);
+                    lastKnownPosition = new Position(Convert.ToDouble(newCurrentPosition[0]), Convert.ToDouble(newCurrentPosition[1]));
+                    
+                    //Only create a line if it returns something from google
+                    if (_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0)
+                    {
+                        List<Position> directionPolylines = PolylineHelper.Decode(_direction.Routes[0].OverviewPolyline.Points).ToList();
+
+                        CreatePolylinesOnMap(directionPolylines);
+
+                        foreach (int order in GoogleMapsAPI._waypointsOrder)
+                        {
+                            _invoicesCollection.Add(_invoices[order + i]);
+                        }
+                    }
+                    else
+                    {
+                        await DisplayAlert("Oops", "Unable to map the directions, please try to use internet connections or restart the app", "OK");
                     }
                 }
-                else
-                {
-                    await DisplayAlert("Oops", "Unable to map the directions, please try to use internet connections or restart the app", "OK");
-                }
-
                 DeliveryItemView.ItemsSource = _invoicesCollection;
             } else if(_waypoints.Count() == 0 && App.CheckIfInternet())
             {
