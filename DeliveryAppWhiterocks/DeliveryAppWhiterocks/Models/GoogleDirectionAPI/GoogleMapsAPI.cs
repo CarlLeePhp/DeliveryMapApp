@@ -25,7 +25,11 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
 
         public static async Task<GoogleDirection> MapDirectionsWithWaypoints(Position initialLocation,params string[] waypoints)
         {
-
+            // Sort the waypoints when its count > 25
+            if(waypoints.Length > 25)
+            {
+                SortWaypoints(waypoints);
+            }
             //GET REQUEST URI
             /*https://maps.googleapis.com/maps/api/directions/json?origin=Boston,MA&destination=Concord,MA&waypoints=via:enc:Charlestown,MA|Lexington,MA&key=YOUR_API_KEY&mode=driving*/
 
@@ -52,7 +56,46 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
             return googleDirection;
         }
 
-
+        public static void SortWaypoints(params string[] waypoints)
+        {
+            List<Position> positions = new List<Position>();
+            double lat;
+            double lon;
+            string[] parts;
+            for(int i=0;i<waypoints.Length; i++)
+            {
+                string[] stringSeparators = new string[] { "%2C" };
+                parts = waypoints[i].Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
+                lat = double.Parse(parts[0]);
+                lon = double.Parse(parts[1]);
+                positions.Add(new Position(lat, lon));
+            }
+            double minDistance;
+            for(int i=0; i < waypoints.Length - 1; i++)
+            {
+                minDistance = Math.Sqrt(
+                    Math.Pow(positions[i].Latitude - positions[i + 1].Latitude, 2) +
+                    Math.Pow(positions[i].Longitude - positions[i + 1].Longitude, 2)
+                    );
+                for(int j = i+1; j < waypoints.Length; j++)
+                {
+                    double newDistance = Math.Sqrt(
+                    Math.Pow(positions[i].Latitude - positions[j].Latitude, 2) +
+                    Math.Pow(positions[i].Longitude - positions[j].Longitude, 2)
+                    );
+                    if(newDistance < minDistance)
+                    {
+                        minDistance = newDistance;
+                        Position tmpPosition = positions[i + 1];
+                        positions[i + 1] = positions[j];
+                        positions[j] = tmpPosition;
+                        string tmpWaypoint = waypoints[i + 1];
+                        waypoints[i + 1] = waypoints[j];
+                        waypoints[j] = tmpWaypoint;
+                    }
+                }
+            }
+        }
 
         internal static async Task<GoogleDirection> MapDirectionsNoWaypoints(Position initialLocation)
         {
