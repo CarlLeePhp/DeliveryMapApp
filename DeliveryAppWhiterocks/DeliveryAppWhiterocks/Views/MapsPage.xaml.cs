@@ -92,7 +92,6 @@ namespace DeliveryAppWhiterocks.Views
             {
                 return false;
             }
-            
 
             if (_prevLocation == null) _prevLocation = _currentLocation;
 
