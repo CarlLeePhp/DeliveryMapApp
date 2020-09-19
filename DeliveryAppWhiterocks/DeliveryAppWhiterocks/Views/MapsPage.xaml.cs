@@ -48,7 +48,7 @@ namespace DeliveryAppWhiterocks.Views
 
         double _currentWeight = 0;
 
-        const int MAX_WAYPOINTS = 2; 
+        const int MAX_WAYPOINTS = 24; 
 
         //DEST CONSTANT ONLY FOR TESTING REMOVE LATER
         int numberOfAPICalls = 0;
@@ -352,7 +352,7 @@ namespace DeliveryAppWhiterocks.Views
                 _invoicesCollection.Clear();
                 
                 if(_waypoints.Count > MAX_WAYPOINTS) { 
-                    GoogleMapsAPI.SortWaypoints(_waypoints.ToArray());
+                    GoogleMapsAPI.SortWaypoints(lastKnownPosition,_waypoints.ToArray());
                     List<Invoice> tempInvoice = new List<Invoice>();
                     for(int i = 0; i < GoogleMapsAPI._waypointsOrder.Count; i++)
                     {

@@ -52,7 +52,7 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
             return googleDirection;
         }
 
-        public static void SortWaypoints(params string[] waypoints)
+        public static void SortWaypoints(Position initialLocation, params string[] waypoints)
         {
             List<Position> positions = new List<Position>();
             double lat;
@@ -71,29 +71,30 @@ namespace DeliveryAppWhiterocks.Models.GoogleDirectionAPI
             for(int i=0; i < waypoints.Length - 1; i++)
             {
                 minDistance = Math.Sqrt(
-                    Math.Pow(positions[i].Latitude - positions[i + 1].Latitude, 2) +
-                    Math.Pow(positions[i].Longitude - positions[i + 1].Longitude, 2)
+                    Math.Pow(positions[i].Latitude - initialLocation.Latitude, 2) +
+                    Math.Pow(positions[i].Longitude - initialLocation.Longitude, 2)
                     );
                 for(int j = i+1; j < waypoints.Length; j++)
                 {
                     double newDistance = Math.Sqrt(
-                    Math.Pow(positions[i].Latitude - positions[j].Latitude, 2) +
-                    Math.Pow(positions[i].Longitude - positions[j].Longitude, 2)
+                    Math.Pow(initialLocation.Latitude - positions[j].Latitude, 2) +
+                    Math.Pow(initialLocation.Longitude - positions[j].Longitude, 2)
                     );
                     if(newDistance < minDistance)
                     {
                         minDistance = newDistance;
-                        Position tmpPosition = positions[i + 1];
-                        positions[i + 1] = positions[j];
+                        Position tmpPosition = positions[i];
+                        positions[i] = positions[j];
                         positions[j] = tmpPosition;
-                        string tmpWaypoint = waypoints[i + 1];
-                        waypoints[i + 1] = waypoints[j];
+                        string tmpWaypoint = waypoints[i];
+                        waypoints[i] = waypoints[j];
                         waypoints[j] = tmpWaypoint;
-                        int tmpOrder = _waypointsOrder[i + 1];
-                        _waypointsOrder[i + 1] = _waypointsOrder[j];
+                        int tmpOrder = _waypointsOrder[i];
+                        _waypointsOrder[i] = _waypointsOrder[j];
                         _waypointsOrder[j] = tmpOrder;
                     }
                 }
+                initialLocation = positions[i];
             }
         }
 
