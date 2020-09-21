@@ -38,7 +38,7 @@ namespace DeliveryAppWhiterocks.ViewModels
             _deliveryOrders.Clear();
 
             List<InvoiceSQLite> invoices = App.InvoiceDatabase.GetAllCompletedInvoices();
-            invoices = invoices.OrderByDescending(invoiceX => invoiceX.UpdateTimeTicksApp).ToList();
+            invoices = invoices.OrderByDescending(invoiceX => invoiceX.UpdateTimeTicksApp).Take(30).ToList();
 
             foreach (InvoiceSQLite invoiceSqlite in invoices)
             {

@@ -241,15 +241,9 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                                     App.LineItemDatabase.InsertLineItem(theLineItem);
                                 } else
                                 {
-                                    LineItemSQLite lineItemSQLite = new LineItemSQLite()
-                                    {
-                                        ItemLineID = theLineItem.ItemLineID,
-                                        InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
-                                        ItemCode = lineItem.ItemCode,
-                                        Quantity = (int)lineItem.Quantity,
-                                        UnitAmount = lineItem.UnitAmount,
-                                    };
-                                    App.LineItemDatabase.UpdateLineItem(lineItemSQLite);
+                                    theLineItem.Quantity = (int)lineItem.Quantity;
+                                    theLineItem.UnitAmount = lineItem.UnitAmount;
+                                    App.LineItemDatabase.UpdateLineItem(theLineItem);
                                     lineItemSQLiteList.Remove(theLineItem);
                                 }
                             }
@@ -264,21 +258,15 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                         }
                     }
                 }
-                else if(_InvoiceResponse.Invoices[i].Status == "VOIDED")
+                else if(_InvoiceResponse.Invoices[i].Status == "VOIDED" && invoiceInDatabase != null)
                 {
-                    InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
-                    if(invoiceSQLite != null)
-                    {
-                        App.InvoiceDatabase.DeleteInvoiceByInvoice(invoiceSQLite);
-                    }
+                    App.InvoiceDatabase.DeleteInvoiceByInvoice(invoiceInDatabase);
                 }
             }
             return true;
         }
         private static async Task<bool> FillItems(Invoice invoice, int i)
         {
-            Dictionary<string, Stock> itemDictionary = new Dictionary<string, Stock>();
-
             var response = await HttpClientBuilder(RequestType.Invoice, invoice.InvoiceID);
 
             if (!response.IsSuccessStatusCode) return false;
@@ -288,34 +276,13 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
 
             foreach(LineItem item in _InvoiceResponse.Invoices[i].LineItems)
             {
-                string codeX;
                 double weight = GetWeight(item.Description);
                 item.Weight = weight;
 
-                if (!string.IsNullOrEmpty(item.ItemCode)) { 
-                    codeX = item.ItemCode;
-                } else if (!string.IsNullOrEmpty(item.Description))
+                if (!string.IsNullOrEmpty(item.Description))
                 {
-                    codeX = item.Description;
                     item.ItemCode = item.Description;
-                } else
-                {
-                    return false;
-                }
-
-                if (!itemDictionary.ContainsKey(codeX))
-                {
-                    //Get Weight from description
-                    //has an {itemName " "?} + {number} kg
-                    //possible format 20kg , 20 kg , (20kg), (20)kg, (20) kg
-                    Stock stock = new Stock(codeX, item.Description, weight * item.Quantity, item.Quantity);
-                    itemDictionary.Add(codeX, stock);
-                } else
-                {
-                    //Get Weight from description
-                    itemDictionary[codeX].AddStockQuantity(Convert.ToInt32(item.Quantity));
-                    itemDictionary[codeX].Weight *= itemDictionary[codeX].Quantity;
-                }
+                } 
             }
             return true;
         }
