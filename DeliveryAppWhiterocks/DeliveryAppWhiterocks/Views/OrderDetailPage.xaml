@@ -41,8 +41,11 @@
                         <StackLayout Orientation="Horizontal">
                             <Label x:Name="customerNameLabel" TextColor="#CE0B06" FontSize="Medium"></Label>
                         </StackLayout>
-                        <StackLayout Orientation="Horizontal">
+                        <StackLayout x:Name="addressLayout" Orientation="Horizontal">
                             <Label x:Name="customerAddressLabel" TextColor="#CE0B06" FontSize="Medium"></Label>
+                        </StackLayout>
+                        <StackLayout x:Name="phoneLayout" Orientation="Horizontal">
+                            <Label x:Name="phoneNumberLabel" TextColor="#CE0B06" FontSize="Medium"></Label>
                         </StackLayout>
                     </StackLayout>
                 </ListView.Header>

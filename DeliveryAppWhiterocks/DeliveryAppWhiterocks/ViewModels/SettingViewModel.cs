@@ -101,6 +101,7 @@ namespace DeliveryAppWhiterocks.ViewModels
             if (isSuccess)
             {
                 Preferences.Set("EndPoint", EndPoint);
+                Preferences.Set("EndPointGeoWaypoint", $"{position.Latitude}%2C{position.Longitude}");
                 GoogleMapsAPI.DestinationAddress = EndPoint;
                 GoogleMapsAPI.DestinationPosition = position;
             }

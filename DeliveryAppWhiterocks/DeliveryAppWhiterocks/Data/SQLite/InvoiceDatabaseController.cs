@@ -23,6 +23,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             database.CreateTable<InvoiceSQLite>();
         }
 
+        public List<InvoiceSQLite> GetAllInvoices()
+        {
+            lock (locker)
+            {
+                return database.Table<InvoiceSQLite>().ToList();
+            }
+        }
+
         public List<InvoiceSQLite> GetAllIncompleteInvoices()
         {
             lock (locker)
@@ -107,16 +115,19 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 {
                     ContactSQLite contactSQLite = App.ContactDatabase.PrepareContactSQLite(contact);
                     App.ContactDatabase.InsertContact(contactSQLite);
-                } 
+                }
 
-                foreach(LineItem item in lineitem) {
-                    //sort desc by ID, get the first one (biggest id number)
-                    var maxItemLineID = App.LineItemDatabase.GetLastLineItem();
+                //sort desc by ID, get the first one (biggest id number)
+                var maxItemLineID = App.LineItemDatabase.GetLastLineItem();
+                int itemLineID = maxItemLineID == null ? 1 : maxItemLineID.ItemLineID;
+
+                foreach (LineItem item in lineitem) {
+                    itemLineID++;
                     //create the id by referencing lineitemtable
                     LineItemSQLite lineItemSQLite = new LineItemSQLite()
                     {
                         // if it's not set set the itemline id to 1 else increment 1 from the biggest value
-                        ItemLineID = (maxItemLineID == null ? 1 : maxItemLineID.ItemLineID + 1),
+                        ItemLineID = itemLineID,
                         InvoiceID = invoice.InvoiceID,
                         ItemCode = item.ItemCode,
                         Quantity = (int)item.Quantity,
@@ -138,16 +149,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                             UpdateTimeTicks = invoice.UpdateTimeTicksXERO,
                         };
                         App.ItemDatabase.InsertItem(newItem);
-                    } else
+                    }
+                    else if (invoice.UpdateTimeTicksXERO > itemSQLite.UpdateTimeTicks)
                     {
-                        if(invoice.UpdateTimeTicksXERO > itemSQLite.UpdateTimeTicks)
-                        {
-                            itemSQLite.Weight = item.Weight;
-                            itemSQLite.Description = item.Description;
-                            itemSQLite.UnitCost = invoice.InvoiceType == "ACCPAY" ? item.UnitAmount : 0;
-                            itemSQLite.UpdateTimeTicks = invoice.UpdateTimeTicksXERO;
-                            App.ItemDatabase.UpdateItem(itemSQLite);
-                        }
+                        itemSQLite.Weight = item.Weight;
+                        itemSQLite.Description = item.Description;
+                        itemSQLite.UnitCost = invoice.InvoiceType == "ACCPAY" ? item.UnitAmount : 0;
+                        itemSQLite.UpdateTimeTicks = invoice.UpdateTimeTicksXERO;
+                        App.ItemDatabase.UpdateItem(itemSQLite);
                     }
                 }
             }
@@ -174,6 +183,14 @@ namespace DeliveryAppWhiterocks.Data.SQLite
             lock (locker)
             {
                 database.Delete(invoice);
+            }
+        }
+
+        internal void UpdateInvoiceNumber(InvoiceSQLite invoice)
+        {
+            lock (locker)
+            {
+                database.Update(invoice);
             }
         }
     }

@@ -43,7 +43,7 @@ namespace DeliveryAppWhiterocks
             NavigationPage.SetHasNavigationBar(this, false);
             base.OnAppearing();
             loadLocalData();
-            await Task.Delay(7000);
+            await Task.Delay(5000);
             Application.Current.MainPage = new NavigationPage(new OrderPage());
         }
 

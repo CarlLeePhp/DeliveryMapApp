@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
@@ -8,15 +7,9 @@ using Xamarin.Essentials;
 using System.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
 using UnixTimeStamp;
-using DeliveryAppWhiterocks.Models.XeroAPI;
-using IdentityModel.Client;
-using IdentityModel.Jwk;
 using DeliveryAppWhiterocks.Models.Database.SQLite;
-using Xamarin.Forms;
 using System.Text.RegularExpressions;
-using Xamarin.Forms.Shapes;
 using System.Linq;
-using Xero.NetStandard.OAuth2.Model.Accounting;
 
 namespace DeliveryAppWhiterocks.Models.XeroAPI
 {
@@ -139,9 +132,15 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
         {
 
             var tenantID = Preferences.Get("TenantID", string.Empty);
+            Dictionary<string,InvoiceSQLite> allInvoicesInDatabase = App.InvoiceDatabase.GetAllInvoices().ToDictionary(invX => invX.InvoiceID, invX => invX);
             for (int i = 0; i < _InvoiceResponse.Invoices.Count; i++)
             {
-                InvoiceSQLite invoiceInDatabase = App.InvoiceDatabase.GetInvoiceByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
+                InvoiceSQLite invoiceInDatabase = null;
+
+                if (allInvoicesInDatabase.ContainsKey(_InvoiceResponse.Invoices[i].InvoiceID)) { 
+                    invoiceInDatabase = allInvoicesInDatabase[_InvoiceResponse.Invoices[i].InvoiceID];
+                    allInvoicesInDatabase.Remove(_InvoiceResponse.Invoices[i].InvoiceID);
+                }
 
                 if (invoiceInDatabase != null && invoiceInDatabase.CompletedDeliveryStatus) continue;
                 
@@ -150,21 +149,20 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                     await FillItems(_InvoiceResponse.Invoices[i], i);
                     await FillContactAddress(_InvoiceResponse.Invoices[i].Contact, i);
 
-                    InvoiceSQLite invoiceSqlite = new InvoiceSQLite()
-                    {
-                        InvoiceType = _InvoiceResponse.Invoices[i].Type,
-                        InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
-                        TenantID = tenantID,
-                        InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
-                        CompletedDeliveryStatus = false,
-                        ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
-                        Subtotal = _InvoiceResponse.Invoices[i].SubTotal,
-                        UpdateTimeTicksXERO = _InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks,
-                        UpdateTimeTicksApp = _InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks,
-                    };
-                    
                     //Insert data normally if the data doesnt exist else check for update
-                    if(invoiceInDatabase == null) { 
+                    if(invoiceInDatabase == null) {
+                        InvoiceSQLite invoiceSqlite = new InvoiceSQLite()
+                        {
+                            InvoiceType = _InvoiceResponse.Invoices[i].Type,
+                            InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
+                            TenantID = tenantID,
+                            InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber,
+                            CompletedDeliveryStatus = false,
+                            ContactID = _InvoiceResponse.Invoices[i].Contact.ContactID,
+                            Subtotal = _InvoiceResponse.Invoices[i].SubTotal,
+                            UpdateTimeTicksXERO = _InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks,
+                            UpdateTimeTicksApp = _InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks,
+                        };
                         App.InvoiceDatabase.InsertInvoice(invoiceSqlite, _InvoiceResponse.Invoices[i].LineItems, _InvoiceResponse.Invoices[i].Contact);
                     }
                     else
@@ -172,17 +170,30 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                         ContactSQLite contactInDatabase = App.ContactDatabase.GetContactByID(invoiceInDatabase.ContactID);
                         ContactSQLite newContact = App.ContactDatabase.PrepareContactSQLite(_InvoiceResponse.Invoices[i].Contact);
                         
-                        if(contactInDatabase.Address != newContact.Address)
+                        if(contactInDatabase.Address != newContact.Address || contactInDatabase.Fullname != newContact.Fullname || 
+                            contactInDatabase.City != newContact.City || contactInDatabase.PhoneNumber != newContact.PhoneNumber)
                         {
                             App.ContactDatabase.UpdateContactPosition(newContact);
                         }
 
-                        if (_InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks == invoiceInDatabase.UpdateTimeTicksXERO) continue;
                         
+                        if (_InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks == invoiceInDatabase.UpdateTimeTicksXERO) continue;
+
+                        if (invoiceInDatabase.InvoiceNumber != _InvoiceResponse.Invoices[i].InvoiceNumber)
+                        {
+                            invoiceInDatabase.InvoiceNumber = _InvoiceResponse.Invoices[i].InvoiceNumber;
+                        }
+                        invoiceInDatabase.UpdateTimeTicksXERO = _InvoiceResponse.Invoices[i].UpdatedDateUTC.Ticks;
+                        App.InvoiceDatabase.UpdateInvoiceNumber(invoiceInDatabase);
+
                         List<LineItemSQLite> lineItemSQLiteList = App.LineItemDatabase.GetLineItemByInvoiceID(_InvoiceResponse.Invoices[i].InvoiceID);
+
+                        var maxItemLineID = App.LineItemDatabase.GetLastLineItem();
+                        int itemLineID = maxItemLineID == null ? 1 : maxItemLineID.ItemLineID;
 
                         foreach (LineItem lineItem in _InvoiceResponse.Invoices[i].LineItems)
                         {
+                            
                             ItemSQLite itemSQLite = App.ItemDatabase.GetItemByID(lineItem.ItemCode);
                             if (itemSQLite == null)
                             {
@@ -198,12 +209,12 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                                 }
                                 App.ItemDatabase.InsertItem(newItem);
 
-                                var maxItemLineID = App.LineItemDatabase.GetLastLineItem();
+                                itemLineID++;
                                 //create the id by referencing lineitemtable
                                 LineItemSQLite lineItemSQLite = new LineItemSQLite()
                                 {
                                     // if it's not set set the itemline id to 1 else increment 1 from the biggest value
-                                    ItemLineID = (maxItemLineID == null ? 1 : maxItemLineID.ItemLineID + 1),
+                                    ItemLineID = itemLineID,
                                     InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
                                     ItemCode = lineItem.ItemCode,
                                     Quantity = (int)lineItem.Quantity,
@@ -225,13 +236,12 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                                 LineItemSQLite theLineItem = lineItemSQLiteList.Where(lineItemX => lineItemX.ItemCode == lineItem.ItemCode).FirstOrDefault();
                                 if(theLineItem == null)
                                 {
-                                    //sort desc by ID, get the first one (biggest id number)
-                                    var maxItemLineID = App.LineItemDatabase.GetLastLineItem();
+                                    itemLineID++;
                                     //create the id by referencing lineitemtable
                                     theLineItem = new LineItemSQLite()
                                     {
                                         // if it's not set set the itemline id to 1 else increment 1 from the biggest value
-                                        ItemLineID = (maxItemLineID == null ? 1 : maxItemLineID.ItemLineID + 1),
+                                        ItemLineID = itemLineID,
                                         InvoiceID = _InvoiceResponse.Invoices[i].InvoiceID,
                                         ItemCode = lineItem.ItemCode,
                                         Quantity = (int)lineItem.Quantity,
@@ -274,7 +284,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             string responseBody = await response.Content.ReadAsStringAsync();
             _InvoiceResponse.Invoices[i] = JsonConvert.DeserializeObject<InvoiceResponse>(responseBody).Invoices[0];
 
-            foreach(LineItem item in _InvoiceResponse.Invoices[i].LineItems)
+            foreach (LineItem item in _InvoiceResponse.Invoices[i].LineItems)
             {
                 double weight = GetWeight(item.Description);
                 item.Weight = weight;
@@ -282,7 +292,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                 if (!string.IsNullOrEmpty(item.Description))
                 {
                     item.ItemCode = item.Description;
-                } 
+                }
             }
             return true;
         }

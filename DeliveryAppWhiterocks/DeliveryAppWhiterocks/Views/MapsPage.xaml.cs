@@ -363,27 +363,39 @@ namespace DeliveryAppWhiterocks.Views
                 
                 for (int i = 0; i < _waypoints.Count; i+= MAX_WAYPOINTS)
                 {
+                    string destinationWaypoint;
                     int waypointCountLeft = _waypoints.Count - i;
                     string[] orderedWaypoints;
                     if (waypointCountLeft > MAX_WAYPOINTS) { 
                         orderedWaypoints = new string[MAX_WAYPOINTS];
                         _waypoints.CopyTo(i, orderedWaypoints, 0, MAX_WAYPOINTS);
+                        destinationWaypoint = orderedWaypoints[orderedWaypoints.Count() - 1];
                     } else
                     {
                         orderedWaypoints = new string[waypointCountLeft];
                         _waypoints.CopyTo(i, orderedWaypoints, 0, waypointCountLeft);
+                        if ((destinationWaypoint = Preferences.Get("EndPointGeoWaypoint", string.Empty)) == "")
+                        {
+                            destinationWaypoint = orderedWaypoints[orderedWaypoints.Count() - 1];
+                        }
                     }
 
                     
-                    _direction = await GoogleMapsAPI.MapDirectionsWithWaypoints(lastKnownPosition,orderedWaypoints[orderedWaypoints.Count()-1],orderedWaypoints);
+                    _direction = await GoogleMapsAPI.MapDirectionsWithWaypoints(lastKnownPosition, destinationWaypoint, orderedWaypoints);
                     string[] newCurrentPosition = orderedWaypoints[orderedWaypoints.Count() - 1].Split( new string[] { "%2C" },StringSplitOptions.None);
                     lastKnownPosition = new Position(Convert.ToDouble(newCurrentPosition[0]), Convert.ToDouble(newCurrentPosition[1]));
-                    
+
                     //Only create a line if it returns something from google
                     if (_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0)
                     {
-                        List<Position> directionPolylines = PolylineHelper.Decode(_direction.Routes[0].OverviewPolyline.Points).ToList();
-
+                        List<Position> directionPolylines = new List<Position>();
+                        foreach (Leg leg in _direction.Routes[0].Legs) {
+                            if (leg.StartAddress == leg.EndAddress) break;
+                            foreach (Step step in leg.Steps)
+                            {
+                                directionPolylines = directionPolylines.Concat(PolylineHelper.Decode(step.Polyline.Points).ToList()).ToList();
+                            }
+                        }
                         CreatePolylinesOnMap(directionPolylines);
 
                         foreach (int order in GoogleMapsAPI._waypointsOrder)
@@ -393,7 +405,7 @@ namespace DeliveryAppWhiterocks.Views
                     }
                     else
                     {
-                        await DisplayAlert("Oops", "Unable to map the directions, please try to use internet connections or restart the app", "OK");
+                        await DisplayAlert("Oops", "Unable to map the directions, Please make sure the address entered is legit", "OK");
                     }
                 }
                 DeliveryItemView.ItemsSource = _invoicesCollection;
@@ -402,7 +414,15 @@ namespace DeliveryAppWhiterocks.Views
                 _direction = await GoogleMapsAPI.MapDirectionsNoWaypoints(lastKnownPosition);
                 if (_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0)
                 {
-                    List<Position> directionPolylines = PolylineHelper.Decode(_direction.Routes[0].OverviewPolyline.Points).ToList();
+                    List<Position> directionPolylines = new List<Position>();
+                    foreach (Leg leg in _direction.Routes[0].Legs)
+                    {
+                        if (leg.StartAddress == leg.EndAddress) break;
+                        foreach (Step step in leg.Steps)
+                        {
+                            directionPolylines = directionPolylines.Concat(PolylineHelper.Decode(step.Polyline.Points).ToList()).ToList();
+                        }
+                    }
                     CreatePolylinesOnMap(directionPolylines);
                 }
             }
@@ -416,7 +436,7 @@ namespace DeliveryAppWhiterocks.Views
                 StrokeWidth = 8,
             };
 
-            for (int i = 0; i < directionPolylines.Count ; i++)
+            for (int i = 0; i < directionPolylines.Count; i++)
             {
                 polyline.Positions.Add(directionPolylines[i]);
             }

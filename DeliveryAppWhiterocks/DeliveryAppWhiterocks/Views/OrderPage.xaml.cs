@@ -83,15 +83,19 @@ namespace DeliveryAppWhiterocks.Views
                 if (Constants.TenantID != "" && invoiceSqlite.TenantID != Constants.TenantID) continue;
                 ContactSQLite contactSqlite = App.ContactDatabase.GetContactByID(invoiceSqlite.ContactID);
                 List<Address> address = new List<Address>();
-                //add emtpy one to mimic the structure of our client
+                //add emtpy one to mimic the structure of our xero
                 address.Add(new Address());
                 if (contactSqlite.City != "") contactSqlite.City = string.Format(", {0}", contactSqlite.City);
                 address.Add(new Address() { AddressLine1 = contactSqlite.Address, City = contactSqlite.City});
-                
+
+                List<Phone> phones = new List<Phone>();
+                phones.Add(new Phone());
+                phones.Add(new Phone() { PhoneNumber = contactSqlite.PhoneNumber });
                 Contact contact = new Contact() { 
                     ContactID = contactSqlite.ContactID, 
                     Name = contactSqlite.Fullname, 
-                    Addresses = address 
+                    Addresses = address,
+                    Phones = phones,
                 };
 
                 Invoice invoice = new Invoice() {
@@ -137,8 +141,9 @@ namespace DeliveryAppWhiterocks.Views
             XeroAPI.DecodeAccessToken();
             long currentUnixTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            try { 
-                if(XeroAPI._accessToken == null || currentUnixTimeStamp - XeroAPI._accessToken.nbf >= 30 * 24 * 3600)
+            try
+            {
+                if (XeroAPI._accessToken == null || currentUnixTimeStamp - XeroAPI._accessToken.nbf >= 30 * 24 * 3600)
                 {
                     await Navigation.PushModalAsync(new XEROWebPage());
                     GridOverlay.IsVisible = false;
@@ -164,7 +169,8 @@ namespace DeliveryAppWhiterocks.Views
                     SupplyOrder();
                     await DisplayAlert("Xero API", "Data has been loaded", "OK");
                 }
-            } catch
+            }
+            catch
             {
                 await DisplayAlert("Xero API", "Failure in loading data from XERO", "OK");
             }

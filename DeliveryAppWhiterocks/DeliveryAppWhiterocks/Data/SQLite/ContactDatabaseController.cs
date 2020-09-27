@@ -85,8 +85,9 @@ namespace DeliveryAppWhiterocks.Data.SQLite
         public ContactSQLite PrepareContactSQLite(Contact contact)
         {
             Address address;
-            if (contact.Addresses.Count > 1) { 
-                address = contact.Addresses[1] ;
+            if (contact.Addresses.Count > 1)
+            {
+                address = contact.Addresses[1];
             } else
             {
                 address = new Address()
@@ -100,7 +101,19 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 };
                 contact.Addresses.Add(new Address());
                 contact.Addresses.Add(address);
-            } 
+            }
+            
+            string phoneNumber = "";
+
+            foreach(Phone phone in contact.Phones)
+            {
+                if(phone.PhoneNumber != "")
+                {
+                    phoneNumber = phone.PhoneCountryCode+phone.PhoneNumber;
+                    break;
+                }
+            }
+
             ContactSQLite contactSQLite = new ContactSQLite()
             {
                 ContactID = contact.ContactID,
@@ -108,6 +121,7 @@ namespace DeliveryAppWhiterocks.Data.SQLite
                 Address = (address.AddressLine1.Trim() + " " + address.AddressLine2.Trim() + " " + address.AddressLine3.Trim() + " " + address.AddressLine4.Trim()).Trim(),
                 City = contact.Addresses[1].City,
                 PostalCode = contact.Addresses[1].PostalCode,
+                PhoneNumber = phoneNumber,
                 Type = contact.IsCustomer ? ContactType.Customer : ContactType.Supplier
             };
 

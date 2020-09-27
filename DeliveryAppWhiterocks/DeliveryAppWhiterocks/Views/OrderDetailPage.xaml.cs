@@ -42,10 +42,19 @@ namespace DeliveryAppWhiterocks.Views
             PageHeaderLabel.Text += _selectedInvoice.Type == "ACCPAY" ? " - Pickup" : " - Dropoff";
 
             customerNameLabel.Text = _selectedInvoice.Contact.Name;
-            customerAddressLabel.Text = $"{_selectedInvoice.Contact.Addresses[1].AddressLine1}";
-            if(_selectedInvoice.Contact.Addresses[1].City != "")
+            if(_selectedInvoice.Contact.Addresses[1].AddressLine1 != "")
             {
-                customerAddressLabel.Text +=  _selectedInvoice.Contact.Addresses[1].City;
+                customerAddressLabel.Text = $"{_selectedInvoice.Contact.Addresses[1].AddressLine1} {_selectedInvoice.Contact.Addresses[1].City}";
+            } else
+            {
+                addressLayout.IsVisible = false;
+            }
+
+            if(_selectedInvoice.Contact.Phones[1].PhoneNumber != "") { 
+                phoneNumberLabel.Text = _selectedInvoice.Contact.Phones[1].PhoneNumber;
+            } else
+            {
+                phoneLayout.IsVisible = false;
             }
             App.CheckInternetIfConnected(noInternetLbl, this);
         }

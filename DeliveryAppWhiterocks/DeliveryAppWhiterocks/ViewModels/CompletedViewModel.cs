@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
-
 using DeliveryAppWhiterocks.Models.XeroAPI;
 using DeliveryAppWhiterocks.Models.Database.SQLite;
 using Xamarin.Forms;
@@ -49,11 +47,16 @@ namespace DeliveryAppWhiterocks.ViewModels
                 if (contactSqlite.City != "") contactSqlite.City = string.Format(", {0}", contactSqlite.City);
                 address.Add(new Address() { AddressLine1 = contactSqlite.Address, City = contactSqlite.City });
 
+                List<Phone> phones = new List<Phone>();
+                phones.Add(new Phone());
+                phones.Add(new Phone() { PhoneNumber = contactSqlite.PhoneNumber });
+
                 Contact contact = new Contact()
                 {
                     ContactID = contactSqlite.ContactID,
                     Name = contactSqlite.Fullname,
-                    Addresses = address
+                    Addresses = address,
+                    Phones = phones
                 };
 
                 Invoice invoice = new Invoice()
