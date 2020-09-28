@@ -80,6 +80,14 @@
                     <Label Grid.Column="0" VerticalTextAlignment="Center" FontSize="Medium">GST:</Label>
                     <Entry x:Name="taxAmount"  Grid.Column="1" Placeholder="Enter GST" Text="{Binding TaxAmount}" />
                 </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" VerticalTextAlignment="Center" FontSize="Medium">Start Date:</Label>
+                    <DatePicker Grid.Column="1"  Date="{Binding StartDate}"  />
+                </Grid>
             </StackLayout>
         </Grid>
     </Grid>
