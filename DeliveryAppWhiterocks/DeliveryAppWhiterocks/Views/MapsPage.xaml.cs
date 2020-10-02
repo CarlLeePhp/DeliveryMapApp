@@ -48,7 +48,7 @@ namespace DeliveryAppWhiterocks.Views
 
         double _currentWeight = 0;
 
-        const int MAX_WAYPOINTS = 24; 
+        const int MAX_WAYPOINTS = 23; 
 
         //DEST CONSTANT ONLY FOR TESTING REMOVE LATER
         int numberOfAPICalls = 0;

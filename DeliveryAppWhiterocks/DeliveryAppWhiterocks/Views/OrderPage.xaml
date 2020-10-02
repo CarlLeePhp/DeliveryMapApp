@@ -119,8 +119,8 @@
                                             <StackLayout Grid.Row="1" Margin="5" Grid.ColumnSpan="2">
                                                 <BoxView BackgroundColor="White" HeightRequest="1"></BoxView>
                                                 <StackLayout x:Name="test" Orientation="Horizontal" Spacing="4">
-                                                    <Label TextColor="White" Text="{Binding Contact.Addresses[1].AddressLine1}"></Label>
-                                                    <Label TextColor="White" Text="{Binding Contact.Addresses[1].City}"></Label>
+                                                    <Label TextColor="White" FontSize="Subtitle" Text="{Binding Contact.Addresses[1].AddressLine1}"></Label>
+                                                    <Label TextColor="White" FontSize="Subtitle" Text="{Binding Contact.Addresses[1].City}"></Label>
                                                 </StackLayout>
                                             </StackLayout>
                                         </Grid>
@@ -141,12 +141,12 @@
                     <BoxView Grid.Row="3" Grid.ColumnSpan="3"></BoxView>
                     <StackLayout Orientation="Horizontal" Spacing="45" HorizontalOptions="Center">
 
-                        <Button Text="Load Delivery" Clicked="LoadDeliveryBtn_Clicked" TextColor="#80574D" BackgroundColor="Transparent" >
+                        <Button Text="Load Delivery" Clicked="LoadDeliveryBtn_Clicked" TextColor="#FFFFFF" BackgroundColor="Transparent" >
                         </Button>
                         
                         <BoxView BackgroundColor="black" WidthRequest="1"></BoxView>
 
-                        <Button Text="Get Directions" Clicked="GetDirectionBtn_Clicked" TextColor="#80574D" BackgroundColor="Transparent">
+                        <Button Text="Get Directions" Clicked="GetDirectionBtn_Clicked" TextColor="#FFFFFF" BackgroundColor="Transparent">
                         </Button>
 
                     </StackLayout>
@@ -188,7 +188,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Load Delivery"
-                               TextColor="#80574D"
+                               TextColor="#FFFFFF"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
@@ -204,7 +204,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Delivery Info"
-                               TextColor="#80574D"
+                               TextColor="#FFFFFF"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
@@ -220,7 +220,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Add Pickup"
-                               TextColor="#80574D"
+                               TextColor="#FFFFFF"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
@@ -236,7 +236,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Past Delivery"
-                               TextColor="#80574D"
+                               TextColor="#FFFFFF"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
@@ -252,7 +252,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Settings"
-                               TextColor="#80574D"
+                               TextColor="#FFFFFF"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
@@ -268,7 +268,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Close Options"
-                               TextColor="#80574D"
+                               TextColor="#FFFFFF"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
