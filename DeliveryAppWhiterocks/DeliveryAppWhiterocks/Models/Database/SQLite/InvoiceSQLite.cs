@@ -17,5 +17,6 @@ namespace DeliveryAppWhiterocks.Models.Database.SQLite
         public string TenantID { get; set; }
         public long UpdateTimeTicksXERO { get; set; }
         public long UpdateTimeTicksApp { get; set; }
+        
     }
 }
