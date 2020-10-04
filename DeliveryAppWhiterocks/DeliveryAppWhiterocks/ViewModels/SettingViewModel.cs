@@ -71,6 +71,21 @@ namespace DeliveryAppWhiterocks.ViewModels
             }
         }
 
+        private DateTime _startDate;
+
+        public DateTime StartDate
+        {
+            get {
+                
+                return _startDate;
+            }
+            set {
+                _startDate = value;
+                OnPropertyChanged();
+                Preferences.Set("StartDate", _startDate);
+            }
+        }
+
 
 
         public Command CloseCommand { get; set; }
@@ -81,6 +96,8 @@ namespace DeliveryAppWhiterocks.ViewModels
             TaxAmount = Constants.taxAmount;
             EndPoint = Preferences.Get("EndPoint", "");
             Tenants = App.TenantDatabase.GetAllTenants();
+
+            _startDate = Preferences.Get("StartDate", DateTime.Now);
             // Register Commands
             CloseCommand = new Command(CloseView);
             EndPointCompleted = new Command(CheckEndPoint);
@@ -109,5 +126,7 @@ namespace DeliveryAppWhiterocks.ViewModels
             Validate(() => !isSuccess, "Set the End Point as " + _endPoint, "Message");
             Validate(() => isSuccess, "The address is not valid, Please try again", "Message"); // Message is not a real property name
         }
+
+        
     }
 }
