@@ -38,6 +38,7 @@ namespace DeliveryAppWhiterocks.Views
 
         int _counter = 0;
         bool _firstVisited = true;
+        bool _isDetailedPageOpen = false;
 
         Timer _timer;
         Location _currentLocation;
@@ -135,6 +136,7 @@ namespace DeliveryAppWhiterocks.Views
 
         protected async override void OnAppearing()
         {
+            _isDetailedPageOpen = false;
             if (_currentSelectedInvoice != null)
             {
                 InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceID(_currentSelectedInvoice.InvoiceID);
@@ -308,21 +310,23 @@ namespace DeliveryAppWhiterocks.Views
                     //Add it to the waypoints list later to be used on the googleDirection API
                     //Formatted by Comma separator for latitude,longitude
                     _waypoints.Add($"{position.Latitude}%2C{position.Longitude}");
-
+                    
                     //Set pin on map
                     #region SetPin
                     var pin = new Pin()
                     {
+
                         Position = position,
-                        Label = $"{_invoiceSQLite[i].InvoiceNumber}",
+                        Label = $"{_invoiceSQLite[i].InvoiceNumber} : Click for Details",
                         //set tag so i can reference it when a pin is clicked
-                        Tag = _invoiceSQLite[i],
+                        Tag = _invoiceSQLite[i].InvoiceID,
                         Icon = BitmapDescriptorFactory.FromBundle(_invoiceSQLite[i].InvoiceType),
                     };
                     
                     _pins.Add(pin);
 
                     map.SelectedPinChanged += Map_SelectedPinChanged;
+                    map.InfoWindowClicked += Map_InfoWindowClicked;
                     map.Pins.Add(pin);
                     #endregion
 
@@ -332,9 +336,14 @@ namespace DeliveryAppWhiterocks.Views
             return true;
         }
 
-        private void Map_InfoWindowClicked(object sender, InfoWindowClickedEventArgs e)
+        private async void Map_InfoWindowClicked(object sender, InfoWindowClickedEventArgs e)
         {
-
+            Pin clickedPin = e.Pin;
+            string clickedInvoiceID = clickedPin.Tag as string;
+            Invoice invoice = _invoicesCollection.Where(invoiceX => invoiceX.InvoiceID == clickedInvoiceID).FirstOrDefault();
+            if (_isDetailedPageOpen || invoice == null) return;
+            _isDetailedPageOpen = true;
+            await Navigation.PushModalAsync(new OrderDetailPage(invoice));
         }
 
         //InitPins() should be called before this method, _waypoints is added in InitPins()
@@ -478,6 +487,8 @@ namespace DeliveryAppWhiterocks.Views
             var button = sender as Button;
             Invoice invoiceSelected = button.BindingContext as Invoice;
             _currentSelectedInvoice = invoiceSelected;
+            if (_isDetailedPageOpen) return;
+            _isDetailedPageOpen = true;
             await Navigation.PushModalAsync(new OrderDetailPage(invoiceSelected));
         }
 
