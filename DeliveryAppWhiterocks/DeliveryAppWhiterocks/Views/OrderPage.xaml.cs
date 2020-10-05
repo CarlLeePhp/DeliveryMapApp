@@ -26,12 +26,11 @@ namespace DeliveryAppWhiterocks.Views
             //App.Current.MainPage = this;
             Init();
             _deliveryOrders = new ObservableCollection<Invoice>();
-            
         }
 
         public string Hello()
         {
-            return "Hello";
+            return "Hello App is Ready";
         }
         protected override void OnAppearing()
         {
