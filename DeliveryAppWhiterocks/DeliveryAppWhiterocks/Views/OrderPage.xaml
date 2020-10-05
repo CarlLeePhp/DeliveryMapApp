@@ -141,12 +141,12 @@
                     <BoxView Grid.Row="3" Grid.ColumnSpan="3"></BoxView>
                     <StackLayout Orientation="Horizontal" Spacing="45" HorizontalOptions="Center">
 
-                        <Button Text="Load Delivery" Clicked="LoadDeliveryBtn_Clicked" TextColor="#FFFFFF" BackgroundColor="Transparent" >
+                        <Button Text="Load Delivery" Clicked="LoadDeliveryBtn_Clicked" TextColor="#80574D" BackgroundColor="Transparent" >
                         </Button>
                         
                         <BoxView BackgroundColor="black" WidthRequest="1"></BoxView>
 
-                        <Button Text="Get Directions" Clicked="GetDirectionBtn_Clicked" TextColor="#FFFFFF" BackgroundColor="Transparent">
+                        <Button Text="Get Directions" Clicked="GetDirectionBtn_Clicked" TextColor="#80574D" BackgroundColor="Transparent">
                         </Button>
 
                     </StackLayout>

@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
@@ -46,6 +47,7 @@ namespace DeliveryAppWhiterocks.Views
         int _outsideRouteUpdateCounter = 0;
 
         GoogleDirection _direction;
+        List<Step> _steps = new List<Step>();
 
         double _currentWeight = 0;
 
@@ -79,7 +81,7 @@ namespace DeliveryAppWhiterocks.Views
                         Console.WriteLine("Error");
                     }
                 });
-            }, null, 10, (int)TimeSpan.FromSeconds(6).TotalMilliseconds);
+            }, null, 10, (int)TimeSpan.FromSeconds(5).TotalMilliseconds);
 
             //Got the information from https://winstongubantes.blogspot.com/2017/11/creating-draggable-sliding-up-panel-in.html
             InitMenu(); 
@@ -124,6 +126,13 @@ namespace DeliveryAppWhiterocks.Views
                 {
                     _outsideRouteUpdateCounter++;
                 }
+
+                double kilometersDistanceToStep = Location.CalculateDistance(_currentLocation, new Location(_steps[0].StartLocation.Lat, _steps[0].StartLocation.Lng), DistanceUnits.Kilometers);
+                if (kilometersDistanceToStep * 1000 < 35 && _steps.Count >0)
+                {
+                    TextToSpeech.SpeakAsync(StripHTML(_steps[0].HtmlInstructions));
+                    _steps.RemoveAt(0);
+                }
             }
 
             if (_outsideRouteUpdateCounter >= 5)
@@ -132,6 +141,11 @@ namespace DeliveryAppWhiterocks.Views
                 MapDirections("(stray) ");
             }
             return true;
+        }
+
+        public static string StripHTML(string input)
+        {
+            return Regex.Replace(input, "<.*?>", String.Empty);
         }
 
         protected async override void OnAppearing()
@@ -322,7 +336,6 @@ namespace DeliveryAppWhiterocks.Views
                         Tag = _invoiceSQLite[i].InvoiceID,
                         Icon = BitmapDescriptorFactory.FromBundle(_invoiceSQLite[i].InvoiceType),
                     };
-                    
                     _pins.Add(pin);
 
                     map.SelectedPinChanged += Map_SelectedPinChanged;
@@ -402,15 +415,7 @@ namespace DeliveryAppWhiterocks.Views
                     //Only create a line if it returns something from google
                     if (_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0)
                     {
-                        List<Position> directionPolylines = new List<Position>();
-                        foreach (Leg leg in _direction.Routes[0].Legs) {
-                            if (leg.StartAddress == leg.EndAddress) break;
-                            foreach (Step step in leg.Steps)
-                            {
-                                directionPolylines = directionPolylines.Concat(PolylineHelper.Decode(step.Polyline.Points).ToList()).ToList();
-                            }
-                        }
-                        CreatePolylinesOnMap(directionPolylines);
+                        AddPolyLine();
 
                         foreach (int order in GoogleMapsAPI._waypointsOrder)
                         {
@@ -423,23 +428,31 @@ namespace DeliveryAppWhiterocks.Views
                     }
                 }
                 DeliveryItemView.ItemsSource = _invoicesCollection;
-            } else if(_waypoints.Count() == 0 && App.CheckIfInternet())
+            } 
+            else if (_waypoints.Count() == 0 && App.CheckIfInternet())
             {
                 _direction = await GoogleMapsAPI.MapDirectionsNoWaypoints(lastKnownPosition);
                 if (_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0)
                 {
-                    List<Position> directionPolylines = new List<Position>();
-                    foreach (Leg leg in _direction.Routes[0].Legs)
-                    {
-                        if (leg.StartAddress == leg.EndAddress) break;
-                        foreach (Step step in leg.Steps)
-                        {
-                            directionPolylines = directionPolylines.Concat(PolylineHelper.Decode(step.Polyline.Points).ToList()).ToList();
-                        }
-                    }
-                    CreatePolylinesOnMap(directionPolylines);
+                    AddPolyLine();
                 }
             }
+        }
+
+        private void AddPolyLine()
+        {
+            _steps.Clear();
+            List<Position> directionPolylines = new List<Position>();
+            foreach (Leg leg in _direction.Routes[0].Legs)
+            {
+                if (leg.StartAddress == leg.EndAddress) break;
+                foreach (Step step in leg.Steps)
+                {
+                    directionPolylines = directionPolylines.Concat(PolylineHelper.Decode(step.Polyline.Points).ToList()).ToList();
+                    _steps.Add(step);
+                }
+            }
+            CreatePolylinesOnMap(directionPolylines);
         }
 
         private void CreatePolylinesOnMap(List<Position> directionPolylines)
