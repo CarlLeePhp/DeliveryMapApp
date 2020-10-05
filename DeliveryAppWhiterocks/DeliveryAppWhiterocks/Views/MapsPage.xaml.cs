@@ -332,6 +332,11 @@ namespace DeliveryAppWhiterocks.Views
             return true;
         }
 
+        private void Map_InfoWindowClicked(object sender, InfoWindowClickedEventArgs e)
+        {
+
+        }
+
         //InitPins() should be called before this method, _waypoints is added in InitPins()
         //A method that let's google handle the directions, shortest path etc.
         private async void MapDirections(string message="")
