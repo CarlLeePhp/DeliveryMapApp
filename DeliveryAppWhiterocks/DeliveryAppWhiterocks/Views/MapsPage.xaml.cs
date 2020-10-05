@@ -401,17 +401,7 @@ namespace DeliveryAppWhiterocks.Views
                     //Only create a line if it returns something from google
                     if (_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0)
                     {
-                        _steps.Clear();
-                        List<Position> directionPolylines = new List<Position>();
-                        foreach (Leg leg in _direction.Routes[0].Legs) {
-                            if (leg.StartAddress == leg.EndAddress) break;
-                            foreach (Step step in leg.Steps)
-                            {
-                                directionPolylines = directionPolylines.Concat(PolylineHelper.Decode(step.Polyline.Points).ToList()).ToList();
-                                _steps.Add(step);
-                            }
-                        }
-                        CreatePolylinesOnMap(directionPolylines);
+                        AddPolyLine();
 
                         foreach (int order in GoogleMapsAPI._waypointsOrder)
                         {
@@ -430,20 +420,25 @@ namespace DeliveryAppWhiterocks.Views
                 _direction = await GoogleMapsAPI.MapDirectionsNoWaypoints(lastKnownPosition);
                 if (_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0)
                 {
-                    _steps.Clear();
-                    List<Position> directionPolylines = new List<Position>();
-                    foreach (Leg leg in _direction.Routes[0].Legs)
-                    {
-                        if (leg.StartAddress == leg.EndAddress) break;
-                        foreach (Step step in leg.Steps)
-                        {
-                            directionPolylines = directionPolylines.Concat(PolylineHelper.Decode(step.Polyline.Points).ToList()).ToList();
-                            _steps.Add(step);
-                        }
-                    }
-                    CreatePolylinesOnMap(directionPolylines);
+                    AddPolyLine();
                 }
             }
+        }
+
+        private void AddPolyLine()
+        {
+            _steps.Clear();
+            List<Position> directionPolylines = new List<Position>();
+            foreach (Leg leg in _direction.Routes[0].Legs)
+            {
+                if (leg.StartAddress == leg.EndAddress) break;
+                foreach (Step step in leg.Steps)
+                {
+                    directionPolylines = directionPolylines.Concat(PolylineHelper.Decode(step.Polyline.Points).ToList()).ToList();
+                    _steps.Add(step);
+                }
+            }
+            CreatePolylinesOnMap(directionPolylines);
         }
 
         private void CreatePolylinesOnMap(List<Position> directionPolylines)
