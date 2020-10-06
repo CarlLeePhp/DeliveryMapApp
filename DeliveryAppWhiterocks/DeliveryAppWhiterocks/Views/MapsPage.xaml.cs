@@ -373,7 +373,7 @@ namespace DeliveryAppWhiterocks.Views
                 _currentLocation = await Geolocation.GetLastKnownLocationAsync();
             }
             Position lastKnownPosition = new Position(_currentLocation.Latitude, _currentLocation.Longitude);
-
+            // Position lastKnownPosition = new Position(-46.3, 168);
             if (_waypoints.Count > 0 && App.CheckIfInternet()) {
                 
                 _invoicesCollection.Clear();
@@ -485,6 +485,7 @@ namespace DeliveryAppWhiterocks.Views
             }
             
             Position lastKnownPosition = new Position(_currentLocation.Latitude, _currentLocation.Longitude);
+            // Position lastKnownPosition = new Position(-46.3, 168);
             map.MoveToRegion(new MapSpan(lastKnownPosition, 0.05, 0.05));
         }
 
@@ -543,10 +544,10 @@ namespace DeliveryAppWhiterocks.Views
             _invoicesCollection.Remove(invoiceSelected);
             _invoices.Remove(invoiceSelected);
             DeliveryItemView.ItemsSource = _invoicesCollection;
-            Pin thePin = _pins.Where(pinX => pinX.Label == invoiceSelected.InvoiceNumber).FirstOrDefault();
-            map.Pins.Remove(thePin);
+            Pin thePin = _pins.Where(pinX => pinX.Tag as string == invoiceSelected.InvoiceID).FirstOrDefault();
             _waypoints.Remove($"{thePin.Position.Latitude}%2C{thePin.Position.Longitude}");
-
+            map.Pins.Remove(thePin);
+           
             _counter--;
         }
 
