@@ -9,6 +9,7 @@ using DeliveryAppWhiterocks.Models;
 using DeliveryAppWhiterocks.Views;
 using DeliveryAppWhiterocks.Models.XeroAPI;
 using DeliveryAppWhiterocks.Models.Database.SQLite;
+using Xamarin.Essentials;
 
 namespace DeliveryAppWhiterocks
 {
@@ -43,6 +44,14 @@ namespace DeliveryAppWhiterocks
             NavigationPage.SetHasNavigationBar(this, false);
             base.OnAppearing();
             loadLocalData();
+            
+            var location = await Geolocation.GetLastKnownLocationAsync();
+            if(location == null)
+            {
+                var request = new GeolocationRequest(GeolocationAccuracy.Medium);
+                Geolocation.GetLocationAsync(request);
+            }
+
             await Task.Delay(5000);
             Application.Current.MainPage = new NavigationPage(new OrderPage());
         }

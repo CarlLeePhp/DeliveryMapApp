@@ -122,7 +122,8 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
                 string responseBody = await response.Content.ReadAsStringAsync();
                 _InvoiceResponse = JsonConvert.DeserializeObject<InvoiceResponse>(responseBody);
                 // filter invoices by start date
-                DateTime startDate = Preferences.Get("StartDate", new DateTime(2019, 1, 1));
+                DateTime defaultDate = DateTime.Now.AddMonths(-3);
+                DateTime startDate = Preferences.Get("StartDate", defaultDate);
                 List<Invoice> filterInvoices = new List<Invoice>();
                 for(int i=0; i < _InvoiceResponse.Invoices.Count; i++)
                 {

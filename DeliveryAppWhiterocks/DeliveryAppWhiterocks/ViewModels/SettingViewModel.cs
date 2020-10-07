@@ -97,7 +97,8 @@ namespace DeliveryAppWhiterocks.ViewModels
             EndPoint = Preferences.Get("EndPoint", "");
             Tenants = App.TenantDatabase.GetAllTenants();
 
-            _startDate = Preferences.Get("StartDate", DateTime.Now);
+            DateTime defaultDateTime = DateTime.Now.AddMonths(-3);
+            _startDate = Preferences.Get("StartDate", defaultDateTime);
             // Register Commands
             CloseCommand = new Command(CloseView);
             EndPointCompleted = new Command(CheckEndPoint);

@@ -188,7 +188,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Load Delivery"
-                               TextColor="#FFFFFF"
+                               TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
@@ -204,7 +204,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Delivery Info"
-                               TextColor="#FFFFFF"
+                               TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
@@ -220,7 +220,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Add Pickup"
-                               TextColor="#FFFFFF"
+                               TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
@@ -236,7 +236,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Past Delivery"
-                               TextColor="#FFFFFF"
+                               TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
@@ -252,7 +252,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Settings"
-                               TextColor="#FFFFFF"
+                               TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />
@@ -268,7 +268,7 @@
                                HeightRequest="30"
                                WidthRequest="30" />
                         <Label Text="Close Options"
-                               TextColor="#FFFFFF"
+                               TextColor="#80574D"
                                HeightRequest="50"
                                VerticalTextAlignment="Center"
                                FontSize="20" />

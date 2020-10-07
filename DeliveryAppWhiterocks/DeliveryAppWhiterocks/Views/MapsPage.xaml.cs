@@ -122,7 +122,7 @@ namespace DeliveryAppWhiterocks.Views
                     _outsideRouteUpdateCounter = 0;
                     map.Polylines[0].Positions.RemoveAt(0);
                 }
-                else if(kilometersDistanceToPointA * 1000 > 10)
+                else if(kilometersDistanceToPointA * 1000 > 15)
                 {
                     _outsideRouteUpdateCounter++;
                 }
@@ -431,7 +431,9 @@ namespace DeliveryAppWhiterocks.Views
             } 
             else if (_waypoints.Count() == 0 && App.CheckIfInternet())
             {
-                _direction = await GoogleMapsAPI.MapDirectionsNoWaypoints(lastKnownPosition);
+                string destinationPoint;
+                if ((destinationPoint = Preferences.Get("EndPointGeoWaypoint", string.Empty)) == "") return; 
+                _direction = await GoogleMapsAPI.MapDirectionsNoWaypoints(lastKnownPosition,destinationPoint);
                 if (_direction.Status != "ZERO_RESULTS" && _direction.Routes.Count > 0)
                 {
                     AddPolyLine();
@@ -467,6 +469,8 @@ namespace DeliveryAppWhiterocks.Views
             {
                 polyline.Positions.Add(directionPolylines[i]);
             }
+
+            if (polyline.Positions.Count == 0) return;
             map.Polylines.Add(polyline);
         }
 
