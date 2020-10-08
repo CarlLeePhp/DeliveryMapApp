@@ -118,20 +118,20 @@ namespace DeliveryAppWhiterocks.Views
 
                 double kilometersDistanceOld = Location.CalculateDistance(_prevLocation, locationB, DistanceUnits.Kilometers);
                 double kilometersDistanceNew = Location.CalculateDistance(_currentLocation, locationB, DistanceUnits.Kilometers);
-                double kilometersDistanceOldVsNew = Location.CalculateDistance(_prevLocation, _currentLocation, DistanceUnits.Kilometers);
+                //double kilometersDistanceOldVsNew = Location.CalculateDistance(_prevLocation, _currentLocation, DistanceUnits.Kilometers);
 
                 if(kilometersDistanceNew < 0.035)
                 {
                     _outsideRouteUpdateCounter = 0;
                     map.Polylines[0].Positions.RemoveAt(0);
-                } else if (kilometersDistanceOldVsNew > 0.015 && (kilometersDistanceNew > kilometersDistanceOld || kilometersDistanceNew > 0.1))
+                } else if (kilometersDistanceNew > kilometersDistanceOld || kilometersDistanceNew > 0.1)
                 {
                     _outsideRouteUpdateCounter++;
                 }
 
                 //Text To speech
                 double kilometersDistanceToStep = Location.CalculateDistance(_currentLocation, new Location(_steps[0].StartLocation.Lat, _steps[0].StartLocation.Lng), DistanceUnits.Kilometers);
-                if (kilometersDistanceToStep < 0.035 && _steps.Count >0)
+                if (kilometersDistanceToStep < 0.06 && _steps.Count >0)
                 {
                     string instruction = StripHTML(_steps[0].HtmlInstructions).ToLower();
 
@@ -469,10 +469,21 @@ namespace DeliveryAppWhiterocks.Views
             foreach (Leg leg in _direction.Routes[0].Legs)
             {
                 if (leg.StartAddress == leg.EndAddress) break;
-                foreach (Step step in leg.Steps)
+                for (int i=0; i < leg.Steps.Count ; i++)
                 {
-                    directionPolylines = directionPolylines.Concat(PolylineHelper.Decode(step.Polyline.Points).ToList()).ToList();
-                    _steps.Add(step);
+                    directionPolylines = directionPolylines.Concat(PolylineHelper.Decode(leg.Steps[i].Polyline.Points).ToList()).ToList();
+                    if(i != leg.Steps.Count - 1)
+                    {
+                        if(leg.Steps[i].Distance.Text.IndexOf(" km") != -1)
+                        {
+                            leg.Steps[i].Distance.Text = leg.Steps[i].Distance.Text.Replace("km", "kilometers");
+                        } else if (leg.Steps[i].Distance.Text.IndexOf(" m") != -1)
+                        {
+                            leg.Steps[i].Distance.Text = leg.Steps[i].Distance.Text.Replace("m", "meters");
+                        }
+                        leg.Steps[i].HtmlInstructions += $" for {leg.Steps[i].Distance.Text}"; 
+                    }
+                    _steps.Add(leg.Steps[i]);
                 }
             }
             CreatePolylinesOnMap(directionPolylines);
@@ -570,9 +581,10 @@ namespace DeliveryAppWhiterocks.Views
             _invoices.Remove(invoiceSelected);
             DeliveryItemView.ItemsSource = _invoicesCollection;
             Pin thePin = _pins.Where(pinX => pinX.Tag as string == invoiceSelected.InvoiceID).FirstOrDefault();
-            _waypoints.Remove($"{thePin.Position.Latitude}%2C{thePin.Position.Longitude}");
-            map.Pins.Remove(thePin);
-           
+            if(thePin != null) { 
+                _waypoints.Remove($"{thePin.Position.Latitude}%2C{thePin.Position.Longitude}");
+                map.Pins.Remove(thePin);
+            }
             _counter--;
         }
 
