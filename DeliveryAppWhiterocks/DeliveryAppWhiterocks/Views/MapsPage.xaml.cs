@@ -48,6 +48,7 @@ namespace DeliveryAppWhiterocks.Views
 
         GoogleDirection _direction;
         List<Step> _steps = new List<Step>();
+        string instructionPrefix = "";
 
         double _currentWeight = 0;
 
@@ -93,7 +94,7 @@ namespace DeliveryAppWhiterocks.Views
         private async Task<bool> Update()
         {
             _currentLocation = await Geolocation.GetLastKnownLocationAsync();
-            if (_currentLocation == null)
+            if (_currentLocation == null )
             {
                 return false;
             }
@@ -101,7 +102,7 @@ namespace DeliveryAppWhiterocks.Views
             if (_prevLocation == null) _prevLocation = _currentLocation;
 
             
-            if (map.Polylines.Count > 0 && _prevLocation != _currentLocation)
+            if (map.Polylines.Count > 0 )
             {
                 if (map.Polylines[0].Positions.Count == 0) return false;
                 
@@ -117,21 +118,37 @@ namespace DeliveryAppWhiterocks.Views
 
                 double kilometersDistanceOld = Location.CalculateDistance(_prevLocation, locationB, DistanceUnits.Kilometers);
                 double kilometersDistanceNew = Location.CalculateDistance(_currentLocation, locationB, DistanceUnits.Kilometers);
+                double kilometersDistanceOldVsNew = Location.CalculateDistance(_prevLocation, _currentLocation, DistanceUnits.Kilometers);
 
-                if(kilometersDistanceNew * 1000 < 35)
+                if(kilometersDistanceNew < 0.035)
                 {
                     _outsideRouteUpdateCounter = 0;
                     map.Polylines[0].Positions.RemoveAt(0);
-                } else if (kilometersDistanceNew > kilometersDistanceOld || kilometersDistanceNew * 1000 > 100)
+                } else if (kilometersDistanceOldVsNew > 0.015 && (kilometersDistanceNew > kilometersDistanceOld || kilometersDistanceNew > 0.1))
                 {
                     _outsideRouteUpdateCounter++;
                 }
 
                 //Text To speech
                 double kilometersDistanceToStep = Location.CalculateDistance(_currentLocation, new Location(_steps[0].StartLocation.Lat, _steps[0].StartLocation.Lng), DistanceUnits.Kilometers);
-                if (kilometersDistanceToStep * 1000 < 35 && _steps.Count >0)
+                if (kilometersDistanceToStep < 0.035 && _steps.Count >0)
                 {
-                    TextToSpeech.SpeakAsync(StripHTML(_steps[0].HtmlInstructions));
+                    string instruction = StripHTML(_steps[0].HtmlInstructions).ToLower();
+
+                   
+                    
+                    instruction = Regex.Replace(instruction, "( st)($| |,)", " street ");
+                    instruction = Regex.Replace(instruction, "( dr)($| |,)", " drive ");
+                    instruction = Regex.Replace(instruction, "( rd)($| |,|.)", " road ");
+                    instruction = Regex.Replace(instruction, "( ave)($| |,)", " avenue ");
+                    instruction = Regex.Replace(instruction, "( hwy)($| |,)", " highway ");
+                    
+                    TextToSpeech.SpeakAsync(instructionPrefix + instruction);
+                    
+                        //double distanceToNextSpeech = Location.CalculateDistance(_currentLocation, new Location(_steps[0].EndLocation.Lat, _steps[0].EndLocation.Lng), DistanceUnits.Kilometers);
+                        //{ Math.Round(distanceToNextSpeech * 1000, 0)}
+                    instructionPrefix = $"In 35 meters, ";
+                    
                     _steps.RemoveAt(0);
                 }
 
@@ -140,6 +157,7 @@ namespace DeliveryAppWhiterocks.Views
 
             if (_outsideRouteUpdateCounter >= 5)
             {
+                Console.WriteLine("REFRESH");
                 _outsideRouteUpdateCounter = 0;
                 MapDirections("(stray) ");
             }
@@ -148,7 +166,7 @@ namespace DeliveryAppWhiterocks.Views
 
         public static string StripHTML(string input)
         {
-            return Regex.Replace(input, "<.*?>", String.Empty);
+            return Regex.Replace(input, "<.*?>", "");
         }
 
         protected async override void OnAppearing()
