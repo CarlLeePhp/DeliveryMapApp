@@ -71,10 +71,10 @@ namespace DeliveryAppWhiterocks.Views
                 {
                     try
                     {
-                        if (App.CheckIfInternet())
-                        {
+                        //if (App.CheckIfInternet())
+                        //{
                             await Update();
-                        }
+                        //}
                     }
                     catch
                     {
@@ -100,13 +100,11 @@ namespace DeliveryAppWhiterocks.Views
 
             if (_prevLocation == null) _prevLocation = _currentLocation;
 
-
+            
             if (map.Polylines.Count > 0 && _prevLocation != _currentLocation)
             {
                 if (map.Polylines[0].Positions.Count == 0) return false;
-                double kilometersDistanceToPointA = Location.CalculateDistance(_currentLocation, _prevLocation, DistanceUnits.Kilometers);
-                //this is Point A, update the point A
-                _prevLocation = _currentLocation;
+                
                 map.Polylines[0].Positions[0] = new Position(_currentLocation.Latitude, _currentLocation.Longitude);
                 Position pointB = new Position(0, 0);
                 if (map.Polylines[0].Positions.Count > 0)
@@ -116,23 +114,28 @@ namespace DeliveryAppWhiterocks.Views
                 }
 
                 Location locationB = new Location(pointB.Latitude, pointB.Longitude);
-                double kilometersDistanceToPointB = Location.CalculateDistance(_currentLocation, locationB, DistanceUnits.Kilometers);
-                if (kilometersDistanceToPointA * 1000 > 10 && kilometersDistanceToPointB * 1000 < 35)
+
+                double kilometersDistanceOld = Location.CalculateDistance(_prevLocation, locationB, DistanceUnits.Kilometers);
+                double kilometersDistanceNew = Location.CalculateDistance(_currentLocation, locationB, DistanceUnits.Kilometers);
+
+                if(kilometersDistanceNew * 1000 < 35)
                 {
                     _outsideRouteUpdateCounter = 0;
                     map.Polylines[0].Positions.RemoveAt(0);
-                }
-                else if(kilometersDistanceToPointA * 1000 > 15)
+                } else if (kilometersDistanceNew > kilometersDistanceOld || kilometersDistanceNew * 1000 > 100)
                 {
                     _outsideRouteUpdateCounter++;
                 }
 
+                //Text To speech
                 double kilometersDistanceToStep = Location.CalculateDistance(_currentLocation, new Location(_steps[0].StartLocation.Lat, _steps[0].StartLocation.Lng), DistanceUnits.Kilometers);
                 if (kilometersDistanceToStep * 1000 < 35 && _steps.Count >0)
                 {
                     TextToSpeech.SpeakAsync(StripHTML(_steps[0].HtmlInstructions));
                     _steps.RemoveAt(0);
                 }
+
+                _prevLocation = _currentLocation;
             }
 
             if (_outsideRouteUpdateCounter >= 5)

@@ -34,9 +34,16 @@ namespace DeliveryAppWhiterocks
             rightColMargin.Width = App.screenWidth / 4;
         }
 
-        private void Init()
+        private async void Init()
         {
             BackgroundColor = Constants.backgroundColor;
+
+            var location = await Geolocation.GetLastKnownLocationAsync();
+            if (location == null)
+            {
+                var request = new GeolocationRequest(GeolocationAccuracy.Medium);
+                await Geolocation.GetLocationAsync(request);
+            }
         }
 
         protected async override void OnAppearing()
@@ -44,13 +51,6 @@ namespace DeliveryAppWhiterocks
             NavigationPage.SetHasNavigationBar(this, false);
             base.OnAppearing();
             loadLocalData();
-            
-            var location = await Geolocation.GetLastKnownLocationAsync();
-            if(location == null)
-            {
-                var request = new GeolocationRequest(GeolocationAccuracy.Medium);
-                Geolocation.GetLocationAsync(request);
-            }
 
             await Task.Delay(5000);
             Application.Current.MainPage = new NavigationPage(new OrderPage());
