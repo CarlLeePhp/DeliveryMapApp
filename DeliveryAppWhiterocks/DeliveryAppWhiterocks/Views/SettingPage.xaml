@@ -5,8 +5,9 @@
              xmlns:localBehavior="clr-namespace:DeliveryAppWhiterocks.Behaviors">
 
     <Grid>
-        
-        <Grid ColumnSpacing="0"
+        <!--This scrollview wrapper is there so that the Keyboard from the input did not cover / push the input text-->
+        <ScrollView>
+            <Grid ColumnSpacing="0"
                 HorizontalOptions="FillAndExpand"
                 VerticalOptions="Start"
                 RowSpacing="0">
@@ -50,7 +51,7 @@
 
                 <Frame BackgroundColor="White" CornerRadius="5" >
                     <StackLayout>
-                        <Picker Grid.Column="1" x:Name="tenants" Title="Select a Organization"
+                        <Picker Grid.Column="1" x:Name="tenants" Title="Select an Organization"
                                         ItemsSource="{Binding Tenants}"
                                         ItemDisplayBinding="{Binding TenantName}"
                                         SelectedItem="{Binding SelectedTenant}">
@@ -90,6 +91,7 @@
                 </Grid>
             </StackLayout>
         </Grid>
+        </ScrollView>
     </Grid>
 
 </ContentPage>

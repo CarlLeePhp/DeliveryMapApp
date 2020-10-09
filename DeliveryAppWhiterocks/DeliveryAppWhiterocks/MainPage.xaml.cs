@@ -9,6 +9,7 @@ using DeliveryAppWhiterocks.Models;
 using DeliveryAppWhiterocks.Views;
 using DeliveryAppWhiterocks.Models.XeroAPI;
 using DeliveryAppWhiterocks.Models.Database.SQLite;
+using Xamarin.Essentials;
 
 namespace DeliveryAppWhiterocks
 {
@@ -33,9 +34,16 @@ namespace DeliveryAppWhiterocks
             rightColMargin.Width = App.screenWidth / 4;
         }
 
-        private void Init()
+        private async void Init()
         {
             BackgroundColor = Constants.backgroundColor;
+
+            var location = await Geolocation.GetLastKnownLocationAsync();
+            if (location == null)
+            {
+                var request = new GeolocationRequest(GeolocationAccuracy.Medium);
+                await Geolocation.GetLocationAsync(request);
+            }
         }
 
         protected async override void OnAppearing()
@@ -43,6 +51,7 @@ namespace DeliveryAppWhiterocks
             NavigationPage.SetHasNavigationBar(this, false);
             base.OnAppearing();
             loadLocalData();
+
             await Task.Delay(5000);
             Application.Current.MainPage = new NavigationPage(new OrderPage());
         }
