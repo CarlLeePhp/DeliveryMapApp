@@ -56,12 +56,15 @@ namespace DeliveryAppWhiterocks.Views
         //DEST CONSTANT ONLY FOR TESTING REMOVE LATER
         int numberOfAPICalls = 0;
 
+        INavigation _navigation;
+
         //remove the passing parameter later. now is used only for testing
-        public MapsPage(List<Invoice> invoices)
+        public MapsPage(List<Invoice> invoices, INavigation navigation)
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
             _storageInvoice = invoices;
+            _navigation = navigation;
             //Enable the blue circle that mark the current location of user
             map.MyLocationEnabled = true;
             CenterMapToCurrentLocation();
@@ -356,7 +359,7 @@ namespace DeliveryAppWhiterocks.Views
             Invoice invoice = _invoicesCollection.Where(invoiceX => invoiceX.InvoiceID == clickedInvoiceID).FirstOrDefault();
             if (_isDetailedPageOpen || invoice == null) return;
             _isDetailedPageOpen = true;
-            await Navigation.PushModalAsync(new OrderDetailPage(invoice));
+            await _navigation.PushModalAsync(new OrderDetailPage(invoice));
         }
 
         //InitPins() should be called before this method, _waypoints is added in InitPins()
@@ -503,7 +506,7 @@ namespace DeliveryAppWhiterocks.Views
             _currentSelectedInvoice = invoiceSelected;
             if (_isDetailedPageOpen) return;
             _isDetailedPageOpen = true;
-            await Navigation.PushModalAsync(new OrderDetailPage(invoiceSelected));
+            await _navigation.PushModalAsync(new OrderDetailPage(invoiceSelected));
         }
 
         private async void MarkAsCompleted(object sender, EventArgs e)
@@ -571,7 +574,7 @@ namespace DeliveryAppWhiterocks.Views
 
         private void ImgClose_Tapped(object sender, EventArgs e)
         {
-            Navigation.PopAsync(true);
+            _navigation.PopAsync(true);
         }
     }
 }
