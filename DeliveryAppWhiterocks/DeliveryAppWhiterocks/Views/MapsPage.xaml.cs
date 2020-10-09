@@ -179,6 +179,7 @@ namespace DeliveryAppWhiterocks.Views
                 {
                     UpdateStatus(_currentSelectedInvoice);
                     UpdateWeightLabel(_currentSelectedInvoice);
+                    if (IsGoogleAPICallRequired(_currentSelectedInvoice)) MapDirections("(Force-Refresh) ");
                 }
                 _currentSelectedInvoice = null;
             }
@@ -375,6 +376,7 @@ namespace DeliveryAppWhiterocks.Views
             Pin clickedPin = e.Pin;
             string clickedInvoiceID = clickedPin.Tag as string;
             Invoice invoice = _invoicesCollection.Where(invoiceX => invoiceX.InvoiceID == clickedInvoiceID).FirstOrDefault();
+            _currentSelectedInvoice = invoice;
             if (_isDetailedPageOpen || invoice == null) return;
             _isDetailedPageOpen = true;
             await Navigation.PushModalAsync(new OrderDetailPage(invoice));
@@ -561,19 +563,23 @@ namespace DeliveryAppWhiterocks.Views
                 UpdateStatus(invoiceSelected);
                 UpdateWeightLabel(invoiceSelected);
 
-                bool googleAPICallRequired = true;
-                InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceNumber(invoiceSelected.InvoiceNumber);
-                if (invoiceSQLite != null)
-                {
-                    ContactSQLite contact = App.ContactDatabase.GetContactByID(invoiceSQLite.ContactID);
-                    double distanceToInvoiceInKm = Location.CalculateDistance(_currentLocation, new Location((double)contact.Latitude, (double)contact.Longitude), DistanceUnits.Kilometers);
-
-                    if (distanceToInvoiceInKm * 1000 < 30) googleAPICallRequired = false;
-                }
-
-                if (googleAPICallRequired) MapDirections("(Force-Refresh) ");
+                if (IsGoogleAPICallRequired(invoiceSelected)) MapDirections("(Force-Refresh) ");
             }
         } // Mark As Completed
+
+        public bool IsGoogleAPICallRequired(Invoice invoiceSelected)
+        {
+            bool googleAPICallRequired = true;
+            InvoiceSQLite invoiceSQLite = App.InvoiceDatabase.GetInvoiceByInvoiceNumber(invoiceSelected.InvoiceNumber);
+            if (invoiceSQLite != null)
+            {
+                ContactSQLite contact = App.ContactDatabase.GetContactByID(invoiceSQLite.ContactID);
+                double distanceToInvoiceInKm = Location.CalculateDistance(_currentLocation, new Location((double)contact.Latitude, (double)contact.Longitude), DistanceUnits.Kilometers);
+
+                if (distanceToInvoiceInKm < 0.03) googleAPICallRequired = false;
+            }
+            return googleAPICallRequired;
+        }
 
         public void UpdateStatus(Invoice invoiceSelected)
         {
