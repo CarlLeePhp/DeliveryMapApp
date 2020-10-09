@@ -134,7 +134,7 @@ namespace DeliveryAppWhiterocks.Views
 
                 //Text To speech
                 double kilometersDistanceToStep = Location.CalculateDistance(_currentLocation, new Location(_steps[0].StartLocation.Lat, _steps[0].StartLocation.Lng), DistanceUnits.Kilometers);
-                if (kilometersDistanceToStep < 0.06 && _steps.Count >0)
+                if (kilometersDistanceToStep < 0.045 && _steps.Count >0)
                 {
                     string instruction = StripHTML(_steps[0].HtmlInstructions).ToLower();
 
@@ -356,11 +356,12 @@ namespace DeliveryAppWhiterocks.Views
                     {
 
                         Position = position,
-                        Label = $"{_invoiceSQLite[i].InvoiceNumber} : Click for Details",
+                        Label = $"{_invoiceSQLite[i].InvoiceNumber}",
                         //set tag so i can reference it when a pin is clicked
                         Tag = _invoiceSQLite[i].InvoiceID,
                         Icon = BitmapDescriptorFactory.FromBundle(_invoiceSQLite[i].InvoiceType),
                     };
+                    pin.Address = "Click for Details";
                     _pins.Add(pin);
 
                     map.SelectedPinChanged += Map_SelectedPinChanged;
