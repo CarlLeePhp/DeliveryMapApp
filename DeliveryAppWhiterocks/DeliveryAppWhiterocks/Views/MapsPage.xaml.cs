@@ -47,8 +47,9 @@ namespace DeliveryAppWhiterocks.Views
         int _outsideRouteUpdateCounter = 0;
 
         GoogleDirection _direction;
-        List<Step> _steps = new List<Step>();
-        string instructionPrefix = "";
+        //List<Step> _steps = new List<Step>();
+        List<Leg> _legs = new List<Leg>();
+        int _currentLegs = 0;
 
         double _currentWeight = 0;
 
@@ -77,10 +78,10 @@ namespace DeliveryAppWhiterocks.Views
                     {
                         //if (App.CheckIfInternet())
                         //{
-                            await Update();
-                        //}
+                        await Update();
+                    //}
                     }
-                    catch
+                        catch
                     {
                         Console.WriteLine("Error");
                     }
@@ -133,26 +134,27 @@ namespace DeliveryAppWhiterocks.Views
                 }
 
                 //Text To speech
-                double kilometersDistanceToStep = Location.CalculateDistance(_currentLocation, new Location(_steps[0].StartLocation.Lat, _steps[0].StartLocation.Lng), DistanceUnits.Kilometers);
-                if (kilometersDistanceToStep < 0.045 && _steps.Count >0)
+                double kilometersDistanceToStep = Location.CalculateDistance(_currentLocation, new Location(_legs[_currentLegs].Steps[0].StartLocation.Lat, _legs[_currentLegs].Steps[0].StartLocation.Lng), DistanceUnits.Kilometers);
+                if (kilometersDistanceToStep < 0.045 && _legs.Count > 0 )
                 {
-                    string instruction = StripHTML(_steps[0].HtmlInstructions).ToLower();
+                    if (Location.CalculateDistance(_currentLocation, new Location(_legs[_currentLegs].EndLocation.Lat, _legs[_currentLegs].EndLocation.Lng), DistanceUnits.Kilometers) < 0.35)
+                    {
+                        TextToSpeech.SpeakAsync("You have arrived at your destination");
+                        
+                        _legs.RemoveAt(_currentLegs);
+                    }
+                    else if (_legs[_currentLegs].Steps.Count > 0) { 
+                        string instruction = StripHTML(_legs[_currentLegs].Steps[0].HtmlInstructions).ToLower();
+                        instruction = Regex.Replace(instruction, "( st)($| |,)", " street");
+                        instruction = Regex.Replace(instruction, "( dr)($| |,)", " drive");
+                        instruction = Regex.Replace(instruction, "( rd)($| |,|.)", " road");
+                        instruction = Regex.Replace(instruction, "( ave)($| |,)", " avenue");
+                        instruction = Regex.Replace(instruction, "( hwy)($| |,)", " highway");
 
-                   
-                    
-                    instruction = Regex.Replace(instruction, "( st)($| |,)", " street ");
-                    instruction = Regex.Replace(instruction, "( dr)($| |,)", " drive ");
-                    instruction = Regex.Replace(instruction, "( rd)($| |,|.)", " road ");
-                    instruction = Regex.Replace(instruction, "( ave)($| |,)", " avenue ");
-                    instruction = Regex.Replace(instruction, "( hwy)($| |,)", " highway ");
-                    
-                    TextToSpeech.SpeakAsync(instructionPrefix + instruction);
-                    
-                        //double distanceToNextSpeech = Location.CalculateDistance(_currentLocation, new Location(_steps[0].EndLocation.Lat, _steps[0].EndLocation.Lng), DistanceUnits.Kilometers);
-                        //{ Math.Round(distanceToNextSpeech * 1000, 0)}
-                    instructionPrefix = $"In 35 meters, ";
-                    
-                    _steps.RemoveAt(0);
+                        TextToSpeech.SpeakAsync(instruction);
+
+                        _legs[_currentLegs].Steps.RemoveAt(0);
+                    }
                 }
 
                 _prevLocation = _currentLocation;
@@ -470,11 +472,13 @@ namespace DeliveryAppWhiterocks.Views
 
         private void AddPolyLine()
         {
-            _steps.Clear();
+            _legs.Clear();
+            //List<Step> steps = new List<Step>();
             List<Position> directionPolylines = new List<Position>();
+            //int iteration = 0;
             foreach (Leg leg in _direction.Routes[0].Legs)
             {
-                if (leg.StartAddress == leg.EndAddress) break;
+                if (leg.StartAddress == leg.EndAddress) continue;
                 for (int i=0; i < leg.Steps.Count ; i++)
                 {
                     directionPolylines = directionPolylines.Concat(PolylineHelper.Decode(leg.Steps[i].Polyline.Points).ToList()).ToList();
@@ -487,10 +491,11 @@ namespace DeliveryAppWhiterocks.Views
                         {
                             leg.Steps[i].Distance.Text = leg.Steps[i].Distance.Text.Replace("m", "meters");
                         }
-                        leg.Steps[i].HtmlInstructions += $" for {leg.Steps[i].Distance.Text}"; 
+                        leg.Steps[i].HtmlInstructions += $" for {leg.Steps[i].Distance.Text}";
                     }
-                    _steps.Add(leg.Steps[i]);
+                    //steps.Add(leg.Steps[i]);
                 }
+                _legs.Add(leg);
             }
             CreatePolylinesOnMap(directionPolylines);
         }
@@ -580,7 +585,7 @@ namespace DeliveryAppWhiterocks.Views
                 ContactSQLite contact = App.ContactDatabase.GetContactByID(invoiceSQLite.ContactID);
                 double distanceToInvoiceInKm = Location.CalculateDistance(_currentLocation, new Location((double)contact.Latitude, (double)contact.Longitude), DistanceUnits.Kilometers);
 
-                if (distanceToInvoiceInKm < 0.03) googleAPICallRequired = false;
+                if (distanceToInvoiceInKm < 0.045) googleAPICallRequired = false;
             }
             return googleAPICallRequired;
         }
@@ -594,6 +599,9 @@ namespace DeliveryAppWhiterocks.Views
             if(thePin != null) { 
                 _waypoints.Remove($"{thePin.Position.Latitude}%2C{thePin.Position.Longitude}");
                 map.Pins.Remove(thePin);
+            }
+            if(_legs.Count > _currentLegs) {
+                _currentLegs++;
             }
             _counter--;
         }
