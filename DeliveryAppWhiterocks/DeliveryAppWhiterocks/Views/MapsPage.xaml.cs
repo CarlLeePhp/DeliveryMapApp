@@ -124,7 +124,7 @@ namespace DeliveryAppWhiterocks.Views
                 double kilometersDistanceNew = Location.CalculateDistance(_currentLocation, locationB, DistanceUnits.Kilometers);
                 //double kilometersDistanceOldVsNew = Location.CalculateDistance(_prevLocation, _currentLocation, DistanceUnits.Kilometers);
 
-                if(kilometersDistanceNew < 0.035)
+                if(kilometersDistanceNew < 0.06)
                 {
                     _outsideRouteUpdateCounter = 0;
                     map.Polylines[0].Positions.RemoveAt(0);
@@ -134,27 +134,33 @@ namespace DeliveryAppWhiterocks.Views
                 }
 
                 //Text To speech
-                double kilometersDistanceToStep = Location.CalculateDistance(_currentLocation, new Location(_legs[_currentLegs].Steps[0].StartLocation.Lat, _legs[_currentLegs].Steps[0].StartLocation.Lng), DistanceUnits.Kilometers);
-                if (kilometersDistanceToStep < 0.045 && _legs.Count > 0 )
-                {
-                    if (Location.CalculateDistance(_currentLocation, new Location(_legs[_currentLegs].EndLocation.Lat, _legs[_currentLegs].EndLocation.Lng), DistanceUnits.Kilometers) < 0.35)
+                if(_legs.Count > 0  && _currentLegs < _legs.Count ) {
+
+                    if (_legs[_currentLegs].Steps.Count == 0 && Location.CalculateDistance(_currentLocation, new Location(_legs[_currentLegs].EndLocation.Lat, _legs[_currentLegs].EndLocation.Lng), DistanceUnits.Kilometers) < 0.35)
                     {
                         TextToSpeech.SpeakAsync("You have arrived at your destination");
-                        
+
                         _legs.RemoveAt(_currentLegs);
                     }
                     else if (_legs[_currentLegs].Steps.Count > 0) { 
-                        string instruction = StripHTML(_legs[_currentLegs].Steps[0].HtmlInstructions).ToLower();
-                        instruction = Regex.Replace(instruction, "( st)($| |,)", " street");
-                        instruction = Regex.Replace(instruction, "( dr)($| |,)", " drive");
-                        instruction = Regex.Replace(instruction, "( rd)($| |,|.)", " road");
-                        instruction = Regex.Replace(instruction, "( ave)($| |,)", " avenue");
-                        instruction = Regex.Replace(instruction, "( hwy)($| |,)", " highway");
+                        double kilometersDistanceToStep = Location.CalculateDistance(_currentLocation, new Location(_legs[_currentLegs].Steps[0].StartLocation.Lat, _legs[_currentLegs].Steps[0].StartLocation.Lng), DistanceUnits.Kilometers);
 
-                        TextToSpeech.SpeakAsync(instruction);
+                    
+                        if (kilometersDistanceToStep < 0.045 )
+                        {
+                            string instruction = StripHTML(_legs[_currentLegs].Steps[0].HtmlInstructions).ToLower();
+                            instruction = Regex.Replace(instruction, "( st)($| |,)", " street");
+                            instruction = Regex.Replace(instruction, "( dr)($| |,)", " drive");
+                            instruction = Regex.Replace(instruction, "( rd)($| |,|.)", " road");
+                            instruction = Regex.Replace(instruction, "( ave)($| |,)", " avenue");
+                            instruction = Regex.Replace(instruction, "( hwy)($| |,)", " highway");
 
-                        _legs[_currentLegs].Steps.RemoveAt(0);
+                            TextToSpeech.SpeakAsync(instruction);
+
+                            _legs[_currentLegs].Steps.RemoveAt(0);
+                        }
                     }
+                   
                 }
 
                 _prevLocation = _currentLocation;
@@ -502,19 +508,24 @@ namespace DeliveryAppWhiterocks.Views
 
         private void CreatePolylinesOnMap(List<Position> directionPolylines)
         {
-            Xamarin.Forms.GoogleMaps.Polyline polyline = new Xamarin.Forms.GoogleMaps.Polyline()
-            {
-                StrokeColor = Constants.mapShapeColor,
-                StrokeWidth = 8,
-            };
+            try {
+                Xamarin.Forms.GoogleMaps.Polyline polyline = new Xamarin.Forms.GoogleMaps.Polyline()
+                {
+                    StrokeColor = Constants.mapShapeColor,
+                    StrokeWidth = 8,
+                };
 
-            for (int i = 0; i < directionPolylines.Count; i++)
+                for (int i = 0; i < directionPolylines.Count; i++)
+                {
+                    polyline.Positions.Add(directionPolylines[i]);
+                }
+
+                if (polyline.Positions.Count == 0) return;
+                map.Polylines.Add(polyline);
+            } catch
             {
-                polyline.Positions.Add(directionPolylines[i]);
+                Console.WriteLine("Error in polyline");
             }
-
-            if (polyline.Positions.Count == 0) return;
-            map.Polylines.Add(polyline);
         }
 
         //Do something when a pin is clicked, experimental
