@@ -44,6 +44,7 @@ namespace DeliveryAppWhiterocks.Views
         Timer _timer;
         Location _currentLocation;
         Location _prevLocation;
+        Location _savedLocation;
         int _outsideRouteUpdateCounter = 0;
 
         GoogleDirection _direction;
@@ -104,7 +105,7 @@ namespace DeliveryAppWhiterocks.Views
             }
 
             if (_prevLocation == null) _prevLocation = _currentLocation;
-
+            
             
             if (map.Polylines.Count > 0 )
             {
@@ -124,7 +125,7 @@ namespace DeliveryAppWhiterocks.Views
                 double kilometersDistanceNew = Location.CalculateDistance(_currentLocation, locationB, DistanceUnits.Kilometers);
                 //double kilometersDistanceOldVsNew = Location.CalculateDistance(_prevLocation, _currentLocation, DistanceUnits.Kilometers);
 
-                if(kilometersDistanceNew < 0.06)
+                if(kilometersDistanceNew < 0.07)
                 {
                     _outsideRouteUpdateCounter = 0;
                     map.Polylines[0].Positions.RemoveAt(0);
@@ -226,7 +227,6 @@ namespace DeliveryAppWhiterocks.Views
         //SLIDEUP MENU REGION
         //a layout that helps in resizing the stacklayout that contains the delivery orders
         #region SlideUpMenu
-
         private void InitMenu()
         {
             Task.Factory.StartNew(async () =>
@@ -297,9 +297,9 @@ namespace DeliveryAppWhiterocks.Views
                     TaskContinuationOptions.OnlyOnRanToCompletion,
                     TaskScheduler.FromCurrentSynchronizationContext());
         }
-
         #endregion
-
+        
+        //initialize markers on map and position into _waypoints
         private async Task<bool> InitPins()
         {
             _pins.Clear();
@@ -383,6 +383,7 @@ namespace DeliveryAppWhiterocks.Views
             return true;
         }
 
+        //method to open invoice details by clicking label on pin
         private async void Map_InfoWindowClicked(object sender, InfoWindowClickedEventArgs e)
         {
             Pin clickedPin = e.Pin;
@@ -394,7 +395,6 @@ namespace DeliveryAppWhiterocks.Views
             await _navigation.PushModalAsync(new OrderDetailPage(invoice));
         }
 
-        //InitPins() should be called before this method, _waypoints is added in InitPins()
         //A method that let's google handle the directions, shortest path etc.
         private async void MapDirections(string message="")
         {

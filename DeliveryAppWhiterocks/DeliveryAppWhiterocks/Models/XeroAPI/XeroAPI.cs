@@ -45,7 +45,7 @@ namespace DeliveryAppWhiterocks.Models.XeroAPI
             Preferences.Set("ExpiresIn", token.expires_in);
             Preferences.Set("CurrentTime", UnixTime.GetCurrentTime());
             Preferences.Set("RefreshToken", token.refresh_token);
-
+            
             DecodeAccessToken();
             return true;
         }
